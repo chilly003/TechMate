@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainArticle from '../component/article/MainArticle';
-import ArticleCard from '../component/article/ArticleCard';
+import MainArticle from '../components/article/MainArticle';
+import ArticleCard from '../components/article/ArticleCard';
 
 /**
  * @description 메인 페이지, 분류 별 기사를 노출하는 페이지.

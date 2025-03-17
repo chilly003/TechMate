@@ -1,11 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-
-=======
 import IntroImage from '../assets/images/IntroImage.jpg';
 import SocialLoginButton from '../components/ui/SocialLoginButton';
->>>>>>> f75f5ced038c1e5317b434df03232958a2977f96
 
 const Intro = () => {
     const navigate = useNavigate();
@@ -16,10 +12,6 @@ const Intro = () => {
     };
 
     return (
-<<<<<<< HEAD
-        <div>
-
-=======
         <div className="flex flex-row min-h-screen h-screen w-full">
             {/* Left section - hidden on mobile */}
             <div className="hidden md:block md:w-1/2 relative">
@@ -63,7 +55,6 @@ const Intro = () => {
                     </div>
                 </div>
             </div>
->>>>>>> f75f5ced038c1e5317b434df03232958a2977f96
         </div>
     );
 };
