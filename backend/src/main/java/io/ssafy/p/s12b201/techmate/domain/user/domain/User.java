@@ -41,6 +41,8 @@ public class User extends BaseEntity {
 
     private String oauthId;
 
+    private Boolean isNew;
+
     @Enumerated(EnumType.STRING)
     private final AccountRole accountRole = AccountRole.USER;
 
@@ -49,12 +51,14 @@ public class User extends BaseEntity {
             String nickname,
             String oauthProvider,
             String email,
-            String oauthId
+            String oauthId,
+            Boolean isNew
     ) {
         this.nickname = nickname;
         this.oauthProvider = oauthProvider;
         this.email = email;
         this.oauthId = oauthId;
+        this.isNew = isNew;
 
     }
 
