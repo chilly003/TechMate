@@ -1,22 +1,37 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import IntroImage from '../../assets/images/IntroImage.jpg';
 
-/**
- * @description 기사 이미지, 제목, 언론사를 표시하는 기사 카드 컴포넌트
- * 
- * @todo [기사 이미지] 구현 필요
- * @todo [기사 이미지] 구현 방법: [img 태그를 사용하여 기사 썸네일 이미지 로드]
- * @todo [기사 이미지] 요구사항: [이미지 비율 유지 및 최대 높이 설정]
- * 
- * @todo [기사 내용] 구현 필요
- * @todo [기사 내용] 구현 방법: [기사 제목과 언론사 이름 표시]
- * @todo [기사 내용] 요구사항: [언론사 이름은 제목 아래에 표시]
- * 
- */
+const ArticleCard = ({ imageUrl, title, publisher, id }) => {
+    const navigate = useNavigate();
 
-const ArticleCard = () => {
+    const handleClick = () => {
+        navigate(`/article/${id}`);
+    };
+
     return (
-        <div>
-            ArticleCard component.
+        <div 
+            className="flex flex-col hover:bg-gray-50 cursor-pointer transition-colors p-4"
+            onClick={handleClick}
+        >
+            {/* Article Image */}
+            <div className="w-full aspect-[3/4] mb-3 overflow-hidden">
+                <img 
+                    src={IntroImage}
+                    alt="Article thumbnail"
+                    className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-110 hover:rotate-3"
+                />
+            </div>
+
+            {/* Article Content */}
+            <div className="flex flex-col">
+                <h3 className="font-bold text-base line-clamp-2 mb-2">
+                    {title || "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"}
+                </h3>
+                <p className="text-gray-500 text-sm">
+                    {publisher || "기업/경제"}
+                </p>
+            </div>
         </div>
     );
 };
