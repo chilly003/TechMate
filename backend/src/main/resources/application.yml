@@ -2,7 +2,7 @@ spring:
   config:
     import: "optional:configserver:"
   application:
-    name: moonggeul
+    name: techmate
 
   datasource:
     url: jdbc:mysql://localhost:3306/techmate?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -25,3 +25,24 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+
+oauth:
+  kakao:
+    app-id: ${KAKAO_APP_ID}
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-url: ${KAKAO_REDIRECT_URL}
+    base-url: ${KAKAO_BASE_URL}
+    admin-key: ${KAKAO_ADMIN_KEY}
+  google:
+    app-id: ${GOOGLE_CLIENT_ID}
+    redirect-url: ${GOOGLE_REDIRECT_URL}
+    base-url: ${GOOGLE_BASE_URL}
+    client-secret: ${GOOGLE_SECRET}
+
+auth:
+  jwt:
+    secretKey: ${JWT_SECRET_KEY}
+    accessExp: ${JWT_ACCESS_EXP}
+    refreshExp: ${JWT_REFRESH_EXP}
+    header: ${JWT_HEADER}
+    prefix: ${JWT_PREFIX}

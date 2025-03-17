@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TechMateException.class)
-    public ResponseEntity<ErrorResponse> luckLotteryExceptionHandler(
+    public ResponseEntity<ErrorResponse> techMateExceptionHandler(
             TechMateException e, HttpServletRequest request) {
 
         ErrorCode code = e.getErrorCode();
