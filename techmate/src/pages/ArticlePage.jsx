@@ -38,7 +38,7 @@ const ArticlePage = () => {
 
     return (
         <div>
-            Articlepage.
+            Articlepage {id}
         </div>
     );
 };

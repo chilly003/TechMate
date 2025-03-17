@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import MainArticle from '../component/article/MainArticle';
+import ArticleCard from '../component/article/ArticleCard';
 
 /**
  * @description 메인 페이지, 분류 별 기사를 노출하는 페이지.
@@ -23,9 +25,35 @@ import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
     const navigate = useNavigate();
 
+    const dummyArticles = Array.from({ length: 9 }, (_, index) => ({
+        id: index + 1,
+        title: index === 0
+            ? "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"
+            : "삼성전자, '스마트싱스 프로' 통해 국내 건설기업 해외 진출 돕는다",
+        publisher: index % 2 === 0 ? "기업/경제" : "매일경제",
+    }));
+
     return (
-        <div>
-            <h1>Home Page</h1>
+        <div className="flex flex-col md:flex-row min-h-screen">
+            {/* Featured Article Section - Top 50% on mobile, Left 50% on desktop */}
+            <div className="w-full h-[50vh] md:w-1/2 md:h-screen md:fixed md:left-0">
+                <MainArticle id={1} />
+            </div>
+
+            {/* Article List Section - Bottom 50% on mobile, Right 50% on desktop */}
+            <div className="w-full h-[50vh] md:w-1/2 md:min-h-screen md:ml-[50%] p-4">
+                <div className="grid grid-cols-2 gap-4">
+                    {dummyArticles.map((article, index) => (
+                        <div key={article.id} className={`${index % 2 === 1 ? 'mt-16 md:mt-28' : ''}`}>
+                            <ArticleCard
+                                id={article.id}
+                                title={article.title}
+                                publisher={article.publisher}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
