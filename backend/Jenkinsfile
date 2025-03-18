@@ -54,7 +54,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('backend') {}
+                dir('backend') {
                     sh '''
                     docker build \
                     --build-arg MYSQL_HOST=${MYSQL_HOST} \
