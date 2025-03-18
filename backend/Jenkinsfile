@@ -54,32 +54,34 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                docker build \
-                  --build-arg MYSQL_HOST=${MYSQL_HOST} \
-                  --build-arg MYSQL_PORT=${MYSQL_PORT} \
-                  --build-arg MYSQL_DATABASE=${MYSQL_DATABASE} \
-                  --build-arg MYSQL_USER=${MYSQL_USER} \
-                  --build-arg MYSQL_PASSWORD=${MYSQL_PASSWORD} \
-                  --build-arg KAKAO_APP_ID=${KAKAO_APP_ID} \
-                  --build-arg KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
-                  --build-arg KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL} \
-                  --build-arg KAKAO_BASE_URL=${KAKAO_BASE_URL} \
-                  --build-arg KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} \
-                  --build-arg GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
-                  --build-arg GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL} \
-                  --build-arg GOOGLE_BASE_URL=${GOOGLE_BASE_URL} \
-                  --build-arg GOOGLE_SECRET=${GOOGLE_SECRET} \
-                  --build-arg JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-                  --build-arg JWT_ACCESS_EXP=${JWT_ACCESS_EXP} \
-                  --build-arg JWT_REFRESH_EXP=${JWT_REFRESH_EXP} \
-                  --build-arg JWT_HEADER=${JWT_HEADER} \
-                  --build-arg JWT_PREFIX=${JWT_PREFIX} \
-                  --build-arg REDIS_HOST=${REDIS_HOST} \
-                  --build-arg REDIS_PORT=${REDIS_PORT} \
-                  --build-arg REDIS_PASSWORD=${REDIS_PASSWORD} \
-                  -t springboot:latest .
-                '''
+                dir('backend') {}
+                    sh '''
+                    docker build \
+                    --build-arg MYSQL_HOST=${MYSQL_HOST} \
+                    --build-arg MYSQL_PORT=${MYSQL_PORT} \
+                    --build-arg MYSQL_DATABASE=${MYSQL_DATABASE} \
+                    --build-arg MYSQL_USER=${MYSQL_USER} \
+                    --build-arg MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+                    --build-arg KAKAO_APP_ID=${KAKAO_APP_ID} \
+                    --build-arg KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                    --build-arg KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL} \
+                    --build-arg KAKAO_BASE_URL=${KAKAO_BASE_URL} \
+                    --build-arg KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} \
+                    --build-arg GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                    --build-arg GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL} \
+                    --build-arg GOOGLE_BASE_URL=${GOOGLE_BASE_URL} \
+                    --build-arg GOOGLE_SECRET=${GOOGLE_SECRET} \
+                    --build-arg JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                    --build-arg JWT_ACCESS_EXP=${JWT_ACCESS_EXP} \
+                    --build-arg JWT_REFRESH_EXP=${JWT_REFRESH_EXP} \
+                    --build-arg JWT_HEADER=${JWT_HEADER} \
+                    --build-arg JWT_PREFIX=${JWT_PREFIX} \
+                    --build-arg REDIS_HOST=${REDIS_HOST} \
+                    --build-arg REDIS_PORT=${REDIS_PORT} \
+                    --build-arg REDIS_PASSWORD=${REDIS_PASSWORD} \
+                    -t springboot:latest .
+                    '''
+                }
             }
         }
 
