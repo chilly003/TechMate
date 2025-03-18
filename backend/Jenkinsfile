@@ -96,6 +96,7 @@ pipeline {
             steps {
                 sh '''
                 docker run -d --name springboot \
+                  --network techmate_default \
                   -p 8080:8080 \
                   -e MYSQL_HOST=${MYSQL_HOST} \
                   -e MYSQL_PORT=${MYSQL_PORT} \
