@@ -1,6 +1,5 @@
-package io.ssafy.p.s12b201.techmate.domain.memo.domain;
+package io.ssafy.p.s12b201.techmate.domain.articleread.domain;
 
-import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Scrap;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
@@ -9,31 +8,26 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "memos")
+@Table(name = "user_article_reads")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Memo extends BaseEntity {
+public class ArticleRead extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "memo_id")
+    @Column(name = "user_article_read_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scrap_id")
-    private Scrap scrap;
-
-    private String content;
+    private String articleId;
 
     @Builder
-    public Memo(User user, Scrap scrap, String content) {
+    public ArticleRead(User user, String articleId) {
         this.user = user;
-        this.scrap = scrap;
-        this.content = content;
+        this.articleId = articleId;
     }
 }

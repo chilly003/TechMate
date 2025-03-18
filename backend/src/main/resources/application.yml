@@ -5,9 +5,9 @@ spring:
     name: techmate
 
   datasource:
-    url: jdbc:mysql://localhost:3306/techmate?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
@@ -22,7 +22,6 @@ spring:
       host: localhost
       port: 6379
 
-
 logging.level:
   org.hibernate.SQL: debug
 
@@ -34,7 +33,7 @@ oauth:
     base-url: ${KAKAO_BASE_URL}
     admin-key: ${KAKAO_ADMIN_KEY}
   google:
-    app-id: ${GOOGLE_CLIENT_ID}
+    client-id: ${GOOGLE_CLIENT_ID}
     redirect-url: ${GOOGLE_REDIRECT_URL}
     base-url: ${GOOGLE_BASE_URL}
     client-secret: ${GOOGLE_SECRET}

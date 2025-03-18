@@ -30,7 +30,7 @@ public class JwtTokenProvider {
     private final String REFRESH_TOKEN = "refresh_token";
     private final String ROLE = "role";
     private final String TYPE = "type";
-    private final String ISSUER = "moonggeul";
+    private final String ISSUER = "techmate";
 
     public String generateAccessToken(Long id, AccountRole accountRole) {
         final Date issuedAt = new Date();
@@ -55,35 +55,6 @@ public class JwtTokenProvider {
             return rawHeader.substring(jwtProperties.getPrefix().length() + 1);
         }
         return null;
-    }
-
-    public String resolveTokenWeb(String token) {
-
-        if (token != null
-                && token.length() > jwtProperties.getPrefix().length()
-                && token.startsWith(jwtProperties.getPrefix())) {
-            return token.substring(jwtProperties.getPrefix().length() + 1);
-        }
-        return null;
-    }
-
-    //웹소켓에서
-    public void validateToken(final String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token);
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw InvalidTokenException.EXCEPTION;
-        } catch (ExpiredJwtException e) {
-            throw ExpiredTokenException.EXCEPTION;
-        } catch (UnsupportedJwtException e) {
-            throw InvalidTokenException.EXCEPTION;
-        } catch (IllegalArgumentException e) {
-            throw InvalidTokenException.EXCEPTION;
-        }
-    }
-
-    public Long getUserId(String token){
-        return Long.valueOf(getJws(token).getBody().getSubject());
     }
 
     public Authentication getAuthentication(String token) {

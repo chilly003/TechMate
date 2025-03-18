@@ -2,14 +2,13 @@ package io.ssafy.p.s12b201.techmate.domain.user.domain;
 
 import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.ArticleLike;
 import io.ssafy.p.s12b201.techmate.domain.quizresult.domain.QuizResult;
-import io.ssafy.p.s12b201.techmate.domain.userarticleread.domain.UserArticleRead;
+import io.ssafy.p.s12b201.techmate.domain.articleread.domain.ArticleRead;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +27,17 @@ public class User extends BaseEntity {
     private final List<ArticleLike> articleLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private final List<UserArticleRead> userArticleReadList = new ArrayList<>();
+    private final List<ArticleRead> articleReadList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<QuizResult> quizResultList = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "user_preference", joinColumns =
+    @JoinColumn(name = "user_id")
+    )
+    @Column(name = "article_id")
+    private List<String> preferenceArticle = new ArrayList<>();
 
     private String nickname;
 
@@ -61,6 +67,5 @@ public class User extends BaseEntity {
         this.isNew = isNew;
 
     }
-
 
 }

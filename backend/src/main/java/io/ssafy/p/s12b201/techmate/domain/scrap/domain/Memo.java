@@ -7,40 +7,34 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "scraps")
+@Table(name = "memos")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Scrap extends BaseEntity {
+public class Memo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "scrap_id")
+    @Column(name = "memo_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "folder_id")
-    private Folder folder;
+    @OneToOne(mappedBy = "memo", cascade = CascadeType.ALL)
+    private Scrap scrap;
 
-    @OneToOne
-    @JoinColumn(name = "memo_id")
-    private Memo memo;
-
-    private String articleId;
+    private String content;
 
     @Builder
-    public Scrap(User user, Folder folder, Memo memo, String articleId) {
+    public Memo(User user, Scrap scrap, String content) {
         this.user = user;
-        this.folder = folder;
-        this.memo = memo;
-        this.articleId = articleId;
-
+        this.scrap = scrap;
+        this.content = content;
     }
 }

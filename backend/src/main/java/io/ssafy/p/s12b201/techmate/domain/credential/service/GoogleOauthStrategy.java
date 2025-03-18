@@ -40,7 +40,7 @@ public class GoogleOauthStrategy implements OauthStrategy{
         return oauthProperties.getGoogleBaseUrl()
                 + String.format(
                 QUERY_STRING,
-                oauthProperties.getGoogleAppId(),
+                oauthProperties.getGoogleClientId(),
                 oauthProperties.getGoogleRedirectUrl(),
                 scope);
     }
@@ -51,7 +51,7 @@ public class GoogleOauthStrategy implements OauthStrategy{
 
         OauthTokenResponse oauthTokenResponse = googleAuthClient
                 .googleAuth(
-                        oauthProperties.getGoogleAppId(),
+                        oauthProperties.getGoogleClientId(),
                         oauthProperties.getGoogleRedirectUrl(),
                         decodedCode,
                         oauthProperties.getGoogleClientSecret());
