@@ -32,7 +32,6 @@ pipeline {
         // Redis 환경변수
         REDIS_HOST = credentials('REDIS_HOST')
         REDIS_PORT = credentials('REDIS_PORT')
-        REDIS_PASSWORD = credentials('REDIS_PASSWORD')
     }
 
     stages {
