@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     private final List<QuizResult> quizResultList = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "user_preference", joinColumns =
+    @CollectionTable(name = "user_preferences", joinColumns =
     @JoinColumn(name = "user_id")
     )
     @Column(name = "article_id")

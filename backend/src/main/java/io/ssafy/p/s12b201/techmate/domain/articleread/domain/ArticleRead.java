@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "user_article_reads")
+@Table(name = "article_reads")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,7 +16,7 @@ public class ArticleRead extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_article_read_id")
+    @Column(name = "article_read_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
