@@ -1,44 +1,165 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-/**
- * @description 기사 상세 페이지, 기사의 상세 내용을 보여주는 페이지.
- * 
- * @todo [상단부] 구현 필요
- * @todo [상단부] 구현 방식: [img 태그, text 태그 활용]
- * @todo [상단부] 요구사항: [좌측 50%는 기사 대표이미지, 우측 50%는 기사 내용이 나타난다.]
- * @todo [상단부] 요구사항: [768px 이하 일때는 이미지를 배경으로 기사 내용이 나타난다.]
- * 
- * @todo [기사 내용 부] 구현 필요
- * @todo [기사 내용 부] 구현 방식: [text 태그 활용]
- * @todo [기사 내용 부] 요구사항: [문단 별로 구분되어 나타난다.]
- * 
- * @todo [관련 기사 목록 부] 구현 필요
- * @todo [관련 기사 목록 부] 구현 방식: [자유]
- * @todo [관련 기사 목록 부] 요구사항: [Article 컴포넌트를 불러와 목록 형태로 가로로 나타낸다]
- * @todo [관련 기사 목록 부] 요구사항: [드래그로 목록을 넘길 수 있어야 한다.]
- * 
- * @todo [퀴즈 관련] 구현 필요
- * @todo [퀴즈 관련] 구현 방식: [자유]
- * @todo [퀴즈 관련] 요구사항: [퀴즈 풀러가기 버튼을 누르면 Quiz 컴포넌트가 나타난다.]
- * @todo [퀴즈 관련] 요구사항: [퀴즈 컴포넌트는 우측 50%를 차지하게 된다.]
- * 
- * @todo [메모 및 스크랩 관련] 구현 필요
- * @todo [메모 및 스크랩 관련] 구현 방식: [자유]
- * @todo [메모 및 스크랩 관련] 요구사항: [사용자가 스크랩한 기사 일 경우 메모가 가능해야한다.]
- * @todo [메모 및 스크랩 관련] 요구사항: [Memo 컴포넌트를 불러와 메모를 할 수 있다.]
- * @todo [메모 및 스크랩 관련] 요구사항: [Memo 컴포넌트는 열고 닫을 수 있어야 한다.]
- * @todo [메모 및 스크랩 관련] 요구사항: [Memo 컴포넌트는 열려있을 경우 우측 50%를 차지하게 된다.]
- * 
- */
+import IntroImage from '../assets/images/IntroImage.jpg';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
+    const [textColor, setTextColor] = useState('text-black');
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);  // Add this state
+
+    useEffect(() => {
+        // Calculate average color from image
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.src = IntroImage;  // Changed back to IntroImage
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let r = 0, g = 0, b = 0;
+
+            for (let i = 0; i < imageData.length; i += 4) {
+                r += imageData[i];
+                g += imageData[i + 1];
+                b += imageData[i + 2];
+            }
+
+            const pixels = imageData.length / 4;
+            const avgR = r / pixels;
+            const avgG = g / pixels;
+            const avgB = b / pixels;
+
+            setAvgColor({ r: avgR, g: avgG, b: avgB });
+
+            // Calculate brightness using relative luminance formula
+            const brightness = (0.299 * avgR + 0.587 * avgG + 0.114 * avgB) / 255;
+            setTextColor(brightness > 0.5 ? 'text-black' : 'text-white');
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const position = window.pageYOffset;
+            setScrollPosition(position);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const sharedStyle = {
+        filter: `brightness(${Math.max(0.6, 1 - scrollPosition * 0.002)})`,
+    };
+
+    const imageStyle = {
+        transform: `scale(${1 + scrollPosition * 0.0008})`,
+        ...sharedStyle
+    };
 
     return (
-        <div>
-            Articlepage {id}
+        <div className="relative">
+            {/* Floating Button */}
+            <button
+                onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+                className="fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            {/* Side Panel */}
+            <div
+                className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
+            >
+                <div className="p-8">
+                    <button
+                        onClick={() => setIsSidePanelOpen(false)}
+                        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <h2 className="text-2xl font-bold mb-4">Side Panel Content</h2>
+                    <p>Your content goes here...</p>
+                </div>
+            </div>
+
+            {/* Main Content Wrapper */}
+            <div className={`transition-all duration-300 ease-in-out ${isSidePanelOpen ? 'md:w-1/2' : 'w-full'}`}>
+                {/* Hero Section */}
+                <div className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? '' : 'md:flex-row'} h-[50vh] md:h-screen ${isSidePanelOpen ? 'md:w-1/2' : 'w-full'
+                    }`}>
+                    {/* Image Section */}
+                    <div className={`relative w-full h-full ${isSidePanelOpen ? '' : 'md:w-1/2'} overflow-hidden`}>
+                        <div
+                            className="absolute inset-0 bg-cover bg-center"
+                            style={{
+                                ...imageStyle,
+                                backgroundImage: `url(${IntroImage})`
+                            }}
+                        />
+                        <div className={`absolute inset-0 bg-black/50 ${isSidePanelOpen ? '' : 'md:hidden'}`} />
+                    </div>
+
+                    {/* Text Section */}
+                    <div
+                        className={`absolute ${isSidePanelOpen ? '' : 'md:relative'} w-full ${isSidePanelOpen ? '' : 'md:w-1/2'} h-full flex items-center ${isSidePanelOpen ? 'bg-transparent' : 'md:bg-[rgb(var(--avg-color))]'
+                            }`}
+                        style={{
+                            ...sharedStyle,
+                            '--avg-color': `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
+                        }}
+                    >
+                        <div className="px-8 md:px-16 max-w-2xl relative z-10">
+                            <p className={`text-sm text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-70 mb-4`}>종합해외이슈</p>
+                            <h1 className={`text-4xl md:text-5xl font-bold mb-6 md:mb-8 leading-tight text-white ${isSidePanelOpen ? '' : 'md:' + textColor}`}>
+                                [MWC] LGU+ 'AI에 이전트 임시오' 중동 진출...
+                            </h1>
+                            <p className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-80`}>
+                                자이언트과 MWC 2025서 업무협약...
+                            </p>
+                            <p className={`text-sm md:text-base text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-70`}>
+                                최정상 기자
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Section - Adjust width when side panel is open */}
+                <div className="relative">
+                    <div className="h-[50vh] md:h-screen" />
+                    <div className="relative bg-white min-h-screen z-10">
+                        <div className="w-full flex justify-center">
+                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-8' : 'md:w-[40%] md:px-0'
+                                }`}>
+                                <div className="text-left space-y-8">
+                                    <p className="text-lg leading-relaxed">
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                    </p>
+                                    {[...Array(5)].map((_, i) => (
+                                        <p key={i} className="text-lg leading-relaxed">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
