@@ -2,7 +2,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY backend/build/libs/*.jar app.jar
+COPY build/libs/*.jar app.jar
 
 # 환경변수 정의
 ARG MYSQL_HOST
