@@ -1,5 +1,6 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.domain;
 
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotFolderHostException;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
@@ -33,6 +34,21 @@ public class Folder extends BaseEntity {
     @Builder
     public Folder(User user, String folderName) {
         this.user = user;
+        this.folderName = folderName;
+    }
+
+    public void validUserIsHost(Long id) {
+        if (!checkUserIsHost(id)) {
+            throw NotFolderHostException.EXCEPTION;
+        }
+
+    }
+
+    public Boolean checkUserIsHost(Long id) {
+        return user.getId().equals(id);
+    }
+
+    public void updateFolder(String folderName) {
         this.folderName = folderName;
     }
 }
