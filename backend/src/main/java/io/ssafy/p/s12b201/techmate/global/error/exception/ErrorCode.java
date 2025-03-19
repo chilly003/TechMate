@@ -11,6 +11,9 @@ public enum ErrorCode {
     /* 400 */
     NOT_NULL_TOKEN(400, "토큰 값이 NULL일 수 없습니다"),
     MISMATCH_USER_OAUTH_ID(400, "유저의  OAuth ID값이 토큰 ID 값과 일치하지 않습니다"),
+    FOLDER_NAME_AlREADY_EXIST(400, "이미 존재하는 파일명 입니다"),
+    FOLDER_NOT_HOST(400, "폴더의 주인이 아닙니다"),
+
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_TOKEN(401, "토큰이 유효하지 않습니다."),
@@ -22,6 +25,8 @@ public enum ErrorCode {
     /* 404 NOT_FOUND : Resource를 찾을 수 없음 */
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     AlREADY_REGISTER(404, "이미 등록된 회원입니다"),
+    FOLDER_NOT_FOUND(404, "폴더를 찾을 수 없습니다"),
+
 
     /* 500 */
     INTERNAL_SERVER_ERROR(500,"서버 에러"),
