@@ -25,35 +25,65 @@ import ArticleCard from '../components/article/ArticleCard';
 const HomePage = () => {
     const navigate = useNavigate();
 
-    const dummyArticles = Array.from({ length: 9 }, (_, index) => ({
+    // Create array of articles with alternating featured articles
+    const dummyArticles = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,
-        title: index === 0
-            ? "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"
-            : "삼성전자, '스마트싱스 프로' 통해 국내 건설기업 해외 진출 돕는다",
-        publisher: index % 2 === 0 ? "기업/경제" : "매일경제",
+        title: index % 10 === 0
+            ? "삼성전자, AI 반도체로 새로운 시장 개척 나서"
+            : "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]",
+        publisher: index % 2 === 0 ? "IT/일반" : "통신",
+        isFeatured: index % 10 === 0, // Every 10th article is featured
+        content: "자회사그룹과 MWC 2025사업 업무협약...사우디에 연내 및 출시 목표",
+        category: index % 3 === 0 ? "테크" : index % 3 === 1 ? "경제" : "산업"
     }));
 
     return (
-        <div className="flex flex-col md:flex-row min-h-screen">
-            {/* Featured Article Section - Top 50% on mobile, Left 50% on desktop */}
-            <div className="w-full h-[50vh] md:w-1/2 md:h-screen md:fixed md:left-0">
-                <MainArticle id={1} />
-            </div>
-
-            {/* Article List Section - Bottom 50% on mobile, Right 50% on desktop */}
-            <div className="w-full h-[50vh] md:w-1/2 md:min-h-screen md:ml-[50%] p-4">
-                <div className="grid grid-cols-2 gap-4">
-                    {dummyArticles.map((article, index) => (
-                        <div key={article.id} className={`${index % 2 === 1 ? 'mt-16 md:mt-28' : ''}`}>
-                            <ArticleCard
+        <div className="flex flex-col">
+            {dummyArticles.map((article, index) => (
+                article.isFeatured ? (
+                    // Featured Article Section with alternating layout
+                    <div key={article.id}
+                        className={`flex flex-col md:flex-row min-h-screen ${Math.floor(index / 10) % 2 === 1 ? 'bg-gray-50' : ''
+                            }`}
+                    >
+                        {/* Featured Article - alternating position */}
+                        <div className={`
+                            w-full h-[50vh] md:w-1/2 md:h-screen md:sticky md:top-0
+                            ${Math.floor(index / 10) % 2 === 1 ? 'order-1 md:order-2' : ''}
+                        `}>
+                            <MainArticle
                                 id={article.id}
                                 title={article.title}
-                                publisher={article.publisher}
+                                category={article.category}
+                                content={article.content}
                             />
                         </div>
-                    ))}
-                </div>
-            </div>
+
+                        {/* Regular Articles Grid - alternating position */}
+                        <div className={`
+                            w-full md:w-1/2 min-h-screen p-4 bg-gray-100
+                            ${Math.floor(index / 10) % 2 === 1 ? 'order-2 md:order-1' : ''}
+                        `}>
+                            <div className="grid grid-cols-2">
+                                {dummyArticles
+                                    .slice(index + 1, index + 9)
+                                    .map((regularArticle, idx) => (
+                                        <div
+                                            key={regularArticle.id}
+                                            className={`${idx % 2 === 1 ? 'mt-10 md:mt-24' : 'mt-2'}`}
+                                        >
+                                            <ArticleCard
+                                                id={regularArticle.id}
+                                                title={regularArticle.title}
+                                                publisher={regularArticle.publisher}
+                                            />
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    </div>
+                ) : null
+            ))}
         </div>
     );
 };
