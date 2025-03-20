@@ -1,12 +1,11 @@
 package io.ssafy.p.s12b201.techmate.domain.article.presentation;
 
-import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/articles")
 @RequiredArgsConstructor
@@ -15,8 +14,15 @@ public class ArticleController {
 
     private final ArticleUtils articleUtils;
 
-    @GetMapping("/{id}")
-    private void test(@PathVariable Long id) {
-        Article articleById = articleUtils.getArticleById(id);
+    // 선호 기사 등록 (콜드 스타트 시 사용)
+    @PostMapping("/random")
+    public ResponseEntity<Void> initializeArticles(@RequestBody ArticleInitRequest request) {
+        articleUtils.initializeArticles(request);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+//    @GetMapping("/{id}")
+//    private void test(@PathVariable Long id) {
+//        Article articleById = articleUtils.getArticleById(id);
+//    }
 }
