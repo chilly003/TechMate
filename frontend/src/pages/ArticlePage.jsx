@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import IntroImage from '../assets/images/IntroImage.jpg';
+import IntroImage from '../assets/images/introImage.jpg';
 import ListImage from '../assets/images/list1.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 

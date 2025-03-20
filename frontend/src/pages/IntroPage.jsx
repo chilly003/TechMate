@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import IntroImage from '../assets/images/IntroImage.jpg';
+import IntroImage from '../assets/images/introImage.jpg';
 import SocialLoginButton from '../components/ui/SocialLoginButton';
 
 const Intro = () => {
