@@ -10,13 +10,13 @@ const ArticleCard = ({ imageUrl, title, publisher, id }) => {
     };
 
     return (
-        <div 
+        <div
             className="flex flex-col hover:bg-gray-50 cursor-pointer transition-colors p-4"
             onClick={handleClick}
         >
             {/* Article Image */}
             <div className="w-full aspect-[3/4] mb-3 overflow-hidden">
-                <img 
+                <img
                     src={IntroImage}
                     alt="Article thumbnail"
                     className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-110 hover:rotate-3"
