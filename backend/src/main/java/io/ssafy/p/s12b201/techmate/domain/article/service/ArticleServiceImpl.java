@@ -69,4 +69,9 @@ public class ArticleServiceImpl implements ArticleUtils {
         // 선호하는 모든 기사 저장
         userPreferenceRepository.saveAll(preferences);
     }
+
+    @Override
+    public List<Article> getArticlesByArticleIds(List<Long> articleIds) {
+        return articleRepository.findByArticleIdIn(articleIds);
+    }
 }

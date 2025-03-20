@@ -1,6 +1,7 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.service;
 
 import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
+import io.ssafy.p.s12b201.techmate.domain.article.exception.ArticleNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Folder;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Memo;
@@ -21,8 +22,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +40,6 @@ public class ScrapService {
     private final ScrapRepository scrapRepository;
     private final ArticleUtils articleUtils;
     private final UserUtils userUtils;
-
 
     @Transactional
     public ScrapResponse createScrap(Long articleId, Long folderId) {
@@ -71,6 +76,36 @@ public class ScrapService {
         scrapRepository.delete(scrap);
     }
 
+    @Transactional
+    public Slice<ScrapResponse> findAllScrap(Long folderId, PageRequest pageRequest) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        Folder folder = queryFolder(folderId);
+        folder.validUserIsHost(currentUserId);
+
+        Slice<Scrap> scraps = scrapRepository.findAllByFolder(folder, pageRequest);
+
+        List<Long> articleIds = scraps.getContent().stream()
+                .map(Scrap::getArticleId)
+                .collect(Collectors.toList());
+
+        List<Article> articles = articleUtils.getArticlesByArticleIds(articleIds);
+        Map<Long, Article> articleMap = articles.stream()
+                .collect(Collectors.toMap(Article::getArticleId, article -> article));
+
+
+        List<ScrapResponse> scrapResponses = scraps.getContent().stream()
+                .map(scrap -> {
+                    Article article = articleMap.get(scrap.getArticleId());
+                    if (article == null) {
+                        throw ArticleNotFoundException.EXCEPTION;
+                    }
+                    return getScrap(scrap, article);
+                })
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(scrapResponses, pageRequest, scraps.hasNext());
+    }
 
     @Transactional
     public FolderResponse createFolder(CreateFolderRequest createEssayRequest){
@@ -86,7 +121,6 @@ public class ScrapService {
 
         return getFolder(folder);
     }
-
 
 
     @Transactional
