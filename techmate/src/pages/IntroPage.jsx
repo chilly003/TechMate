@@ -30,10 +30,10 @@ const Intro = () => {
                     <div className="w-full text-center space-y-6">
                         <div className="space-y-2 flex flex-col items-center">
                             <h1 className="text-h1 md:text-4xl font-bold flex justify-center">
-                                <span className="text-[#4B89DC]">Tech</span>
+                                <span className="text-primary-500">Tech</span>
                                 <span className="text-black">Mate</span>
                             </h1>
-                            <div className="w-12 md:w-16 h-1 bg-[#4B89DC] mx-auto rounded-full"></div>
+                            <div className="w-12 md:w-36 h-1 bg-primary-500 mx-auto rounded-full"></div>
                         </div>
                         <div className="space-y-1 flex flex-col items-center w-full">
                             <div className="w-full">
