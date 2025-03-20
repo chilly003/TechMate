@@ -1,5 +1,6 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.service;
 
+import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Folder;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Memo;
@@ -34,6 +35,43 @@ public class ScrapService {
     private final ArticleUtils articleUtils;
     private final UserUtils userUtils;
 
+
+    @Transactional
+    public ScrapResponse createScrap(Long articleId, Long folderId) {
+
+        Article article = articleUtils.getArticleById(articleId);
+
+        User user = userUtils.getUserFromSecurityContext();
+
+        Folder folder = queryFolder(folderId);
+
+        folder.validUserIsHost(user.getId());
+
+        Memo memo = makeMemo(user);
+
+        memoRepository.save(memo);
+
+        Scrap scrap = makeScrap(user, folder, memo, articleId);
+
+        scrapRepository.save(scrap);
+
+        return getScrap(scrap, article);
+
+    }
+
+    @Transactional
+    public void deleteScrap(Long scrapId) {
+
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        Scrap scrap = queryScrap(scrapId);
+
+        scrap.validUserIsHost(currentUserId);
+
+        scrapRepository.delete(scrap);
+    }
+
+
     @Transactional
     public FolderResponse createFolder(CreateFolderRequest createEssayRequest){
 
@@ -47,8 +85,9 @@ public class ScrapService {
         folderRepository.save(folder);
 
         return getFolder(folder);
-
     }
+
+
 
     @Transactional
     public void deleteFolder(Long folderId){
@@ -89,28 +128,7 @@ public class ScrapService {
         return folders.map(this::getFolder);
     }
 
-    @Transactional
-    public ScrapResponse createScrap(Long articleId, Long folderId) {
 
-        articleUtils.getArticleById(articleId);
-
-        User user = userUtils.getUserFromSecurityContext();
-
-        Folder folder = queryFolder(folderId);
-
-        folder.validUserIsHost(user.getId());
-
-        Memo memo = makeMemo(user);
-
-        memoRepository.save(memo);
-
-        Scrap scrap = makeScrap(user, folder, memo, articleId);
-
-        scrapRepository.save(scrap);
-
-        return getScrap(scrap);
-
-    }
 
     private Folder makeFolder(CreateFolderRequest createFolderRequest, User user){
 
@@ -148,12 +166,18 @@ public class ScrapService {
                 .orElseThrow(() -> FolderNotFolderException.EXCEPTION);
     }
 
+    private Scrap queryScrap(Long scrapId){
+        return scrapRepository
+                .findById(scrapId)
+                .orElseThrow(() -> FolderNotFolderException.EXCEPTION);
+    }
+
     private FolderResponse getFolder(Folder folder){
         return new FolderResponse(folder);
     }
 
-    private ScrapResponse getScrap(Scrap scrap){
-        return new ScrapResponse(scrap);
+    private ScrapResponse getScrap(Scrap scrap, Article article){
+        return new ScrapResponse(scrap, article);
     }
 
 }

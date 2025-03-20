@@ -1,5 +1,6 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.domain;
 
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotFolderHostException;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
@@ -27,7 +28,7 @@ public class Scrap extends BaseEntity {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "memo_id")
     private Memo memo;
 
@@ -40,5 +41,16 @@ public class Scrap extends BaseEntity {
         this.memo = memo;
         this.articleId = articleId;
 
+    }
+
+    public void validUserIsHost(Long id) {
+        if (!checkUserIsHost(id)) {
+            throw NotFolderHostException.EXCEPTION;
+        }
+
+    }
+
+    public Boolean checkUserIsHost(Long id) {
+        return user.getId().equals(id);
     }
 }

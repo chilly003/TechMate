@@ -17,13 +17,17 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-
     @PostMapping("/{articleId}/folders/{folderId}")
     public ScrapResponse createScrap(
             @PathVariable Long articleId,
             @PathVariable Long folderId) {
 
         return scrapService.createScrap(articleId,folderId);
+    }
+
+    @DeleteMapping("/{scrapId}")
+    public void deleteEssayScrap(@PathVariable("scrapId") Long scrapId) {
+        scrapService.deleteScrap(scrapId);
     }
 
     @PostMapping("/folders")

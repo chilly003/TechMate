@@ -29,7 +29,7 @@ public class Article {
     private String reporter;
 
     @Field("datetime")
-    private String datetimeString;
+    private LocalDateTime datetime;
 
     private String category;
     private String content;
