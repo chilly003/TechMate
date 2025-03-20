@@ -32,6 +32,15 @@ pipeline {
         // Redis 환경변수
         REDIS_HOST = credentials('REDIS_HOST')
         REDIS_PORT = credentials('REDIS_PORT')
+
+        // Mongo 환경변수
+        MONGO_CONNECT_NAME = credentials('MONGO_CONNECT_NAME')
+        MONGO_DATABASE = credentials('MONGO_DATABASE')
+        MONGO_AUTH = credentials('MONGO_AUTH')
+        MONGO_HOST = credentials('MONGO_HOST')
+        MONGO_PASSWORD = credentials('MONGO_PASSWORD')
+        MONGO_PORT = credentials('MONGO_PORT')
+        MONGO_USERNAME = credentials('MONGO_USERNAME')
     }
 
     stages {
@@ -77,6 +86,13 @@ pipeline {
                     --build-arg JWT_PREFIX=${JWT_PREFIX} \
                     --build-arg REDIS_HOST=${REDIS_HOST} \
                     --build-arg REDIS_PORT=${REDIS_PORT} \
+                    --build-arg MONGO_CONNECT_NAME=${MONGO_CONNECT_NAME} \
+                    --build-arg MONGO_DATABASE=${MONGO_DATABASE} \
+                    --build-arg MONGO_AUTH=${MONGO_AUTH} \
+                    --build-arg MONGO_HOST=${MONGO_HOST} \
+                    --build-arg MONGO_PASSWORD=${MONGO_PASSWORD} \
+                    --build-arg MONGO_PORT=${MONGO_PORT} \
+                    --build-arg MONGO_USERNAME=${MONGO_USERNAME} \
                     -t springboot:latest .
                     '''
                 }
@@ -117,10 +133,16 @@ pipeline {
                   -e JWT_PREFIX=${JWT_PREFIX} \
                   -e REDIS_HOST=${REDIS_HOST} \
                   -e REDIS_PORT=${REDIS_PORT} \
+                  -e MONGO_CONNECT_NAME=${MONGO_CONNECT_NAME} \
+                  -e MONGO_DATABASE=${MONGO_DATABASE} \
+                  -e MONGO_AUTH=${MONGO_AUTH} \
+                  -e MONGO_HOST=${MONGO_HOST} \
+                  -e MONGO_PASSWORD=${MONGO_PASSWORD} \
+                  -e MONGO_PORT=${MONGO_PORT} \
+                  -e MONGO_USERNAME=${MONGO_USERNAME} \
                   springboot:latest
                 '''
             }
         }
-
     }
 }
