@@ -24,7 +24,7 @@ pipeline {
         stage('Deploy to Nginx') {
             steps {
                 sh '''
-                docker cp frontend/build/. nginx:/usr/share/nginx/html
+                docker cp frontend/dist/. nginx:/usr/share/nginx/html
                 docker exec nginx nginx -s reload
                 '''
             }
