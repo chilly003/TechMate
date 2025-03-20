@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import IntroImage from '../assets/images/IntroImage.jpg';
+import ListImage from '../assets/images/list1.jpg';  // Changed fro
+import ArticleCard from '../components/article/ArticleCard';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -14,7 +16,7 @@ const ArticlePage = () => {
         // Calculate average color from image
         const img = new Image();
         img.crossOrigin = "Anonymous";
-        img.src = IntroImage;  // Changed back to IntroImage
+        img.src = ListImage;  // Changed back to IntroImage
 
         img.onload = () => {
             const canvas = document.createElement('canvas');
@@ -108,7 +110,7 @@ const ArticlePage = () => {
                             className="absolute inset-0 bg-cover bg-center"
                             style={{
                                 ...imageStyle,
-                                backgroundImage: `url(${IntroImage})`
+                                backgroundImage: `url(${ListImage})`
                             }}
                         />
                         <div className={`absolute inset-0 bg-black/50 ${isSidePanelOpen ? '' : 'md:hidden'}`} />
@@ -124,12 +126,14 @@ const ArticlePage = () => {
                         }}
                     >
                         <div className="px-8 md:px-16 max-w-2xl relative z-10">
-                            <p className={`text-sm text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-70 mb-4`}>종합해외이슈</p>
-                            <h1 className={`text-4xl md:text-5xl font-bold mb-6 md:mb-8 leading-tight text-white ${isSidePanelOpen ? '' : 'md:' + textColor}`}>
-                                [MWC] LGU+ 'AI에 이전트 임시오' 중동 진출...
+                            <p className={`text-xl text-white font-bold ${isSidePanelOpen ? '' : 'md:' + textColor} mb-4`}>CULTURE</p>
+                            <h1 className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
+                                ${isSidePanelOpen ? '' : 'md:' + textColor}
+                                decoration-4 underline underline-offset-8 ${isSidePanelOpen ? 'decoration-white' : 'md:decoration-current'}`}>
+                                2025년 리빙/인테리어 디자인 트렌드를 한눈에, 서울리빙디자인페어
                             </h1>
                             <p className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-80`}>
-                                자이언트과 MWC 2025서 업무협약...
+                                자이언트과 MWC 2025서 업무협약
                             </p>
                             <p className={`text-sm md:text-base text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-70`}>
                                 최정상 기자
@@ -143,7 +147,7 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex justify-center">
-                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-8' : 'md:w-[40%] md:px-0'
+                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-8' : 'md:w-[50%] md:px-0'
                                 }`}>
                                 <div className="text-left space-y-8">
                                     <p className="text-lg leading-relaxed">
@@ -154,6 +158,23 @@ const ArticlePage = () => {
                                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                                         </p>
                                     ))}
+                                </div>
+
+                                {/* Related Articles Section */}
+                                <div className="mt-16">
+                                    <hr className="border-t border-gray-200 mb-12" />
+                                    <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
+                                    <div className="relative">
+                                        <div className="overflow-x-auto pb-4 hide-scrollbar">
+                                            <div className="flex gap-6 w-max">
+                                                {[...Array(6)].map((_, i) => (
+                                                    <div key={i} className="w-[300px] flex-shrink-0 cursor-pointer group">
+                                                        <ArticleCard id={2} />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
