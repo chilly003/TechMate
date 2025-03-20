@@ -8,6 +8,7 @@ import io.ssafy.p.s12b201.techmate.domain.scrap.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/scraps")
@@ -26,9 +27,20 @@ public class ScrapController {
     }
 
     @DeleteMapping("/{scrapId}")
-    public void deleteEssayScrap(@PathVariable("scrapId") Long scrapId) {
+    public void deleteScrap(@PathVariable("scrapId") Long scrapId) {
         scrapService.deleteScrap(scrapId);
     }
+
+    @GetMapping("/{folderId}")
+    public Slice<ScrapResponse> getScrap(
+            @PathVariable(name = "folderId") Long folderId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+        PageRequest pageRequest = PageRequest.of(page,size, Sort.Direction.DESC,"createdAt");
+        return scrapService.findAllScrap(folderId,pageRequest);
+    }
+
 
     @PostMapping("/folders")
     public FolderResponse createFolder(@RequestBody CreateFolderRequest folderRequest) {
