@@ -32,9 +32,13 @@ public class Memo extends BaseEntity {
     private String content;
 
     @Builder
-    public Memo(User user, Scrap scrap, String content) {
+    public Memo(User user, String content) {
         this.user = user;
-        this.scrap = scrap;
         this.content = content;
+    }
+
+    // 연관관계 편의 메서드
+    public void addScrap(Scrap scrap) {
+        this.scrap = scrap;
     }
 }
