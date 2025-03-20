@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/frontend']], extensions: [], userRemoteConfigs: [[credentialsId: 'gitlab-repo-access', url: 'https://lab.ssafy.com/s12-bigdata-recom-sub1/S12P21B201.git']])
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy to Nginx') {
+            steps {
+                sh '''
+                docker cp frontend/build/. nginx:/usr/share/nginx/html
+                docker exec nginx nginx -s reload
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Frontend deployment successful!'
+        }
+        failure {
+            echo 'Frontend deployment failed!'
+        }
+    }
+}
