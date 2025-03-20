@@ -1,24 +1,27 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.service;
 
+import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Folder;
+import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Memo;
+import io.ssafy.p.s12b201.techmate.domain.scrap.domain.Scrap;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.FolderRepository;
+import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.MemoRepository;
+import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.ScrapRepository;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNameAlreadyExistsException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNotFolderException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.utils.security.SecurityUtils;
 import io.ssafy.p.s12b201.techmate.global.utils.user.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.FormatFlagsConversionMismatchException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +29,9 @@ import java.util.FormatFlagsConversionMismatchException;
 public class ScrapService {
 
     private final FolderRepository folderRepository;
+    private final MemoRepository memoRepository;
+    private final ScrapRepository scrapRepository;
+    private final ArticleUtils articleUtils;
     private final UserUtils userUtils;
 
     @Transactional
@@ -83,6 +89,28 @@ public class ScrapService {
         return folders.map(this::getFolder);
     }
 
+    @Transactional
+    public ScrapResponse createScrap(Long articleId, Long folderId) {
+
+        articleUtils.getArticleById(articleId);
+
+        User user = userUtils.getUserFromSecurityContext();
+
+        Folder folder = queryFolder(folderId);
+
+        folder.validUserIsHost(user.getId());
+
+        Memo memo = makeMemo(user);
+
+        memoRepository.save(memo);
+
+        Scrap scrap = makeScrap(user, folder, memo, articleId);
+
+        scrapRepository.save(scrap);
+
+        return getScrap(scrap);
+
+    }
 
     private Folder makeFolder(CreateFolderRequest createFolderRequest, User user){
 
@@ -92,6 +120,28 @@ public class ScrapService {
                 .build();
     }
 
+    private Scrap makeScrap(User user, Folder folder, Memo memo, Long articleId) {
+
+        Scrap scrap = Scrap.builder()
+                .user(user)
+                .folder(folder)
+                .memo(memo)
+                .articleId(articleId)
+                .build();
+
+        memo.addScrap(scrap);
+        return scrap;
+    }
+
+    private Memo makeMemo(User user) {
+
+        return Memo.builder()
+                .user(user)
+                .content("")
+                .build();
+    }
+
+
     private Folder queryFolder(Long folderId){
         return folderRepository
                 .findById(folderId)
@@ -100,6 +150,10 @@ public class ScrapService {
 
     private FolderResponse getFolder(Folder folder){
         return new FolderResponse(folder);
+    }
+
+    private ScrapResponse getScrap(Scrap scrap){
+        return new ScrapResponse(scrap);
     }
 
 }

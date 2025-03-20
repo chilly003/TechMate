@@ -7,8 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.ArrayList;
-import java.util.List;
 
 @Table(name = "scraps")
 @Entity
@@ -29,14 +27,14 @@ public class Scrap extends BaseEntity {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memo_id")
     private Memo memo;
 
-    private String articleId;
+    private Long articleId;
 
     @Builder
-    public Scrap(User user, Folder folder, Memo memo, String articleId) {
+    public Scrap(User user, Folder folder, Memo memo, Long articleId) {
         this.user = user;
         this.folder = folder;
         this.memo = memo;

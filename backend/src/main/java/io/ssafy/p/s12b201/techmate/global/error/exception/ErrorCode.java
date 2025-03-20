@@ -26,6 +26,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     AlREADY_REGISTER(404, "이미 등록된 회원입니다"),
     FOLDER_NOT_FOUND(404, "폴더를 찾을 수 없습니다"),
+    ARTICLE_NOT_FOUND(404, "기사를 찾을 수 없습니다"),
 
 
     /* 500 */

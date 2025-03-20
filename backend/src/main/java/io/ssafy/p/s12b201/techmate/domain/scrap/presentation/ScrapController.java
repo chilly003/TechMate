@@ -3,6 +3,7 @@ package io.ssafy.p.s12b201.techmate.domain.scrap.presentation;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,15 @@ import org.springframework.web.bind.annotation.*;
 public class ScrapController {
 
     private final ScrapService scrapService;
+
+
+    @PostMapping("/{articleId}/folders/{folderId}")
+    public ScrapResponse createScrap(
+            @PathVariable Long articleId,
+            @PathVariable Long folderId) {
+
+        return scrapService.createScrap(articleId,folderId);
+    }
 
     @PostMapping("/folders")
     public FolderResponse createFolder(@RequestBody CreateFolderRequest folderRequest) {
