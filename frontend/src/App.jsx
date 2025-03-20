@@ -4,7 +4,7 @@ import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
-import Mypage from './pages/Mypage';
+import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
 
 function App() {
