@@ -27,6 +27,8 @@ public class ArticleServiceImpl implements ArticleUtils {
         log.info("article content={}", article.getContent());
         log.info("article title={}", article.getTitle());
         log.info("article category={}", article.getCategory());
+        log.info("dateTime={}", article.getDatetime().getClass());
+        log.info("dateTime={}", article.getDatetime());
 
         return article;
     }
