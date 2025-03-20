@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import IntroImage from '../assets/images/introImage.jpg';
+import IntroImage from '../assets/images/IntroImage.jpg';
 import ListImage from '../assets/images/list1.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
+import Memo from '../components/article/Memo';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -10,7 +11,14 @@ const ArticlePage = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
     const [textColor, setTextColor] = useState('text-black');
-    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);  // Add this state
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
+    // Add this useEffect for scroll reset
+    // Modify the scroll reset useEffect
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        setIsSidePanelOpen(false); // Close side panel when article changes
+    }, [id]);
 
     useEffect(() => {
         // Calculate average color from image
@@ -73,7 +81,8 @@ const ArticlePage = () => {
             {/* Floating Button */}
             <button
                 onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-                className="fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8"
+                className={`fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8 ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
@@ -82,10 +91,10 @@ const ArticlePage = () => {
 
             {/* Side Panel */}
             <div
-                className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
-                <div className="p-8">
+                <div className="h-full p-8 overflow-hidden">
                     <button
                         onClick={() => setIsSidePanelOpen(false)}
                         className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -94,8 +103,9 @@ const ArticlePage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    <h2 className="text-2xl font-bold mb-4">Side Panel Content</h2>
-                    <p>Your content goes here...</p>
+                    <div className="h-full">
+                        <Memo />
+                    </div>
                 </div>
             </div>
 
@@ -125,7 +135,7 @@ const ArticlePage = () => {
                             '--avg-color': `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
                         }}
                     >
-                        <div className="px-8 md:px-16 max-w-2xl relative z-10">
+                        <div className="px-8 md:px-12 max-w-2xl relative z-10">
                             <p className={`text-xl text-white font-bold ${isSidePanelOpen ? '' : 'md:' + textColor} mb-4`}>CULTURE</p>
                             <h1 className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
                                 ${isSidePanelOpen ? '' : 'md:' + textColor}
@@ -147,7 +157,7 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex justify-center">
-                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-8' : 'md:w-[50%] md:px-0'
+                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-12' : 'md:w-[50%] md:px-0'
                                 }`}>
                                 <div className="text-left space-y-8">
                                     <p className="text-lg leading-relaxed">

@@ -1,0 +1,30 @@
+.markdown-container {
+  width: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.markdown-editor,
+.markdown-preview {
+  width: 100%;
+  height: calc(100% - 40px);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.markdown-editor {
+  resize: none;
+}
+
+.preview-button {
+  height: 40px;
+  background-color: #1b2c7a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.preview-button:hover {
+  background-color: #111e55;
+}
