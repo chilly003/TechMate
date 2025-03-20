@@ -36,13 +36,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<UserPreference> userPreferenceList = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "user_preferences", joinColumns =
-    @JoinColumn(name = "user_id")
-    )
-    @Column(name = "article_id")
-    private List<String> preferenceArticle = new ArrayList<>();
-
     private String nickname;
 
     private String oauthProvider;
