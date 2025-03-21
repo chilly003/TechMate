@@ -51,3 +51,8 @@ auth:
     refreshExp: ${JWT_REFRESH_EXP}
     header: ${JWT_HEADER}
     prefix: ${JWT_PREFIX}
+
+solar:
+  pro:
+    api:
+      key: ${SOLAR_PRO_API_KEY}

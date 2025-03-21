@@ -1,6 +1,6 @@
 package io.ssafy.p.s12b201.techmate.global.api.client;
 
-import io.ssafy.p.s12b201.techmate.global.api.dto.UserInfoToOauthDto;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.UserInfoToOauthDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

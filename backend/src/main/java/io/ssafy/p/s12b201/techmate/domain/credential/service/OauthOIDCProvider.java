@@ -1,8 +1,8 @@
 package io.ssafy.p.s12b201.techmate.domain.credential.service;
 
 import io.ssafy.p.s12b201.techmate.domain.credential.exception.NoSuchPublicKeyException;
-import io.ssafy.p.s12b201.techmate.global.api.dto.OIDCKeyDto;
-import io.ssafy.p.s12b201.techmate.global.api.dto.OIDCKeysResponse;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.OIDCKeyDto;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.OIDCKeysResponse;
 import io.ssafy.p.s12b201.techmate.global.security.JwtOIDCProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
