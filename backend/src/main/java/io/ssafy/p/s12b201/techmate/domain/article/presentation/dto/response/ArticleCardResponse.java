@@ -13,8 +13,10 @@ public class ArticleCardResponse {
     private Long articleId;
     private String title;
     private String journal;
+    private String summary;
     private String thumbnailImageUrl;
     private LocalDateTime datetime;
+    private String category;
 
     public static ArticleCardResponse from(Article article) {
 
@@ -28,8 +30,10 @@ public class ArticleCardResponse {
                 .articleId(article.getArticleId())
                 .title(article.getTitle())
                 .journal(article.getJournal())
+                .summary(article.getSummary())
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .datetime(article.getDatetime())
+                .category(article.getCategory())
                 .build();
     }
 }
