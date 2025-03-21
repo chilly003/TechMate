@@ -2,6 +2,7 @@ package io.ssafy.p.s12b201.techmate.domain.article.service;
 
 import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
 
 import java.util.List;
 
@@ -14,5 +15,8 @@ public interface ArticleUtils {
     List<Article> getArticlesByArticleIds(List<Long> articleIds);
 
     // 랜덤 기사 조회 메서드
-    List<Article> getRandomArticles();
+    List<ArticleCardResponse> getRandomArticles();
+
+    // 최초 추천 기사 리스트 조회
+//    List<Article> getRecommendArticles();
 }

@@ -4,6 +4,7 @@ import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
 import io.ssafy.p.s12b201.techmate.domain.article.domain.repository.ArticleRepository;
 import io.ssafy.p.s12b201.techmate.domain.article.exception.ArticleNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.repository.UserRepository;
 import io.ssafy.p.s12b201.techmate.domain.userpreference.domain.UserPreference;
@@ -12,14 +13,16 @@ import io.ssafy.p.s12b201.techmate.global.exception.UserNotFoundException;
 import io.ssafy.p.s12b201.techmate.global.utils.user.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -81,7 +84,7 @@ public class ArticleServiceImpl implements ArticleUtils {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Article> getRandomArticles() {
+    public List<ArticleCardResponse> getRandomArticles() {
         //  MongoDB Aggregation Framework를 사용하여 랜덤기사 12개 추출
         Aggregation aggregation = Aggregation.newAggregation(Aggregation.sample(12));
 
@@ -89,6 +92,14 @@ public class ArticleServiceImpl implements ArticleUtils {
 
         List<Article> randomArticles = results.getMappedResults();
 
-        return randomArticles;
+        return randomArticles.stream().map(ArticleCardResponse::from).toList();
     }
+
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<Article> getRecommendArticles() {
+//        /**
+//         * 사용자 로그 기반의
+//         */
+//    }
 }

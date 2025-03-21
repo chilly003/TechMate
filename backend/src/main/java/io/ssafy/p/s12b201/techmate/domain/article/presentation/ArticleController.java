@@ -19,7 +19,7 @@ public class ArticleController {
     // 선호 기사 조회 (콜드 스타트 시 사용)
     @GetMapping("/random")
     public List<ArticleCardResponse> getRandomArticles() {
-        return articleUtils.getRandomArticles().stream().map(ArticleCardResponse::from).toList();
+        return articleUtils.getRandomArticles();
     }
 
     // 선호 기사 등록 (콜드 스타트 시 사용)
