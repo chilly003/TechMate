@@ -1,6 +1,7 @@
 package io.ssafy.p.s12b201.techmate.domain.article.service;
 
 import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
+import io.ssafy.p.s12b201.techmate.domain.article.domain.Recommendation;
 import io.ssafy.p.s12b201.techmate.domain.article.domain.repository.ArticleRepository;
 import io.ssafy.p.s12b201.techmate.domain.article.exception.ArticleNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
@@ -14,8 +15,12 @@ import io.ssafy.p.s12b201.techmate.global.utils.user.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -95,6 +100,11 @@ public class ArticleServiceImpl implements ArticleUtils {
         return randomArticles.stream().map(ArticleCardResponse::from).toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ArticleCardResponse> getRecommendArticles(PageRequest pageRequest) {
+        return null;
+    }
 //    @Override
 //    @Transactional(readOnly = true)
 //    public List<Article> getRecommendArticles() {

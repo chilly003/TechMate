@@ -5,6 +5,9 @@ import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.Arti
 
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,17 @@ public class ArticleController {
     public void initializeArticles(@RequestBody ArticleInitRequest request) {
         articleUtils.initializeArticles(request);
     }
+
+    // 추천 기사 리스트 조회 (메인)
+    @GetMapping("/recommend")
+    public Slice<ArticleCardResponse> getRecommendArticles(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return articleUtils.getRecommendArticles(pageRequest);
+    }
+
 
 //    @GetMapping("/{id}")
 //    private void test(@PathVariable Long id) {
