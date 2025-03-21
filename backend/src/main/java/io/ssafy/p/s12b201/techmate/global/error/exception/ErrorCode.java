@@ -13,6 +13,8 @@ public enum ErrorCode {
     MISMATCH_USER_OAUTH_ID(400, "유저의  OAuth ID값이 토큰 ID 값과 일치하지 않습니다"),
     FOLDER_NAME_AlREADY_EXIST(400, "이미 존재하는 파일명 입니다"),
     FOLDER_NOT_HOST(400, "폴더의 주인이 아닙니다"),
+    SCRAP_NOT_HOST(400, "스크랩의 주인이 아닙니다"),
+    MEMO_NOT_HOST(400, "메모의 주인이 아닙니다"),
 
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
@@ -28,6 +30,7 @@ public enum ErrorCode {
     FOLDER_NOT_FOUND(404, "폴더를 찾을 수 없습니다"),
     ARTICLE_NOT_FOUND(404, "기사를 찾을 수 없습니다"),
     SCRAP_NOT_FOUND(404, "스크랩을 찾을 수 없습니다"),
+    MEMO_NOT_FOUND(404, "메모를 찾을 수 없습니다"),
 
     /* 500 */
     INTERNAL_SERVER_ERROR(500,"서버 에러"),
