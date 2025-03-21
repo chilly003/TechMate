@@ -1,6 +1,7 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.domain;
 
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotFolderHostException;
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotScrapHostException;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
@@ -45,7 +46,7 @@ public class Scrap extends BaseEntity {
 
     public void validUserIsHost(Long id) {
         if (!checkUserIsHost(id)) {
-            throw NotFolderHostException.EXCEPTION;
+            throw NotScrapHostException.EXCEPTION;
         }
 
     }

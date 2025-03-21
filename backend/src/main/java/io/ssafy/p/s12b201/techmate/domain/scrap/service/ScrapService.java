@@ -10,10 +10,12 @@ import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.FolderReposito
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.MemoRepository;
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.ScrapRepository;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNameAlreadyExistsException;
-import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNotFolderException;
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNotFoundException;
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.MemoNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.ScrapNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateMemoRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.MemoResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
@@ -118,7 +120,21 @@ public class ScrapService {
 
         scrap.validUserIsHost(currentUserId);
 
-        return getMemo(scrap);
+        return getMemo(scrap.getMemo());
+    }
+
+    @Transactional
+    public MemoResponse updateMemo(Long memoId, UpdateMemoRequest updateMemoRequest) {
+
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        Memo memo = queryMemo(memoId);
+
+        memo.validUserIsHost(currentUserId);
+
+        memo.updateMemo(updateMemoRequest.getContent());
+
+        return getMemo(memo);
     }
 
     @Transactional
@@ -210,13 +226,19 @@ public class ScrapService {
     private Folder queryFolder(Long folderId){
         return folderRepository
                 .findById(folderId)
-                .orElseThrow(() -> FolderNotFolderException.EXCEPTION);
+                .orElseThrow(() -> FolderNotFoundException.EXCEPTION);
     }
 
     private Scrap queryScrap(Long scrapId){
         return scrapRepository
                 .findById(scrapId)
-                .orElseThrow(() -> FolderNotFolderException.EXCEPTION);
+                .orElseThrow(() -> ScrapNotFoundException.EXCEPTION);
+    }
+
+    private Memo queryMemo(Long memoId){
+        return memoRepository
+                .findById(memoId)
+                .orElseThrow(() -> MemoNotFoundException.EXCEPTION);
     }
 
     private FolderResponse getFolder(Folder folder){
@@ -227,8 +249,8 @@ public class ScrapService {
         return new ScrapResponse(scrap, article);
     }
 
-    private MemoResponse getMemo(Scrap scrap){
-        return new MemoResponse(scrap);
+    private MemoResponse getMemo(Memo memo){
+        return new MemoResponse(memo);
     }
 
 }

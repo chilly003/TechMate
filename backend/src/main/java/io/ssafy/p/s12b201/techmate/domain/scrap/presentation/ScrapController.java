@@ -2,6 +2,7 @@ package io.ssafy.p.s12b201.techmate.domain.scrap.presentation;
 
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateMemoRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.MemoResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
@@ -45,6 +46,13 @@ public class ScrapController {
     @GetMapping("/memos/{articleId}")
     public MemoResponse getMemo(@PathVariable(name = "articleId") Long articleId) {
         return scrapService.findMemo(articleId);
+    }
+
+    @PatchMapping("/memos/{memoId}")
+    public MemoResponse updateMemo(
+            @PathVariable(name = "memoId") Long articleId,
+            @RequestBody UpdateMemoRequest updateMemoRequest) {
+        return scrapService.updateMemo(articleId,updateMemoRequest);
     }
 
     @PostMapping("/folders")

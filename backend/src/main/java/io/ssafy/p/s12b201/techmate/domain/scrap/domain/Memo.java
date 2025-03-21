@@ -1,5 +1,7 @@
 package io.ssafy.p.s12b201.techmate.domain.scrap.domain;
 
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotFolderHostException;
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.NotMemoHostException;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.database.BaseEntity;
 import jakarta.persistence.*;
@@ -40,5 +42,20 @@ public class Memo extends BaseEntity {
     // 연관관계 편의 메서드
     public void addScrap(Scrap scrap) {
         this.scrap = scrap;
+    }
+
+    public void validUserIsHost(Long id) {
+        if (!checkUserIsHost(id)) {
+            throw NotMemoHostException.EXCEPTION;
+        }
+
+    }
+
+    public void updateMemo(String content) {
+        this.content = content;
+    }
+
+    public Boolean checkUserIsHost(Long id) {
+        return user.getId().equals(id);
     }
 }
