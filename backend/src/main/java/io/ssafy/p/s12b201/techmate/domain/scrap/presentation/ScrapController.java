@@ -3,6 +3,7 @@ package io.ssafy.p.s12b201.techmate.domain.scrap.presentation;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.MemoResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.service.ScrapService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,10 @@ public class ScrapController {
         return scrapService.findAllScrap(folderId,pageRequest);
     }
 
+    @GetMapping("/memos/{articleId}")
+    public MemoResponse getMemo(@PathVariable(name = "articleId") Long articleId) {
+        return scrapService.findMemo(articleId);
+    }
 
     @PostMapping("/folders")
     public FolderResponse createFolder(@RequestBody CreateFolderRequest folderRequest) {

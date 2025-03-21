@@ -11,9 +11,11 @@ import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.MemoRepository
 import io.ssafy.p.s12b201.techmate.domain.scrap.domain.repository.ScrapRepository;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNameAlreadyExistsException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.FolderNotFolderException;
+import io.ssafy.p.s12b201.techmate.domain.scrap.excepcion.ScrapNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.CreateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.request.UpdateFolderRequest;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.FolderResponse;
+import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.MemoResponse;
 import io.ssafy.p.s12b201.techmate.domain.scrap.presentation.dto.response.ScrapResponse;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.global.utils.security.SecurityUtils;
@@ -76,7 +78,7 @@ public class ScrapService {
         scrapRepository.delete(scrap);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Slice<ScrapResponse> findAllScrap(Long folderId, PageRequest pageRequest) {
         Long currentUserId = SecurityUtils.getCurrentUserId();
 
@@ -93,7 +95,6 @@ public class ScrapService {
         Map<Long, Article> articleMap = articles.stream()
                 .collect(Collectors.toMap(Article::getArticleId, article -> article));
 
-
         List<ScrapResponse> scrapResponses = scraps.getContent().stream()
                 .map(scrap -> {
                     Article article = articleMap.get(scrap.getArticleId());
@@ -105,6 +106,19 @@ public class ScrapService {
                 .collect(Collectors.toList());
 
         return new SliceImpl<>(scrapResponses, pageRequest, scraps.hasNext());
+    }
+
+    @Transactional(readOnly = true)
+    public MemoResponse findMemo(Long articleId) {
+
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        Scrap scrap = scrapRepository.findByArticleId(articleId)
+                .orElseThrow(() -> ScrapNotFoundException.EXCEPTION);
+
+        scrap.validUserIsHost(currentUserId);
+
+        return getMemo(scrap);
     }
 
     @Transactional
@@ -186,7 +200,6 @@ public class ScrapService {
     }
 
     private Memo makeMemo(User user) {
-
         return Memo.builder()
                 .user(user)
                 .content("")
@@ -212,6 +225,10 @@ public class ScrapService {
 
     private ScrapResponse getScrap(Scrap scrap, Article article){
         return new ScrapResponse(scrap, article);
+    }
+
+    private MemoResponse getMemo(Scrap scrap){
+        return new MemoResponse(scrap);
     }
 
 }
