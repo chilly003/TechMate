@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ListImage from '../assets/images/list1.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
+import Quiz from '../components/article/Quiz';  // 상단에 추가
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -11,6 +12,21 @@ const ArticlePage = () => {
     const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
     const [textColor, setTextColor] = useState('text-black');
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+    const [showQuiz, setShowQuiz] = useState(false);
+
+
+    // 퀴즈 버튼 클릭 핸들러 추가
+    const handleQuizClick = () => {
+        setShowQuiz(true);
+        setIsSidePanelOpen(true);
+    };
+
+    // 사이드 패널 닫을 때 퀴즈 상태도 초기화
+    const handleCloseSidePanel = () => {
+        setIsSidePanelOpen(false);
+        setShowQuiz(false);
+    };
+
 
     // Add this useEffect for scroll reset
     // Modify the scroll reset useEffect
@@ -88,22 +104,30 @@ const ArticlePage = () => {
                 </svg>
             </button>
 
-            {/* Side Panel */}
-            <div
-                className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
-                    }`}
-            >
-                <div className="h-full p-8 overflow-hidden">
+        
+            {/* 사이드 패널: 메모장과 퀴즈를 표시하는 슬라이딩 패널 */}
+            <div className={`fixed top-0 right-0 h-screen w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
+                isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}>
+                <div className="h-full flex flex-col">
+                    {/* 닫기 버튼: 항상 상단에 고정 */}
                     <button
-                        onClick={() => setIsSidePanelOpen(false)}
-                        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                        onClick={handleCloseSidePanel}
+                        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    <div className="h-full">
-                        <Memo />
+                    {/* 콘텐츠 영역: 독립적인 스크롤 가능한 공간 */}
+                    <div 
+                        className="flex-1 overflow-y-auto p-8"
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        onScroll={(e) => e.stopPropagation()}
+                        style={{ overscrollBehavior: 'contain' }}
+                    >
+                        {showQuiz ? <Quiz onClose={handleCloseSidePanel} /> : <Memo />}
                     </div>
                 </div>
             </div>
@@ -167,6 +191,17 @@ const ArticlePage = () => {
                                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                                         </p>
                                     ))}
+                                </div>
+
+
+                                {/* 퀴즈 풀기 버튼 */}
+                                <div className="mt-8 text-center flex-shrink-0">
+                                    <button
+                                        onClick={handleQuizClick}
+                                        className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
+                                    >
+                                        퀴즈 풀기
+                                    </button>
                                 </div>
 
                                 {/* Related Articles Section */}
