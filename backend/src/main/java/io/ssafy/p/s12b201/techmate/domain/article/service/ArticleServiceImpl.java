@@ -6,6 +6,8 @@ import io.ssafy.p.s12b201.techmate.domain.article.domain.repository.ArticleRepos
 import io.ssafy.p.s12b201.techmate.domain.article.exception.ArticleNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
+import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.ArticleLike;
+import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.repository.ArticleLikeRepository;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.repository.UserRepository;
 import io.ssafy.p.s12b201.techmate.domain.userpreference.domain.UserPreference;
@@ -41,6 +43,7 @@ public class ArticleServiceImpl implements ArticleUtils {
     private final UserPreferenceRepository userPreferenceRepository;
     private final UserUtils userUtils;
     private final MongoTemplate mongoTemplate;
+    private final ArticleLikeRepository articleLikeRepository;
 
     @Override
     public Article getArticleById(Long articleId) {
@@ -174,6 +177,32 @@ public class ArticleServiceImpl implements ArticleUtils {
                 .collect(Collectors.toList());
 
         return new SliceImpl<>(articleResponses, pageRequest, hasNext);
+    }
+
+    @Override
+    @Transactional
+    public void likeArticle(Long articleId) {
+        // 사용자 검증
+        User user = userUtils.getUserFromSecurityContext();
+        Long userId = user.getId();
+        userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
+        // 이미 좋아요한 기사인지 확인
+        Optional<ArticleLike> existingLike = articleLikeRepository.findByUserIdAndArticleId(userId, articleId);
+
+        if (existingLike.isPresent()) {
+            // 이미 좋아요한 경우 좋아요 취소 (토글 방식)
+            articleLikeRepository.delete(existingLike.get());
+        } else {
+            // 좋아요 추가
+            ArticleLike articleLike = ArticleLike.builder()
+                    .user(user)
+                    .articleId(articleId)
+                    .build();
+
+            articleLikeRepository.save(articleLike);
+        }
     }
 
 
