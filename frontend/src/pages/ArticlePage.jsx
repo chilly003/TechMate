@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ListImage from '../assets/images/list1.jpg';  // Changed fro
+import ListImage from '../assets/images/ArticleCardImage.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
-import Quiz from '../components/article/Quiz';  // 상단에 추가
+import Quiz from '../components/article/Quiz';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -14,6 +14,13 @@ const ArticlePage = () => {
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
 
+    // Move the function definition here, before it's used
+    const handleSidePanelToggle = () => {
+        if (!isSidePanelOpen) {
+            setShowQuiz(false); // Reset quiz state when opening panel
+        }
+        setIsSidePanelOpen(!isSidePanelOpen);
+    };
 
     // 퀴즈 버튼 클릭 핸들러 추가
     const handleQuizClick = () => {
@@ -26,7 +33,6 @@ const ArticlePage = () => {
         setIsSidePanelOpen(false);
         setShowQuiz(false);
     };
-
 
     // Add this useEffect for scroll reset
     // Modify the scroll reset useEffect
@@ -95,7 +101,7 @@ const ArticlePage = () => {
         <div className="relative">
             {/* Floating Button */}
             <button
-                onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+                onClick={handleSidePanelToggle}
                 className={`fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8 ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
                     }`}
             >
@@ -104,23 +110,21 @@ const ArticlePage = () => {
                 </svg>
             </button>
 
-        
-            {/* 사이드 패널: 메모장과 퀴즈를 표시하는 슬라이딩 패널 */}
-            <div className={`fixed top-0 right-0 h-screen w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
-                isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}>
-                <div className="h-full flex flex-col">
-                    {/* 닫기 버튼: 항상 상단에 고정 */}
+            {/* Side Panel */}
+            <div
+                className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
+            >
+                <div className="h-full p-8 overflow-hidden">
                     <button
-                        onClick={handleCloseSidePanel}
-                        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+                        onClick={() => setIsSidePanelOpen(false)}
+                        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    {/* 콘텐츠 영역: 독립적인 스크롤 가능한 공간 */}
-                    <div 
+                    <div
                         className="flex-1 overflow-y-auto p-8"
                         onWheel={(e) => e.stopPropagation()}
                         onTouchMove={(e) => e.stopPropagation()}
@@ -179,9 +183,8 @@ const ArticlePage = () => {
                 <div className="relative">
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
-                        <div className="w-full flex justify-center">
-                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-12' : 'md:w-[50%] md:px-0'
-                                }`}>
+                        <div className="w-full flex flex-col items-center">
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-16 md:py-24`}>
                                 <div className="text-left space-y-8">
                                     <p className="text-lg leading-relaxed">
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -192,21 +195,21 @@ const ArticlePage = () => {
                                         </p>
                                     ))}
                                 </div>
+                            </div>
 
+                            {/* 퀴즈 풀기 버튼 */}
+                            <div className="mt-8 text-center flex-shrink-0">
+                                <button
+                                    onClick={handleQuizClick}
+                                    className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
+                                >
+                                    퀴즈 풀기
+                                </button>
+                            </div>
 
-                                {/* 퀴즈 풀기 버튼 */}
-                                <div className="mt-8 text-center flex-shrink-0">
-                                    <button
-                                        onClick={handleQuizClick}
-                                        className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
-                                    >
-                                        퀴즈 풀기
-                                    </button>
-                                </div>
-
-                                {/* Related Articles Section */}
-                                <div className="mt-16">
-                                    <hr className="border-t border-gray-200 mb-12" />
+                            {/* Related Articles Section - Full width */}
+                            <div className="w-full bg-gray-50 py-16">
+                                <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                                     <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
                                     <div className="relative">
                                         <div className="overflow-x-auto pb-4 hide-scrollbar">

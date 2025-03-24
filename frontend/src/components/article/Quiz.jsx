@@ -223,7 +223,7 @@ const Quiz = ({ onClose }) => {
         </div>
 
         <h2 className="text-2xl font-semibold mb-10 mt-10">
-         {getCurrentQuiz().question}
+          {getCurrentQuiz().question}
         </h2>
 
         <div className="flex flex-col gap-4">
