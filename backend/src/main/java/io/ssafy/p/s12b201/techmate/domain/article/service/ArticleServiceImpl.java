@@ -182,6 +182,59 @@ public class ArticleServiceImpl implements ArticleUtils {
 
     @Override
     @Transactional(readOnly = true)
+    public Slice<ArticleCardResponse> getHotArticles(PageRequest pageRequest) {
+        // 1. 데이터베이스에서 직접 그룹화하여 조회수 계산 (성능 최적화)
+        List<Object[]> popularArticlesWithCount = articleReadRepository.findTopArticlesByReadCount(
+                pageRequest.getPageSize() + 1,  // 다음 페이지 확인용으로 1개 더 조회
+                pageRequest.getOffset()
+        );
+
+        if (popularArticlesWithCount.isEmpty()) {
+            return new SliceImpl<>(Collections.emptyList(), pageRequest, false);
+        }
+
+        // articleId 목록 추출
+        List<Long> popularArticleIds = popularArticlesWithCount.stream()
+                .map(row -> (Long) row[0])
+                .collect(Collectors.toList());
+
+        // 2. MongoDB에서 해당 기사 조회 (정렬 없이)
+        // Integer로 변환하여 MongoDB 쿼리
+        List<Integer> articleIdInts = popularArticleIds.stream()
+                .map(Long::intValue)
+                .collect(Collectors.toList());
+
+        Query query = new Query(Criteria.where("article_id").in(articleIdInts));
+        List<Article> articles = mongoTemplate.find(query, Article.class, "articles");
+
+        // 3. 다음 페이지 존재 여부 확인
+        boolean hasNext = popularArticleIds.size() > pageRequest.getPageSize();
+
+        List<Long> pageArticleIds = popularArticleIds;
+        if (hasNext) {
+            pageArticleIds = popularArticleIds.subList(0, pageRequest.getPageSize());
+        }
+
+        // 4. 조회수 순서대로 정렬
+        Map<Long, Article> articleMap = articles.stream()
+                .collect(Collectors.toMap(
+                        article -> article.getArticleId(),
+                        article -> article,
+                        (a1, a2) -> a1
+                ));
+
+        // 인기순(조회수순)으로 정렬된 기사 목록
+        List<ArticleCardResponse> content = pageArticleIds.stream()
+                .map(articleMap::get)
+                .filter(Objects::nonNull)  // MongoDB에서 삭제된 기사 제외
+                .map(ArticleCardResponse::from)
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(content, pageRequest, hasNext);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Slice<ArticleCardResponse> getArticlesByCategory(String category, PageRequest pageRequest) {
         // MongoDB에서 카테고리별 기사 조회
         Query query = new Query(Criteria.where("category").is(category));
@@ -236,8 +289,14 @@ public class ArticleServiceImpl implements ArticleUtils {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ArticleDetailResponse getArticleDetail(Long articleId) {
+        // 사용자 검증
+        User user = userUtils.getUserFromSecurityContext();
+        Long userId = user.getId();
+        userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
         // MongoDB의 article_id가 Integer 타입이므로 Long을 Integer로 변환
         Integer articleIdInt = articleId.intValue();
 
@@ -249,10 +308,32 @@ public class ArticleServiceImpl implements ArticleUtils {
             throw ArticleNotFoundException.EXCEPTION;
         }
 
+        // 읽은 기록 저장
+        saveArticleRead(user, articleId);
+
         // 유사 기사 목록 조회
         List<ArticleCardResponse> similarArticles = getSimilarArticlesForDetail(articleId);
 
         return ArticleDetailResponse.from(article, similarArticles);
+    }
+
+    /**
+     * 사용자의 기사 읽은 기록 저장
+     */
+    private void saveArticleRead(User user, Long articleId) {
+        // 이미 읽은 기록이 있는지 확인
+        Optional<ArticleRead> existingRead = articleReadRepository.findByUserIdAndArticleId(user.getId(), articleId);
+
+        if (existingRead.isEmpty()) {
+            // 읽은 기록이 없는 경우에만 저장
+            ArticleRead articleRead = ArticleRead.builder()
+                    .user(user)
+                    .articleId(articleId)
+                    .build();
+
+            articleReadRepository.save(articleRead);
+        }
+        // 읽은 기록이 이미 있는 경우는 아무것도 하지 않음
     }
 
 

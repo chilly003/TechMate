@@ -52,6 +52,16 @@ public class ArticleController {
         return articleUtils.getRecentArticles(pageRequest);
     }
 
+    // 인기순 기사 리스트 조회 (메인)
+    @GetMapping("/hot")
+    public Slice<ArticleCardResponse> getHotArticles(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return articleUtils.getHotArticles(pageRequest);
+    }
+
     // 카테고리별 기사 조회
     @GetMapping("/category")
     public Slice<ArticleCardResponse> getArticlesByCategory(
