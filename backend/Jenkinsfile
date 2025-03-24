@@ -41,6 +41,9 @@ pipeline {
         MONGO_PASSWORD = credentials('MONGO_PASSWORD')
         MONGO_PORT = credentials('MONGO_PORT')
         MONGO_USERNAME = credentials('MONGO_USERNAME')
+
+        // 생성형AI 환경변수
+        SOLAR_PRO_API_KEY = credentials('SOLAR_PRO_API_KEY')
     }
 
     stages {
@@ -93,6 +96,7 @@ pipeline {
                     --build-arg MONGO_PASSWORD=${MONGO_PASSWORD} \
                     --build-arg MONGO_PORT=${MONGO_PORT} \
                     --build-arg MONGO_USERNAME=${MONGO_USERNAME} \
+                    --build-arg SOLAR_PRO_API_KEY=${SOLAR_PRO_API_KEY} \
                     -t springboot:latest .
                     '''
                 }
@@ -140,6 +144,7 @@ pipeline {
                   -e MONGO_PASSWORD=${MONGO_PASSWORD} \
                   -e MONGO_PORT=${MONGO_PORT} \
                   -e MONGO_USERNAME=${MONGO_USERNAME} \
+                  -e SOLAR_PRO_API_KEY=${SOLAR_PRO_API_KEY} \
                   springboot:latest
                 '''
             }
