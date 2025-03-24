@@ -3,6 +3,7 @@ package io.ssafy.p.s12b201.techmate.domain.article.service;
 import io.ssafy.p.s12b201.techmate.domain.article.domain.Article;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleDetailResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
@@ -27,4 +28,7 @@ public interface ArticleUtils {
 
     // 뉴스카드 좋아요
     void likeArticle(Long articleId);
+
+    // 기사 상세
+    ArticleDetailResponse getArticleDetail(Long articleId);
 }

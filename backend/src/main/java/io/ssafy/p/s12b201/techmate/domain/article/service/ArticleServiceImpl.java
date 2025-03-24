@@ -6,6 +6,7 @@ import io.ssafy.p.s12b201.techmate.domain.article.domain.repository.ArticleRepos
 import io.ssafy.p.s12b201.techmate.domain.article.exception.ArticleNotFoundException;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleDetailResponse;
 import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.ArticleLike;
 import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.repository.ArticleLikeRepository;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
@@ -205,6 +206,26 @@ public class ArticleServiceImpl implements ArticleUtils {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ArticleDetailResponse getArticleDetail(Long articleId) {
+        // MongoDB의 article_id가 Integer 타입이므로 Long을 Integer로 변환
+        Integer articleIdInt = articleId.intValue();
+
+        // 기사 정보 조회
+        Query query = new Query(Criteria.where("article_id").is(articleIdInt));
+        Article article = mongoTemplate.findOne(query, Article.class, "articles");
+
+        if (article == null) {
+            throw ArticleNotFoundException.EXCEPTION;
+        }
+
+        // 유사 기사 목록 조회
+        List<ArticleCardResponse> similarArticles = getSimilarArticlesForDetail(articleId);
+
+        return ArticleDetailResponse.from(article, similarArticles);
+    }
+
 
     /**
      * 사용자에게 추천된 기사 ID 목록을 가져오는 메서드
@@ -353,6 +374,47 @@ public class ArticleServiceImpl implements ArticleUtils {
                 .map(doc -> doc.getInteger("article_id"))
                 .filter(Objects::nonNull)
                 .map(Integer::longValue)
+                .toList();
+    }
+
+    /**
+     * 상세보기에서 사용할 유사 기사 목록 조회
+     */
+    private List<ArticleCardResponse> getSimilarArticlesForDetail(Long articleId) {
+        // 기존 메서드를 활용하여 유사 기사 목록 가져오기
+        List<Document> similarArticleDocs = getSimilarArticles(articleId);
+
+        if (similarArticleDocs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 유사도 점수 기준으로 정렬된 유사 기사 ID 목록
+        List<Integer> similarArticleIds = similarArticleDocs.stream()
+                .sorted((a, b) -> {
+                    Double scoreA = a.getDouble("similarity_score");
+                    Double scoreB = b.getDouble("similarity_score");
+                    return scoreB.compareTo(scoreA); // 내림차순 정렬
+                })
+                .limit(5) // 상위 5개만 가져오기
+                .map(doc -> doc.getInteger("article_id"))
+                .collect(Collectors.toList());
+
+        if (similarArticleIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 유사 기사 정보 조회
+        Query articlesQuery = new Query(Criteria.where("article_id").in(similarArticleIds));
+        List<Article> similarArticles = mongoTemplate.find(articlesQuery, Article.class, "articles");
+
+        // 유사 기사 ID 순서대로 정렬 (유사도 순서 유지)
+        Map<Integer, Article> articleMap = similarArticles.stream()
+                .collect(Collectors.toMap(article -> article.getArticleId().intValue(), article -> article));
+
+        return similarArticleIds.stream()
+                .map(articleMap::get)
+                .filter(Objects::nonNull)
+                .map(ArticleCardResponse::from)
                 .toList();
     }
 //    @Override

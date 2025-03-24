@@ -3,6 +3,7 @@ package io.ssafy.p.s12b201.techmate.domain.article.presentation;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
 
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleDetailResponse;
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +58,12 @@ public class ArticleController {
     @PostMapping("/like/{articleId}")
     public void likeArticle(@PathVariable Long articleId) {
         articleUtils.likeArticle(articleId);
+    }
+
+    // 기사 상세보기
+    @GetMapping("/{articleId}")
+    public ArticleDetailResponse getArticleDetail(@PathVariable Long articleId) {
+        return articleUtils.getArticleDetail(articleId);
     }
 
 
