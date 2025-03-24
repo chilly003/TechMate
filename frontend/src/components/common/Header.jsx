@@ -21,9 +21,9 @@ const Header = () => {
             className={`fixed top-0 left-0 w-full z-50 pointer-events-none transition-transform duration-300 ${visible ? 'translate-y-0' : '-translate-y-full'
                 }`}
         >
-            <div className="container mx-auto px-8 md:px-16 py-6">
-                <Link to="/Home" className="inline-block pointer-events-auto">
-                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+            <div className="max-w-[2000px] mx-auto px-8 md:px-12 h-24 flex items-center">
+                <Link to="/Home" className="inline-flex items-center pointer-events-auto">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
                         TechMate
                     </h1>
                 </Link>
