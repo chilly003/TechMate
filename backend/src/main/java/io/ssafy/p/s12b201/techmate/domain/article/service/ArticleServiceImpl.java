@@ -18,6 +18,7 @@ import org.bson.Document;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -142,6 +143,35 @@ public class ArticleServiceImpl implements ArticleUtils {
 
         // 더 불러올 데이터가 있는지 확인
         boolean hasNext = endIndex < articleIds.size();
+
+        return new SliceImpl<>(articleResponses, pageRequest, hasNext);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ArticleCardResponse> getArticlesByCategory(String category, PageRequest pageRequest) {
+        // MongoDB에서 카테고리별 기사 조회
+        Query query = new Query(Criteria.where("category").is(category));
+
+        // 페이징 처리를 위한 스킵 및 제한 설정
+        query.skip(pageRequest.getPageNumber() * pageRequest.getPageSize());
+        query.limit(pageRequest.getPageSize() + 1); // 다음 페이지 존재 여부 확인을 위해 1개 더 가져옴
+
+        // datetime 기준 내림차순 정렬 (최신순)
+        query.with(Sort.by(Sort.Direction.DESC, "datetime"));
+
+        List<Article> articles = mongoTemplate.find(query, Article.class, "articles");
+
+        boolean hasNext = articles.size() > pageRequest.getPageSize();
+
+        // 원래 요청한 pageSize만큼만 반환
+        if (hasNext) {
+            articles = articles.subList(0, pageRequest.getPageSize());
+        }
+
+        List<ArticleCardResponse> articleResponses = articles.stream()
+                .map(ArticleCardResponse::from)
+                .collect(Collectors.toList());
 
         return new SliceImpl<>(articleResponses, pageRequest, hasNext);
     }

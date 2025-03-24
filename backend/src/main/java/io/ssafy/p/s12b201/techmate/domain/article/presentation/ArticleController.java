@@ -41,6 +41,18 @@ public class ArticleController {
         return articleUtils.getRecommendArticles(pageRequest);
     }
 
+    // 카테고리별 기사 조회
+    @GetMapping("/category")
+    public Slice<ArticleCardResponse> getArticlesByCategory(
+            @RequestParam("category") String category,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return articleUtils.getArticlesByCategory(category, pageRequest);
+
+    }
+
 
 //    @GetMapping("/{id}")
 //    private void test(@PathVariable Long id) {

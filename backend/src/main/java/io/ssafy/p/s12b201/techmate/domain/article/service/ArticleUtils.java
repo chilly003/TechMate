@@ -21,4 +21,7 @@ public interface ArticleUtils {
 
     // 추천 기사 조회 메서드
     Slice<ArticleCardResponse> getRecommendArticles(PageRequest pageRequest);
+
+    // 카테고리 별 기사 조회 메서드
+    Slice<ArticleCardResponse> getArticlesByCategory(String category, PageRequest pageRequest);
 }
