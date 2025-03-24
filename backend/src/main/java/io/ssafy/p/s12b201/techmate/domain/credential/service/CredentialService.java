@@ -13,7 +13,7 @@ import io.ssafy.p.s12b201.techmate.domain.credential.presentation.dto.response.C
 import io.ssafy.p.s12b201.techmate.domain.credential.presentation.dto.response.OauthTokenInfoDto;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.repository.UserRepository;
-import io.ssafy.p.s12b201.techmate.global.api.dto.UserInfoToOauthDto;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.UserInfoToOauthDto;
 import io.ssafy.p.s12b201.techmate.global.exception.AlreadyRegisterException;
 import io.ssafy.p.s12b201.techmate.global.exception.InvalidTokenException;
 import io.ssafy.p.s12b201.techmate.global.exception.UserNotFoundException;

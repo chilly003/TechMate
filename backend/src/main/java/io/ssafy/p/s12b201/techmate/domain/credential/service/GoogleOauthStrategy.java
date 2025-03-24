@@ -5,9 +5,9 @@ import io.ssafy.p.s12b201.techmate.domain.credential.presentation.dto.request.Un
 import io.ssafy.p.s12b201.techmate.domain.credential.presentation.dto.response.OauthTokenInfoDto;
 import io.ssafy.p.s12b201.techmate.global.api.client.GoogleAuthClient;
 import io.ssafy.p.s12b201.techmate.global.api.client.GoogleUnlinkClient;
-import io.ssafy.p.s12b201.techmate.global.api.dto.OIDCKeysResponse;
-import io.ssafy.p.s12b201.techmate.global.api.dto.OauthTokenResponse;
-import io.ssafy.p.s12b201.techmate.global.api.dto.UserInfoToOauthDto;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.OIDCKeysResponse;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.OauthTokenResponse;
+import io.ssafy.p.s12b201.techmate.global.api.dto.response.UserInfoToOauthDto;
 import io.ssafy.p.s12b201.techmate.global.property.OauthProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

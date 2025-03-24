@@ -1,4 +1,4 @@
-package io.ssafy.p.s12b201.techmate.global.api.dto;
+package io.ssafy.p.s12b201.techmate.global.api.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
