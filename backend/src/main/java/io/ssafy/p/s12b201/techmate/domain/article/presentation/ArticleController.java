@@ -1,15 +1,16 @@
 package io.ssafy.p.s12b201.techmate.domain.article.presentation;
 
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.requset.ArticleInitRequest;
-import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.RandomArticleResponse;
+import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleCardResponse;
+
 import io.ssafy.p.s12b201.techmate.domain.article.service.ArticleUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/api/v1/articles")
 @RequiredArgsConstructor
@@ -18,17 +19,28 @@ public class ArticleController {
 
     private final ArticleUtils articleUtils;
 
-    // 선호 기사 등록 (콜드 스타트 시 사용)
+    // 선호 기사 조회 (콜드 스타트 시 사용)
     @GetMapping("/random")
-    public List<RandomArticleResponse> getRandomArticles() {
-        return articleUtils.getRandomArticles().stream().map(RandomArticleResponse::from).toList();
+    public List<ArticleCardResponse> getRandomArticles() {
+        return articleUtils.getRandomArticles();
     }
 
-
+    // 선호 기사 등록 (콜드 스타트 시 사용)
     @PostMapping("/random")
     public void initializeArticles(@RequestBody ArticleInitRequest request) {
         articleUtils.initializeArticles(request);
     }
+
+    // 추천 기사 리스트 조회 (메인)
+    @GetMapping("/recommend")
+    public Slice<ArticleCardResponse> getRecommendArticles(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return articleUtils.getRecommendArticles(pageRequest);
+    }
+
 
 //    @GetMapping("/{id}")
 //    private void test(@PathVariable Long id) {

@@ -8,15 +8,17 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class RandomArticleResponse {
+public class ArticleCardResponse {
 
     private Long articleId;
     private String title;
     private String journal;
+    private String summary;
     private String thumbnailImageUrl;
     private LocalDateTime datetime;
+    private String category;
 
-    public static RandomArticleResponse from(Article article) {
+    public static ArticleCardResponse from(Article article) {
 
         // images 리스트에서 첫 번째 이미지의 URL만 가져오기
         String thumbnailImageUrl = null;
@@ -24,12 +26,14 @@ public class RandomArticleResponse {
             thumbnailImageUrl = article.getImages().get(0).getImageUrl();
         }
 
-        return RandomArticleResponse.builder()
+        return ArticleCardResponse.builder()
                 .articleId(article.getArticleId())
                 .title(article.getTitle())
                 .journal(article.getJournal())
+                .summary(article.getSummary())
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .datetime(article.getDatetime())
+                .category(article.getCategory())
                 .build();
     }
 }
