@@ -23,10 +23,10 @@ public class ArticleRead extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String articleId;
+    private Long articleId;
 
     @Builder
-    public ArticleRead(User user, String articleId) {
+    public ArticleRead(User user, Long articleId) {
         this.user = user;
         this.articleId = articleId;
     }

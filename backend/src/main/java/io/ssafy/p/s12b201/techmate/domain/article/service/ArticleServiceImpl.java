@@ -9,6 +9,8 @@ import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.Arti
 import io.ssafy.p.s12b201.techmate.domain.article.presentation.dto.response.ArticleDetailResponse;
 import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.ArticleLike;
 import io.ssafy.p.s12b201.techmate.domain.articlelike.domain.repository.ArticleLikeRepository;
+import io.ssafy.p.s12b201.techmate.domain.articleread.domain.ArticleRead;
+import io.ssafy.p.s12b201.techmate.domain.articleread.domain.repository.ArticleReadRepository;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.User;
 import io.ssafy.p.s12b201.techmate.domain.user.domain.repository.UserRepository;
 import io.ssafy.p.s12b201.techmate.domain.userpreference.domain.UserPreference;
@@ -45,6 +47,7 @@ public class ArticleServiceImpl implements ArticleUtils {
     private final UserUtils userUtils;
     private final MongoTemplate mongoTemplate;
     private final ArticleLikeRepository articleLikeRepository;
+    private final ArticleReadRepository articleReadRepository;
 
     @Override
     public Article getArticleById(Long articleId) {
@@ -149,6 +152,32 @@ public class ArticleServiceImpl implements ArticleUtils {
         boolean hasNext = endIndex < articleIds.size();
 
         return new SliceImpl<>(articleResponses, pageRequest, hasNext);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ArticleCardResponse> getRecentArticles(PageRequest pageRequest) {
+        // 1. MongoDB에서 최신순 기사 조회
+        Query query = new Query()
+                .with(Sort.by(Sort.Direction.DESC, "datetime"))
+                .skip(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize() + 1);
+
+        List<Article> articles = mongoTemplate.find(query, Article.class, "articles");
+
+        // 추가: datetime 기준으로 재정렬
+        articles.sort((a1, a2) -> a2.getDatetime().compareTo(a1.getDatetime())); // 내림차순
+
+        boolean hasNext = articles.size() > pageRequest.getPageSize();
+        if (hasNext) {
+            articles = articles.subList(0, pageRequest.getPageSize());
+        }
+
+        List<ArticleCardResponse> content = articles.stream()
+                .map(ArticleCardResponse::from)
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(content, pageRequest, hasNext);
     }
 
     @Override
