@@ -1,0 +1,153 @@
+pipeline {
+    agent any
+
+    environment {
+        // MySQL 환경변수
+        MYSQL_HOST = credentials('MYSQL_HOST')
+        MYSQL_PORT = credentials('MYSQL_PORT')
+        MYSQL_DATABASE = credentials('MYSQL_DATABASE')
+        MYSQL_USER = credentials('MYSQL_USER')
+        MYSQL_PASSWORD = credentials('MYSQL_PASSWORD')
+
+        // OAuth 카카오 환경변수
+        KAKAO_APP_ID = credentials('KAKAO_APP_ID')
+        KAKAO_CLIENT_ID = credentials('KAKAO_CLIENT_ID')
+        KAKAO_REDIRECT_URL = credentials('KAKAO_REDIRECT_URL')
+        KAKAO_BASE_URL = credentials('KAKAO_BASE_URL')
+        KAKAO_ADMIN_KEY = credentials('KAKAO_ADMIN_KEY')
+
+        // OAuth 구글 환경변수
+        GOOGLE_CLIENT_ID = credentials('GOOGLE_CLIENT_ID')
+        GOOGLE_REDIRECT_URL = credentials('GOOGLE_REDIRECT_URL')
+        GOOGLE_BASE_URL = credentials('GOOGLE_BASE_URL')
+        GOOGLE_SECRET = credentials('GOOGLE_SECRET')
+
+        // JWT 환경변수
+        JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
+        JWT_ACCESS_EXP = credentials('JWT_ACCESS_EXP')
+        JWT_REFRESH_EXP = credentials('JWT_REFRESH_EXP')
+        JWT_HEADER = credentials('JWT_HEADER')
+        JWT_PREFIX = credentials('JWT_PREFIX')
+
+        // Redis 환경변수
+        REDIS_HOST = credentials('REDIS_HOST')
+        REDIS_PORT = credentials('REDIS_PORT')
+
+        // Mongo 환경변수
+        MONGO_CONNECT_NAME = credentials('MONGO_CONNECT_NAME')
+        MONGO_DATABASE = credentials('MONGO_DATABASE')
+        MONGO_AUTH = credentials('MONGO_AUTH')
+        MONGO_HOST = credentials('MONGO_HOST')
+        MONGO_PASSWORD = credentials('MONGO_PASSWORD')
+        MONGO_PORT = credentials('MONGO_PORT')
+        MONGO_USERNAME = credentials('MONGO_USERNAME')
+
+        // 생성형AI 환경변수
+        SOLAR_PRO_API_KEY = credentials('SOLAR_PRO_API_KEY')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/backend']], extensions: [], userRemoteConfigs: [[credentialsId: 'gitlab-repo-access', url: 'https://lab.ssafy.com/s12-bigdata-recom-sub1/S12P21B201.git']])
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('backend') {
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build -x test'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('backend') {
+                    sh '''
+                    docker build \
+                    --build-arg MYSQL_HOST=${MYSQL_HOST} \
+                    --build-arg MYSQL_PORT=${MYSQL_PORT} \
+                    --build-arg MYSQL_DATABASE=${MYSQL_DATABASE} \
+                    --build-arg MYSQL_USER=${MYSQL_USER} \
+                    --build-arg MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+                    --build-arg KAKAO_APP_ID=${KAKAO_APP_ID} \
+                    --build-arg KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                    --build-arg KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL} \
+                    --build-arg KAKAO_BASE_URL=${KAKAO_BASE_URL} \
+                    --build-arg KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} \
+                    --build-arg GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                    --build-arg GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL} \
+                    --build-arg GOOGLE_BASE_URL=${GOOGLE_BASE_URL} \
+                    --build-arg GOOGLE_SECRET=${GOOGLE_SECRET} \
+                    --build-arg JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                    --build-arg JWT_ACCESS_EXP=${JWT_ACCESS_EXP} \
+                    --build-arg JWT_REFRESH_EXP=${JWT_REFRESH_EXP} \
+                    --build-arg JWT_HEADER=${JWT_HEADER} \
+                    --build-arg JWT_PREFIX=${JWT_PREFIX} \
+                    --build-arg REDIS_HOST=${REDIS_HOST} \
+                    --build-arg REDIS_PORT=${REDIS_PORT} \
+                    --build-arg MONGO_CONNECT_NAME=${MONGO_CONNECT_NAME} \
+                    --build-arg MONGO_DATABASE=${MONGO_DATABASE} \
+                    --build-arg MONGO_AUTH=${MONGO_AUTH} \
+                    --build-arg MONGO_HOST=${MONGO_HOST} \
+                    --build-arg MONGO_PASSWORD=${MONGO_PASSWORD} \
+                    --build-arg MONGO_PORT=${MONGO_PORT} \
+                    --build-arg MONGO_USERNAME=${MONGO_USERNAME} \
+                    --build-arg SOLAR_PRO_API_KEY=${SOLAR_PRO_API_KEY} \
+                    -t springboot:latest .
+                    '''
+                }
+            }
+        }
+
+        stage('Stop Previous Container') {
+            steps {
+                sh 'docker stop springboot || true'
+                sh 'docker rm springboot || true'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                docker run -d --name springboot \
+                  --network techmate_default \
+                  -p 8080:8080 \
+                  -e MYSQL_HOST=${MYSQL_HOST} \
+                  -e MYSQL_PORT=${MYSQL_PORT} \
+                  -e MYSQL_DATABASE=${MYSQL_DATABASE} \
+                  -e MYSQL_USER=${MYSQL_USER} \
+                  -e MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+                  -e KAKAO_APP_ID=${KAKAO_APP_ID} \
+                  -e KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                  -e KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL} \
+                  -e KAKAO_BASE_URL=${KAKAO_BASE_URL} \
+                  -e KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} \
+                  -e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                  -e GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL} \
+                  -e GOOGLE_BASE_URL=${GOOGLE_BASE_URL} \
+                  -e GOOGLE_SECRET=${GOOGLE_SECRET} \
+                  -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                  -e JWT_ACCESS_EXP=${JWT_ACCESS_EXP} \
+                  -e JWT_REFRESH_EXP=${JWT_REFRESH_EXP} \
+                  -e JWT_HEADER=${JWT_HEADER} \
+                  -e JWT_PREFIX=${JWT_PREFIX} \
+                  -e REDIS_HOST=${REDIS_HOST} \
+                  -e REDIS_PORT=${REDIS_PORT} \
+                  -e MONGO_CONNECT_NAME=${MONGO_CONNECT_NAME} \
+                  -e MONGO_DATABASE=${MONGO_DATABASE} \
+                  -e MONGO_AUTH=${MONGO_AUTH} \
+                  -e MONGO_HOST=${MONGO_HOST} \
+                  -e MONGO_PASSWORD=${MONGO_PASSWORD} \
+                  -e MONGO_PORT=${MONGO_PORT} \
+                  -e MONGO_USERNAME=${MONGO_USERNAME} \
+                  -e SOLAR_PRO_API_KEY=${SOLAR_PRO_API_KEY} \
+                  springboot:latest
+                '''
+            }
+        }
+    }
+}
