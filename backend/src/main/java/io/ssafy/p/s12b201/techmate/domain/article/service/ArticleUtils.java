@@ -24,4 +24,7 @@ public interface ArticleUtils {
 
     // 카테고리 별 기사 조회 메서드
     Slice<ArticleCardResponse> getArticlesByCategory(String category, PageRequest pageRequest);
+
+    // 뉴스카드 좋아요
+    void likeArticle(Long articleId);
 }

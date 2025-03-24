@@ -53,6 +53,12 @@ public class ArticleController {
 
     }
 
+    // 뉴스카드 좋아요
+    @PostMapping("/like/{articleId}")
+    public void likeArticle(@PathVariable Long articleId) {
+        articleUtils.likeArticle(articleId);
+    }
+
 
 //    @GetMapping("/{id}")
 //    private void test(@PathVariable Long id) {
