@@ -9,6 +9,8 @@ import io.ssafy.p.s12b201.techmate.global.api.dto.response.ChatResponseDto;
 import io.ssafy.p.s12b201.techmate.global.api.dto.response.OptionDto;
 import io.ssafy.p.s12b201.techmate.global.api.dto.response.QuizDto;
 import io.ssafy.p.s12b201.techmate.global.api.dto.response.QuizResponseDto;
+import io.ssafy.p.s12b201.techmate.global.api.exception.JsonParseException;
+import io.ssafy.p.s12b201.techmate.global.api.exception.SolarException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,14 +41,14 @@ public class SolarProService {
             String authorization = "Bearer " + apiKey;
             return solarProClient.chat(authorization, request);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to call SolarPro API: " + e.getMessage(), e);
+            throw SolarException.EXCEPTION;
         }
     }
 
     public String getAssistantMessage(String userMessage) {
         ChatResponseDto response = chatWithSolarPro(userMessage);
         if (response.getChoices() == null || response.getChoices().isEmpty()) {
-            throw new IllegalStateException("No choices found in the response");
+            throw SolarException.EXCEPTION;
         }
         return response.getChoices().get(0).getMessage().getContent();
     }
@@ -105,7 +107,7 @@ public class SolarProService {
 
         try {
             if (!jsonResponse.trim().startsWith("{")) {
-                throw new IllegalStateException("Invalid JSON response from Solar API: " + jsonResponse);
+                throw JsonParseException.EXCEPTION;
             }
             QuizResponseDto quizResponse = objectMapper.readValue(jsonResponse, QuizResponseDto.class);
 
@@ -140,13 +142,13 @@ public class SolarProService {
                         .filter(OptionDto::getIsCorrect)
                         .count();
                 if (correctCount != 1) {
-                    throw new IllegalStateException("Each quiz must have exactly one correct option");
+                    throw SolarException.EXCEPTION;
                 }
             }
 
             return quizResponse;
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse quiz response: " + e.getMessage(), e);
+            throw JsonParseException.EXCEPTION;
         }
     }
 }

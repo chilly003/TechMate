@@ -12,4 +12,7 @@ public interface ArticleUtils {
     void initializeArticles(ArticleInitRequest articleInitRequest);
 
     List<Article> getArticlesByArticleIds(List<Long> articleIds);
+
+    // 랜덤 기사 조회 메서드
+    List<Article> getRandomArticles();
 }
