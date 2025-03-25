@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ListImage from '../assets/images/list1.jpg';  // Changed fro
+import ListImage from '../assets/images/ArticleCardImage.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
 import FloatingButton from '../components/ui/FloatingButton';
@@ -8,6 +8,7 @@ import { FiEdit3 } from 'react-icons/fi';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { BsBookmark, BsFillBookmarkFill } from 'react-icons/bs';
 import Modal from '../components/common/Modal';
+import Quiz from '../components/article/Quiz';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -21,6 +22,27 @@ const ArticlePage = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [isScraped, setIsScraped] = useState(false);
     const [folderName, setFolderName] = useState('');
+    const [showQuiz, setShowQuiz] = useState(false);
+
+    // Move the function definition here, before it's used
+    const handleSidePanelToggle = () => {
+        if (!isSidePanelOpen) {
+            setShowQuiz(false); // Reset quiz state when opening panel
+        }
+        setIsSidePanelOpen(!isSidePanelOpen);
+    };
+
+    // 퀴즈 버튼 클릭 핸들러 추가
+    const handleQuizClick = () => {
+        setShowQuiz(true);
+        setIsSidePanelOpen(true);
+    };
+
+    // 사이드 패널 닫을 때 퀴즈 상태도 초기화
+    const handleCloseSidePanel = () => {
+        setIsSidePanelOpen(false);
+        setShowQuiz(false);
+    };
 
     // Add these style definitions before the handleScrapClick function
     const sharedStyle = {
@@ -132,8 +154,14 @@ const ArticlePage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    <div className="h-full">
-                        <Memo />
+                    <div
+                        className="flex-1 overflow-y-auto p-8"
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        onScroll={(e) => e.stopPropagation()}
+                        style={{ overscrollBehavior: 'contain' }}
+                    >
+                        {showQuiz ? <Quiz onClose={handleCloseSidePanel} /> : <Memo />}
                     </div>
                 </div>
             </div>
@@ -185,9 +213,8 @@ const ArticlePage = () => {
                 <div className="relative">
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
-                        <div className="w-full flex justify-center">
-                            <div className={`w-full px-8 py-16 md:py-24 ${isSidePanelOpen ? 'md:px-12' : 'md:w-[50%] md:px-0'
-                                }`}>
+                        <div className="w-full flex flex-col items-center">
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-16 md:py-24`}>
                                 <div className="text-left space-y-8">
                                     <p className="text-lg leading-relaxed">
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -198,10 +225,21 @@ const ArticlePage = () => {
                                         </p>
                                     ))}
                                 </div>
+                            </div>
 
-                                {/* Related Articles Section */}
-                                <div className="mt-16">
-                                    <hr className="border-t border-gray-200 mb-12" />
+                            {/* 퀴즈 풀기 버튼 */}
+                            <div className="mt-8 text-center flex-shrink-0">
+                                <button
+                                    onClick={handleQuizClick}
+                                    className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
+                                >
+                                    퀴즈 풀기
+                                </button>
+                            </div>
+
+                            {/* Related Articles Section - Full width */}
+                            <div className="w-full bg-gray-50 py-16">
+                                <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                                     <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
                                     <div className="relative">
                                         <div className="overflow-x-auto pb-4 hide-scrollbar">
