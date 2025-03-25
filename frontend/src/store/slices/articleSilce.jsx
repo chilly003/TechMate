@@ -43,13 +43,30 @@ export const fetchArticle = createAsyncThunk(
  * 
  * @return articles [] : 기사 배열
  */
+const initialState = {
+    articles: [],
+    currentArticle: null,
+    recommendArticles: [],
+    categoryArticles: [],
+    loading: false,
+    error: null,
+    hasMore: true,
+    currentPage: 0
+};
+
 export const fetchRecommendArticles = createAsyncThunk(
     "article/fetchRecommendArticles",
-    async () => {
-        const response = await api.get("/articles/recommend");
-        return response.data.data; // Return the correct data structure
+    async (page = 0) => {
+        const response = await api.get("/articles/recommend", {
+            params: {
+                page,
+                size: 5,
+            }
+        });
+        console.log(response.data.data);
+        return response.data.data;
     }
-)
+);
 
 /**
  * 기사 카테고리 리스트 조회
@@ -83,7 +100,8 @@ export const fetchArticleDetail = createAsyncThunk(
     "article/fetchArticleDetail",
     async (articleId) => {
         const response = await api.get(`/articles/${articleId}`);
-        return response.data;
+        // console.log(response.data);
+        return response.data.data;
     }
 )
 
@@ -99,15 +117,6 @@ export const toggleLikeArticle = createAsyncThunk(
         return response.data;
     }
 )
-
-const initialState = {
-    articles: [],
-    currentArticle: null,
-    recommendArticles: [],
-    categoryArticles: [],
-    loading: false,
-    error: null,
-};
 
 const articleSlice = createSlice({
     name: 'article',
@@ -140,7 +149,7 @@ const articleSlice = createSlice({
             })
             .addCase(fetchArticleDetail.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentArticle = action.payload;
+                state.article = action.payload;
             })
             .addCase(fetchArticleDetail.rejected, (state, action) => {
                 state.loading = false;
@@ -154,8 +163,20 @@ const articleSlice = createSlice({
             })
             .addCase(fetchRecommendArticles.fulfilled, (state, action) => {
                 state.loading = false;
-                state.recommendArticles = action.payload;
-                state.articles = action.payload.content; // Store the articles array in state.articles
+                // Check if it's the first page
+                if (state.currentPage === 0) {
+                    state.articles = action.payload.content;
+                } else {
+                    // Filter out duplicates when adding new articles
+                    const newArticles = action.payload.content.filter(newArticle =>
+                        !state.articles.some(existingArticle =>
+                            existingArticle.articleId === newArticle.articleId
+                        )
+                    );
+                    state.articles = [...state.articles, ...newArticles];
+                }
+                state.hasMore = action.payload.content.length === 5;
+                state.currentPage += 1;
             })
             .addCase(fetchRecommendArticles.rejected, (state, action) => {
                 state.loading = false;
