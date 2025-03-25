@@ -1,13 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import CompanyImage from '../../assets/images/company.png';
 import ArticleCardImage from '../../assets/images/ArticleCardImage.jpg';
 
-const ArticleCard = ({ id, imageUrl, category, title, content, date }) => {
+const ArticleCard = ({ id, title, journal, summary, category, imageUrl, datetime }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
         navigate(`/article/${id}`);
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "2025.06.12"; // Default date if none provided
+        const date = new Date(dateString);
+        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     };
 
     return (
@@ -36,22 +41,22 @@ const ArticleCard = ({ id, imageUrl, category, title, content, date }) => {
                         {title || "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"}
                     </div>
 
-                    <h3 className="hidden sm:block text-base line-clamp-1 mb-2 mr-none sm:mr-5">
-                        {content || "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"}
+                    <h3 className="hidden sm:block text-base line-clamp-2 md:line-clamp-2 mb-2 mr-none sm:mr-5">
+                        {summary || ""}
                     </h3>
                 </div>
 
                 <div className="flex justify-between items-end mt-auto">
                     <div className="text-black text-sm sm:text-sm">
-                        {date || "2025.06.12"}
+                        {formatDate(datetime)}
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                        <img
+                        {/* <img
                             src={CompanyImage}
                             alt="author"
                             className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover"
-                        />
-                        <span className="text-sm sm:text-sm">매일경제</span>
+                        /> */}
+                        <span className="text-sm sm:text-sm">{journal}</span>
                     </div>
                 </div>
             </div>
