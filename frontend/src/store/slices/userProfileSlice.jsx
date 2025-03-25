@@ -1,14 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import instance from '../../api/axios';  
 
 // 랜덤 기사 조회 액션
 export const fetchRandomArticles = createAsyncThunk(
     'userProfile/fetchRandomArticles',
     async (nickname, { rejectWithValue }) => {
         try {
-            const response = await axios({
-                method: 'get',
-                url: 'v1/articles/random',
+            const response = await instance.get('/v1/articles/random', {
                 data: {
                     nickname: nickname
                 }
@@ -25,7 +23,7 @@ export const registerPreferredArticles = createAsyncThunk(
     'userProfile/registerPreferred',
     async (articleIds, { rejectWithValue }) => {
         try {
-            const response = await axios.post('v1/articles/preferred', {
+            const response = await instance.post('/v1/articles/random', {
                 article_id: articleIds
             });
             return response.data;

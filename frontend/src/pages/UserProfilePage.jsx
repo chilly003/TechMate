@@ -4,7 +4,7 @@ import ArticleCard from '../components/article/ArticleCard';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import '../styles/Logo.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRandomArticles } from '../store/slices/userProfileSlice';
+// import { fetchRandomArticles, registerPreferred } from '../store/slices/userProfileSlice';
 
 const UserProfilePage = () => {
     const navigate = useNavigate();
@@ -14,8 +14,8 @@ const UserProfilePage = () => {
     const [selectedArticle, setSelectedArticle] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
     const [selectedArticles, setSelectedArticles] = useState([]);
-    const [isTransitioning, setIsTransitioning] = useState(false);  // Add this line
-    const [slideDirection, setSlideDirection] = useState('left');   // Add this line if needed
+    const [isTransitioning, setIsTransitioning] = useState(false);  
+    const [slideDirection, setSlideDirection] = useState('left');  
 
 
     // 프로그레스 바 단계 정보 추가
@@ -84,10 +84,20 @@ const UserProfilePage = () => {
         }
         
         if (step === 2) {
+            // if (selectedArticles.length === 3) {
+            //     // 선택된 기사 ID들만 서버로 전송
+            //     dispatch(registerPreferred(selectedArticles))
+            //         .unwrap()
+            //         .then(() => {
+            //             setStep(prev => prev + 1);
+            //         })
+            //         .catch((err) => {
+            //             console.error('선호 기사 저장 실패:', err);
+            //         });
+            //     return;
+            // }
             if (currentPage < totalPages - 1) {
                 setCurrentPage(prev => prev + 1);
-                return;
-            } else if (selectedArticles.length === 0) {
                 return;
             }
         }
@@ -100,7 +110,7 @@ const UserProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center pt-14">
+        <div className="min-h-screen flex flex-col items-center pt-14 px-8 md:px-10">
             {/* 프로그레스 바 */}
             <div className="w-full max-w-3xl px-4 pt-5 mb-8">
                 <div className="flex justify-between items-center relative">
@@ -124,26 +134,40 @@ const UserProfilePage = () => {
             </div>
 
             {/* 단계별 컨텐츠 */}
-            <div className="w-full max-w-6xl px-4 py-8">
+            <div className="w-full max-w-6xl py-8">
                 {step === 1 && (
-                    <div className="text-center max-w-xl mx-auto">
-                        <h2 className="text-2xl font-bold mb-8">사용하실 닉네임을 입력해 주세요</h2>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
-                                className="w-full p-4 border-2 border-gray-200 rounded-lg outline-none focus:border-blue-600"
-                                placeholder="닉네임을 입력해 주세요. (1-20자)"
-                                maxLength={20}
-                            />
-                            {nickname && (
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    {isNicknameValid ? "✓" : "✗"}
-                                </div>
-                            )}
+                    <>
+                        <div className="text-center max-w-xl mx-auto">
+                            <h2 className="text-2xl font-bold mb-8">사용하실 닉네임을 입력해주세요</h2>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={nickname}
+                                    onChange={(e) => setNickname(e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-200 rounded-lg outline-none focus:border-blue-600"
+                                    placeholder="닉네임을 입력해 주세요 (1-20자)"
+                                    maxLength={20}
+                                />
+                                {nickname && (
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                        {isNicknameValid ? "✓" : "✗"}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                        <div className="max-w-xl mx-auto md:mt-8 fixed md:relative bottom-0 left-0 right-0 px-8 pb-10 md:p-0 bg-white md:bg-transparent">
+                            <button
+                                onClick={handleNext}
+                                disabled={!isNicknameValid}
+                                className={`w-full py-3 rounded-lg ${isNicknameValid
+                                    ? 'bg-[#1B2C7A] text-white'
+                                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                                다음
+                            </button>
+                        </div>
+                    </>
                 )}
 
                 {step === 2 && (
@@ -157,7 +181,7 @@ const UserProfilePage = () => {
                         
                         <div className="max-w-6xl mx-auto px-4 relative">
                             <div 
-                                className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-300
+                                className={`grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-8 transition-all duration-300
                                     ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
                             >
                                 {articles
@@ -172,7 +196,7 @@ const UserProfilePage = () => {
                                                     handleArticleSelect(article.id);
                                                 }
                                             }}
-                                            className={`cursor-pointer transition-all duration-300 w-full rounded-lg overflow-hidden p-4
+                                            className={`cursor-pointer transition-all duration-300 w-full rounded-lg overflow-hidden p-2 md:p-4
                                                 ${selectedArticles.includes(article.id) 
                                                     ? 'ring-4 ring-[#1B2C7A] bg-blue-50 scale-105' 
                                                     : selectedArticles.length >= 3 
@@ -181,7 +205,8 @@ const UserProfilePage = () => {
                                                 }`}
                                         >
                                             <div className="w-full mx-auto pointer-events-none">
-                                                <div className="[&>div>div>div:first-child]:text-sm [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
+                                                {/* articlecard에서 헤드라인, 날짜, 언론사 임의로 제거거 */}
+                                                <div className="[&>div>div>div:first-child]:text-xs md:text-sm [&>div>div>div:first-child]:line-clamp-3 [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
                                                     <ArticleCard id={article.id} />
                                                 </div>
                                             </div>
@@ -231,7 +256,7 @@ const UserProfilePage = () => {
                     </div>
                 )}
 
-                {step == 1 && (
+                {/* {step == 1 && (
                     <div className="max-w-xl mx-auto">
                         <button
                             onClick={handleNext}
@@ -244,7 +269,7 @@ const UserProfilePage = () => {
                             다음
                         </button>
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );
