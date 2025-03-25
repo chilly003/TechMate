@@ -1,20 +1,20 @@
 import axios from 'axios';
 
-const instance = axios.create({
-    baseURL: 'http://localhost:8080/api', // Update this with your actual API base URL
-    timeout: 5000,
-    headers: {
-        'Content-Type': 'application/json',
-    }
+const api = axios.create({
+    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/v1`,
 });
-
 // Request interceptor
-instance.interceptors.request.use(
+api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        // const token = localStorage.getItem('token');
+        // if (token) {
+        //     config.headers.Authorization = `Bearer ${token}`;
+        // }
+        // return config;
+
+        // 여기에 토큰을 넣으셈 하드코딩이나
+        config.headers.Authorization = 'Bearer ';
+
         return config;
     },
     (error) => {
@@ -23,7 +23,7 @@ instance.interceptors.request.use(
 );
 
 // Response interceptor
-instance.interceptors.response.use(
+api.interceptors.response.use(
     (response) => {
         return response;
     },
@@ -37,4 +37,4 @@ instance.interceptors.response.use(
     }
 );
 
-export default instance;
+export default api;
