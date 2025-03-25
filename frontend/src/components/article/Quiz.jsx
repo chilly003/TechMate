@@ -115,7 +115,7 @@ const Quiz = ({ onClose }) => {
 
   if (showFinalResults) {
     return (
-      <div className="max-w-3xl mx-auto px-20 py-8">
+      <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
         {/* <h2 className="text-2xl font-bold mb-8">퀴즈 결과</h2> */}
         {quizData.quizzes.map((quiz, index) => (
           <div key={quiz.quiz_id} className="mb-12">
@@ -192,7 +192,7 @@ const Quiz = ({ onClose }) => {
     const quiz = getCurrentQuiz();
     const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestion]);
     return (
-      <div className="max-w-3xl mx-auto px-20 py-8">
+      <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
         {/* Question Counter */}
         <div className="text-right mb-4">
           Question {currentQuestion + 1} / {quizData.quizzes.length}
@@ -265,7 +265,7 @@ const Quiz = ({ onClose }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-20 py-8">
+    <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
       <div className="text-right mb-4">
         Question {currentQuestion + 1} / {quizData.quizzes.length}
       </div>

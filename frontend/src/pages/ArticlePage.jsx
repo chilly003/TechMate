@@ -184,7 +184,7 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex flex-col items-center">
-                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-16 md:py-24`}>
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-14`}>
                                 <div className="text-left space-y-8">
                                     <p className="text-lg leading-relaxed">
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -198,7 +198,7 @@ const ArticlePage = () => {
                             </div>
 
                             {/* 퀴즈 풀기 버튼 */}
-                            <div className="mt-8 text-center flex-shrink-0">
+                            <div className="pb-16 text-center flex-shrink-0">
                                 <button
                                     onClick={handleQuizClick}
                                     className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
@@ -208,7 +208,7 @@ const ArticlePage = () => {
                             </div>
 
                             {/* Related Articles Section - Full width */}
-                            <div className="w-full bg-gray-50 py-16">
+                            <div className="w-full bg-gray-50 py-20">
                                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                                     <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
                                     <div className="relative">
