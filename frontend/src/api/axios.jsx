@@ -12,8 +12,7 @@ api.interceptors.request.use(
         // }
         // return config;
 
-        // 여기에 토큰을 넣으셈 하드코딩이나
-        config.headers.Authorization = 'Bearer ';
+        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MjgwMTY5OCwic3ViIjoiMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiVVNFUiIsImV4cCI6MTc0Mjk4MTY5OH0.zQE9t8dk8MLkCyhYyC6tNE5mxyfA9FBIcdibCIZpZOM';
 
         return config;
     },
