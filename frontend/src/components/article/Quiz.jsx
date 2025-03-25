@@ -115,7 +115,7 @@ const Quiz = ({ onClose }) => {
 
   if (showFinalResults) {
     return (
-      <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
         {/* <h2 className="text-2xl font-bold mb-8">퀴즈 결과</h2> */}
         {quizData.quizzes.map((quiz, index) => (
           <div key={quiz.quiz_id} className="mb-12">
@@ -168,18 +168,18 @@ const Quiz = ({ onClose }) => {
         ))}
 
         {/* Navigation buttons */}
-        <div className="flex justify-between mt-16 mb-8">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mt-16 mb-8">
           <button
             onClick={() => {
-              onClose(); // 사이드 패널 닫기
+              onClose();
             }}
-            className="px-16 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors"
+            className="px-8 md:px-16 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors w-full md:w-auto"
           >
             기사 보기
           </button>
           <button
             onClick={() => window.location.href = '/home'}
-            className="px-16 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-8 md:px-16 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors w-full md:w-auto"
           >
             홈으로 가기
           </button>
@@ -192,7 +192,7 @@ const Quiz = ({ onClose }) => {
     const quiz = getCurrentQuiz();
     const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestion]);
     return (
-      <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
         {/* Question Counter */}
         <div className="text-right mb-4">
           Question {currentQuestion + 1} / {quizData.quizzes.length}
@@ -265,7 +265,7 @@ const Quiz = ({ onClose }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
+    <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
       <div className="text-right mb-4">
         Question {currentQuestion + 1} / {quizData.quizzes.length}
       </div>
