@@ -35,7 +35,7 @@ const Modal = ({
                         ))}
                         <div 
                             className="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer text-gray-600"
-                            onClick={() => onConfirm('new')}
+                            onClick={() => onConfirm({ type: 'new_folder' })}
                         >
                             <span className="mr-3 text-xl">+</span>
                             새 폴더 만들기
@@ -45,7 +45,14 @@ const Modal = ({
             case 'edit':
                 return (
                     <div className="my-5">
-                        {children}
+                        <input
+                            type="text"
+                            value={value}
+                            onChange={onChange}
+                            placeholder="폴더명을 입력하세요"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                            autoFocus
+                        />
                     </div>
                 );
             default:
@@ -68,14 +75,16 @@ const Modal = ({
 
                 {renderContent()}
 
-                <div className="flex justify-end mt-5">
-                    <button
-                        onClick={onConfirm}
-                        className="bg-[#1a237e] hover:bg-[#0e1642] text-white font-bold py-2 px-6 rounded-lg"
-                    >
-                        확인
-                    </button>
-                </div>
+                {(type === 'confirm' || type === 'edit') && (
+                    <div className="flex justify-end mt-5">
+                        <button
+                            onClick={onConfirm}
+                            className="bg-[#1a237e] hover:bg-[#0e1642] text-white font-bold py-2 px-6 rounded-lg"
+                        >
+                            확인
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

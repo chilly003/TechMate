@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import FloatingButton from "../ui/FloatingButton";
 import "../../styles/memo.css";
+import { MdEdit, MdPreview } from 'react-icons/md';  // Add this import at the top
 
 /**
  * @description 스크랩된 기사의 메모 컴포넌트
@@ -98,7 +99,7 @@ const Memo = () => {
   const categories = ["프론트엔드", "관심 유"];
 
   return (
-    <div className="markdown-container p-4">
+    <div className="markdown-container md:p-4">
       {/* 상단 작성일자와 카테고리 */}
         <div className="grid grid-cols-1 gap-2">
           <div className="flex items-center space-x-3">
@@ -177,7 +178,7 @@ const Memo = () => {
       )}
 
       {/* 저장 버튼 */}
-      <div className="mt-4 text-center">
+      <div className="mt-4 mb-12 md:mb-8 text-center">
         <button className="preview-button bg-blue-500 text-white px-4 py-2 rounded">
           저장하기
         </button>
@@ -185,9 +186,10 @@ const Memo = () => {
 
       {/* 플로팅 버튼 (우측 하단 고정) */}
       <FloatingButton
-        text={isPreview ? "메모" : "미리보기"}
-        color="from-[#1B2C7A] to-[#72B7CA]"
+        text={isPreview ? <MdEdit size={20} /> : <MdPreview size={20} />}
+        color="from-blue-500 to-blue-600"
         onClick={togglePreview}
+        className="bottom-8 w-10 h-10 md:w-12 md:h-12 right-3 md:right-8 z-50"
       />
     </div>
   );

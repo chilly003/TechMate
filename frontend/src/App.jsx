@@ -6,7 +6,6 @@ import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
-import Memo from './components/article/Memo';
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
             <Route path="/userprofile" element={<UserProfilePage />} />
             <Route path="/article/:id" element={<ArticlePage />} />
             <Route path="/mypage" element={<Mypage />} />
-            <Route path="/memo" element={<Memo />} />
           </Routes>
         </div>
       </div>

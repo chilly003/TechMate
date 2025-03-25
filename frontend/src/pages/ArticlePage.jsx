@@ -3,6 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ListImage from '../assets/images/list1.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
+import FloatingButton from '../components/ui/FloatingButton';
+import { FiEdit3 } from 'react-icons/fi';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { BsBookmark, BsFillBookmarkFill } from 'react-icons/bs';
+import Modal from '../components/common/Modal';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -11,61 +16,13 @@ const ArticlePage = () => {
     const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
     const [textColor, setTextColor] = useState('text-black');
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState('');
+    const [isLiked, setIsLiked] = useState(false);
+    const [isScraped, setIsScraped] = useState(false);
+    const [folderName, setFolderName] = useState('');
 
-    // Add this useEffect for scroll reset
-    // Modify the scroll reset useEffect
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        setIsSidePanelOpen(false); // Close side panel when article changes
-    }, [id]);
-
-    useEffect(() => {
-        // Calculate average color from image
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = ListImage;  // Changed back to IntroImage
-
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            let r = 0, g = 0, b = 0;
-
-            for (let i = 0; i < imageData.length; i += 4) {
-                r += imageData[i];
-                g += imageData[i + 1];
-                b += imageData[i + 2];
-            }
-
-            const pixels = imageData.length / 4;
-            const avgR = r / pixels;
-            const avgG = g / pixels;
-            const avgB = b / pixels;
-
-            setAvgColor({ r: avgR, g: avgG, b: avgB });
-
-            // Calculate brightness using relative luminance formula
-            const brightness = (0.299 * avgR + 0.587 * avgG + 0.114 * avgB) / 255;
-            setTextColor(brightness > 0.5 ? 'text-black' : 'text-white');
-        };
-    }, []);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const position = window.pageYOffset;
-            setScrollPosition(position);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
+    // Add these style definitions before the handleScrapClick function
     const sharedStyle = {
         filter: `brightness(${Math.max(0.6, 1 - scrollPosition * 0.002)})`,
     };
@@ -75,18 +32,91 @@ const ArticlePage = () => {
         ...sharedStyle
     };
 
+    const handleScrapClick = () => {
+        if (!isScraped) {
+            // Show folder selection modal when scrapping
+            setModalType('select');
+            setShowModal(true);
+        } else {
+            // Show confirmation modal when un-scrapping
+            setModalType('confirm');
+            setShowModal(true);
+        }
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+        setModalType('');
+        setFolderName('');  // Reset folder name when closing modal
+    };
+
+    const handleModalConfirm = (option) => {
+        if (modalType === 'select') {
+            if (option.type === 'new_folder') {
+                setModalType('edit');
+                return;
+            }
+            setIsScraped(true);
+            setIsSidePanelOpen(true);
+            setShowModal(false);
+        } else if (modalType === 'edit') {
+            if (folderName.trim()) {
+                setIsScraped(true);
+                setIsSidePanelOpen(true);
+                setShowModal(false);
+            }
+        } else if (modalType === 'confirm') {
+            setIsScraped(false);
+            setIsSidePanelOpen(false);
+            setShowModal(false);
+        }
+    };
+
     return (
         <div className="relative">
-            {/* Floating Button */}
-            <button
-                onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-                className={`fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8 ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-            </button>
+            {showModal && (
+                <Modal
+                    type={modalType}
+                    title={modalType === 'select' 
+                        ? "스크랩 폴더 선택" 
+                        : modalType === 'edit'
+                        ? "새 폴더 만들기"
+                        : "스크랩 삭제"}
+                    message={modalType === 'confirm' ? "스크랩 삭제시 작성한 메모는 전체 삭제됩니다. 삭제하시겠습니까?" : null}
+                    options={[
+                        { label: "기본 폴더", value: "default" },
+                        { label: "나만의 폴더", value: "custom" }
+                    ]}
+                    value={folderName}
+                    onChange={(e) => setFolderName(e.target.value)}
+                    onClose={handleModalClose}
+                    onConfirm={handleModalConfirm}
+                />
+            )}
+
+            {/* Floating Buttons */}
+            {isScraped && (
+                <FloatingButton
+                    text={<FiEdit3 size={16} className="md:w-5 md:h-5"  />}
+                    color="from-blue-500 to-blue-600"
+                    onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+                    className={`w-10 h-10 md:w-12 md:h-12 bottom-28 right-3 md:right-8 z-50 ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                />
+            )}
+            
+            <FloatingButton
+                text={isLiked ? <AiFillHeart size={16} className="md:w-5 md:h-5" /> : <AiOutlineHeart size={16} className="md:w-5 md:h-5" />}
+                color={isLiked ? "from-red-500 to-red-600" : "from-blue-500 to-blue-600"}
+                onClick={() => setIsLiked(!isLiked)}
+                className={`w-10 h-10 md:w-12 md:h-12 bottom-16 right-3 md:right-8 z-50`}
+            />
+
+            <FloatingButton
+                text={isScraped ? <BsFillBookmarkFill size={16} className="md:w-5 md:h-5" /> : <BsBookmark size={16} className="md:w-5 md:h-5" />}
+                color={isScraped ? "from-yellow-500 to-yellow-600" : "from-blue-500 to-blue-600"}
+                onClick={handleScrapClick}
+                className="w-10 h-10 md:w-12 md:h-12 bottom-4 right-3 md:right-8 z-50"
+            />
 
             {/* Side Panel */}
             <div
