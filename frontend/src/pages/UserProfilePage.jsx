@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/article/ArticleCard';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import '../styles/Logo.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRandomArticles } from '../store/slices/userProfileSlice';
+import { fetchRandomArticles, registerPreferredArticles } from '../store/slices/userProfileSlice';
 
-// Import 부분에 추가
+
 const UserProfilePage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [step, setStep] = useState(1);
     const [nickname, setNickname] = useState('');
-    const [selectedArticle, setSelectedArticle] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
     const [selectedArticles, setSelectedArticles] = useState([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const [slideDirection, setSlideDirection] = useState('left');
+    const [fadeIn, setFadeIn] = useState(false);
 
 
     // 프로그레스 바 단계 정보 추가
@@ -30,11 +28,22 @@ const UserProfilePage = () => {
     const isNicknameValid = nickname.length >= 1 && nickname.length <= 20;
 
     // Redux store에서 랜덤 기사 목록 가져오기
-    const { randomArticles, loading } = useSelector((state) => state.userProfile);
+    const { randomArticles = [], loading = false } = useSelector((state) => {
+        return state.userProfile || {};
+    });
 
     // articles 배열 제거하고 randomArticles 사용
     const articlesPerPage = 4;
-    const totalPages = Math.ceil(randomArticles.length / articlesPerPage);
+
+    // randomArticles가 존재할 때만 렌더링
+    useEffect(() => {
+        if (step === 3) {
+            setTimeout(() => setFadeIn(true), 100);
+        } else {
+            setFadeIn(false);
+        }
+    }, [step]);
+    // }, [randomArticles, selectedArticles, currentPage]);
 
     const handleArticleSelect = (articleId) => {
         setIsTransitioning(true);
@@ -44,55 +53,69 @@ const UserProfilePage = () => {
             !currentPageArticles.map(a => a.id).includes(id)
         );
 
-        setSelectedArticles([...otherPagesSelections, articleId]);
+        const newSelectedArticles = [...otherPagesSelections, articleId];
+        setSelectedArticles(newSelectedArticles);
 
-        if (selectedArticles.length < 2) {  // 2개 선택할 때까지 자동 페이지 전환
-            setTimeout(() => {
-                setCurrentPage(prev => prev + 1);
+        setTimeout(() => {
+            if (newSelectedArticles.length === 3) {
                 setIsTransitioning(false);
-            }, 500);
-        } else {
-            setTimeout(() => {
-                setStep(prev => prev + 1);
-                setIsTransitioning(false);
-            }, 500);
-        }
-    };
-
-    const handleNext = () => {
-        if (step === 1) {
-            if (!isNicknameValid) return;
-            setStep(prev => prev + 1);
-            dispatch(fetchRandomArticles(nickname))
-                .unwrap()
-                .then(() => {
-                    setStep(prev => prev + 1);
-                })
-                .catch((err) => {
-                    console.error('랜덤 기사 조회 실패:', err);
-                });
-            return;
-        }
-
-        if (step === 2) {
-            if (selectedArticles.length === 3) {
-                // 선택된 기사 ID들을 서버로 전송
-                dispatch(registerPreferred(selectedArticles))
+                dispatch(registerPreferredArticles(newSelectedArticles))
                     .unwrap()
                     .then(() => {
                         setStep(prev => prev + 1);
                     })
                     .catch((err) => {
-                        console.error('선호 기사 저장 실패:', err);
+                        console.error('❌ 선호 기사 등록 실패:', err);
                     });
-                return;
-            }
-            if (currentPage < totalPages - 1) {
+            } else {
                 setCurrentPage(prev => prev + 1);
-                return;
+                setIsTransitioning(false);
             }
+        }, 500);
+    };
+
+    // 닉네임 입력 후 랜덤 기사 조회
+    const handleNicknameSubmit = () => {
+        if (!isNicknameValid) return;
+
+        dispatch(fetchRandomArticles(nickname))
+            .then((action) => {
+                if (action.type.endsWith('/fulfilled')) {
+                    setStep(prev => prev + 1);
+                } else {
+                    console.error('❌ 데이터 저장 실패:', action);
+                }
+            })
+            .catch((err) => {
+                console.error('❌ 랜덤 기사 조회 실패:', err);
+            });
+    };
+
+    // 선호 기사 등록
+    const handlePreferredArticles = () => {
+        dispatch(registerPreferredArticles(selectedArticles))
+            .unwrap()
+            .then(() => {
+                setStep(prev => prev + 1);
+            })
+            .catch((err) => {
+                console.error('❌ 선호 기사 등록 실패:', err);
+            });
+
+    };
+
+    const handleNext = () => {
+        if (step === 1) {
+            handleNicknameSubmit();
+            return;
         }
-        setStep(prev => prev + 1);
+
+        if (step === 2) {
+            if (selectedArticles.length === 3) {
+                handlePreferredArticles();
+            }
+            return;
+        }
     };
 
     // 홈으로 이동
@@ -103,7 +126,7 @@ const UserProfilePage = () => {
     return (
         <div className="min-h-screen flex flex-col items-center pt-14 px-8 md:px-10">
             {/* 프로그레스 바 */}
-            <div className="w-full max-w-3xl px-4 pt-5 mb-8">
+            <div className="w-full max-w-3xl px-4 pt-3 mb-8">
                 <div className="flex justify-between items-center relative">
                     {steps.map((s, index) => (
                         <div key={s.number} className="flex flex-col items-center relative z-10">
@@ -125,7 +148,7 @@ const UserProfilePage = () => {
             </div>
 
             {/* 단계별 컨텐츠 */}
-            <div className="w-full max-w-6xl py-8">
+            <div className="w-full max-w-6xl py-6">
                 {step === 1 && (
                     <>
                         <div className="text-center max-w-xl mx-auto">
@@ -163,9 +186,9 @@ const UserProfilePage = () => {
 
                 {step === 2 && (
                     <div>
-                        <div className="text-center mb-10">
+                        <div className="text-center mb-4">
                             <h2 className="text-2xl font-bold">흥미로운 기사를 선택해주세요</h2>
-                            <p className="text-gray-600 mt-2">
+                            <p className="text-gray-600 mt-2 text-xs">
                                 {currentPage + 1}번째 선호 기사를 선택해주세요 ({selectedArticles.length}/3)
                             </p>
                         </div>
@@ -197,8 +220,12 @@ const UserProfilePage = () => {
                                         >
                                             <div className="w-full mx-auto pointer-events-none">
                                                 {/* articlecard에서 헤드라인, 날짜, 언론사 임의로 제거 */}
-                                                <div className="[&>div>div>div:first-child]:text-xs md:text-sm [&>div>div>div:first-child]:line-clamp-3 [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
-                                                    <ArticleCard article={article} />
+                                                <div className="[&>div>div>div:first-child]:text-sm md:text-sm [&>div>div>div:first-child]:line-clamp-3 [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
+                                                    <ArticleCard
+                                                        id={article.id}
+                                                        title={article.title}
+                                                        imageUrl={article.thumbnailUrl}
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -211,7 +238,9 @@ const UserProfilePage = () => {
 
                 {step === 3 && (
                     <div className="text-center max-w-xl mx-auto">
-                        <h2 className="text-2xl font-bold mb-10 mt-10">정보 입력이 완료되었어요!</h2>
+                        <h2 className={`text-2xl font-bold mb-10 mt-10 transition-all duration-700 transform ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                            정보 입력이 완료되었어요!
+                        </h2>
                         <div className="inline-block">
                             <h1
                                 onClick={handleGoHome}
