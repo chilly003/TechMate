@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import ListImage from '../assets/images/ArticleCardImage.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
 import Quiz from '../components/article/Quiz';
+
+import { fetchArticleDetail } from '../store/slices/articleSilce';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -13,6 +16,15 @@ const ArticlePage = () => {
     const [textColor, setTextColor] = useState('text-black');
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
+
+    const { article, status, error } = useSelector((state) => state.article);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchArticleDetail(id));
+    }, [dispatch, id]);
+
+    console.log(article)
 
     // Move the function definition here, before it's used
     const handleSidePanelToggle = () => {
@@ -131,7 +143,7 @@ const ArticlePage = () => {
                         onScroll={(e) => e.stopPropagation()}
                         style={{ overscrollBehavior: 'contain' }}
                     >
-                        {showQuiz ? <Quiz onClose={handleCloseSidePanel} /> : <Memo />}
+                        {showQuiz ? <Quiz quizzes={article?.quizzes} onClose={handleCloseSidePanel} /> : <Memo />}
                     </div>
                 </div>
             </div>
@@ -147,7 +159,7 @@ const ArticlePage = () => {
                             className="absolute inset-0 bg-cover bg-center"
                             style={{
                                 ...imageStyle,
-                                backgroundImage: `url(${ListImage})`
+                                backgroundImage: `url(${article?.images[0]?.imageUrl})`
                             }}
                         />
                         <div className={`absolute inset-0 bg-black/50 ${isSidePanelOpen ? '' : 'md:hidden'}`} />
@@ -163,17 +175,19 @@ const ArticlePage = () => {
                         }}
                     >
                         <div className="px-8 md:px-12 max-w-2xl relative z-10">
-                            <p className={`text-xl text-white font-bold ${isSidePanelOpen ? '' : 'md:' + textColor} mb-4`}>CULTURE</p>
+                            <p className={`text-xl text-white font-bold ${isSidePanelOpen ? '' : 'md:' + textColor} mb-4`}>
+                                {article?.category}
+                            </p>
                             <h1 className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
                                 ${isSidePanelOpen ? '' : 'md:' + textColor}
                                 decoration-4 underline underline-offset-8 ${isSidePanelOpen ? 'decoration-white' : 'md:decoration-current'}`}>
-                                2025년 리빙/인테리어 디자인 트렌드를 한눈에, 서울리빙디자인페어
+                                {article?.title}
                             </h1>
                             <p className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-80`}>
-                                자이언트과 MWC 2025서 업무협약
+                                {article?.summary}
                             </p>
                             <p className={`text-sm md:text-base text-white ${isSidePanelOpen ? '' : 'md:' + textColor} opacity-70`}>
-                                최정상 기자
+                                {article?.reporter}
                             </p>
                         </div>
                     </div>
@@ -184,21 +198,33 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex flex-col items-center">
-                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-14`}>
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-16 md:py-24`}>
                                 <div className="text-left space-y-8">
-                                    <p className="text-lg leading-relaxed">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </p>
-                                    {[...Array(5)].map((_, i) => (
-                                        <p key={i} className="text-lg leading-relaxed">
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                        </p>
-                                    ))}
+                                    {article?.content?.split('\n').map((paragraph, index) => {
+                                        // Skip empty paragraphs
+                                        if (!paragraph.trim()) return null;
+
+                                        // Check if paragraph is a photo description (contains reporter name and email)
+                                        const isPhotoDesc = paragraph.includes('@') && (paragraph.includes('기자') || paragraph.includes('연합뉴스'));
+
+                                        return (
+                                            <p
+                                                key={index}
+                                                className={`${isPhotoDesc
+                                                    ? 'text-gray-500 text-sm italic'
+                                                    : 'text-lg leading-relaxed text-gray-800'
+                                                    } ${index === 0 ? 'font-semibold text-xl' : ''
+                                                    }`}
+                                            >
+                                                {paragraph.trim()}
+                                            </p>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
                             {/* 퀴즈 풀기 버튼 */}
-                            <div className="pb-16 text-center flex-shrink-0">
+                            <div className="mt-8 text-center flex-shrink-0">
                                 <button
                                     onClick={handleQuizClick}
                                     className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
@@ -208,15 +234,27 @@ const ArticlePage = () => {
                             </div>
 
                             {/* Related Articles Section - Full width */}
-                            <div className="w-full bg-gray-50 py-20">
+                            <div className="w-full bg-gray-50 py-16">
                                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                                     <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
                                     <div className="relative">
                                         <div className="overflow-x-auto pb-4 hide-scrollbar">
                                             <div className="flex gap-6 w-max">
-                                                {[...Array(6)].map((_, i) => (
-                                                    <div key={i} className="w-[300px] flex-shrink-0 cursor-pointer group">
-                                                        <ArticleCard id={2} />
+                                                {article?.similarArticles?.map((relatedArticle) => (
+                                                    <div
+                                                        key={relatedArticle.articleId}
+                                                        className="w-[300px] flex-shrink-0 cursor-pointer group"
+                                                        onClick={() => navigate(`/article/${relatedArticle.articleId}`)}
+                                                    >
+                                                        <ArticleCard
+                                                            id={relatedArticle.articleId}
+                                                            title={relatedArticle.title}
+                                                            journal={relatedArticle.journal}
+                                                            category={relatedArticle.category}
+                                                            summary={relatedArticle.summary || ""}
+                                                            imageUrl={relatedArticle.thumbnailImageUrl || ListImage}
+                                                            datetime={relatedArticle.datetime}
+                                                        />
                                                     </div>
                                                 ))}
                                             </div>
