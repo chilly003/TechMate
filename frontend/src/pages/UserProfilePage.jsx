@@ -4,7 +4,7 @@ import ArticleCard from '../components/article/ArticleCard';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import '../styles/Logo.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRandomArticles, registerPreferred } from '../store/slices/userProfileSlice';
+import { fetchRandomArticles } from '../store/slices/userProfileSlice';
 
 // Import 부분에 추가
 const UserProfilePage = () => {
