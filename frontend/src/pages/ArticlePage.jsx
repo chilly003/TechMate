@@ -24,7 +24,6 @@ const ArticlePage = () => {
         dispatch(fetchArticleDetail(id));
     }, [dispatch, id]);
 
-    console.log(article)
 
     // Move the function definition here, before it's used
     const handleSidePanelToggle = () => {
