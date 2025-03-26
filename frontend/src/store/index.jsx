@@ -3,7 +3,6 @@ import articleReducer from './slices/articleSilce';
 import memoReducer from './slices/memoSlice';
 import folderReducer from './slices/folderSlice';
 import userProfileReducer from './slices/userProfileSlice';
-import scrapSlice from './slices/scrapSlice';
 
 
 const store = configureStore({
@@ -11,7 +10,7 @@ const store = configureStore({
         article: articleReducer,
         folder: folderReducer,
         userProfile: userProfileReducer,
-        scrap : scrapSlice,
+        memo: memoReducer
         // ... other reducers
     },
 });
