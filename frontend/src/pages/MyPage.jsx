@@ -14,10 +14,19 @@ import {
   updateFolder,
 } from "../store/slices/folderSlice";
 import { fetchScraps } from "../store/slices/scrapSlice";
+import { fetchNickname, fetchActivity } from "../store/slices/myPageSlice";
+import { format, subMonths, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
+// import { format } from "date-fns/format";
+// import { subMonths } from "date-fns/subMonths";
+// import { startOfMonth } from "date-fns/startOfMonth";
+// import { endOfMonth } from "date-fns/endOfMonth";
+// import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
+
 
 const Mypage = () => {
   const dispatch = useDispatch();
-  // Fix the selector to match the store structure
+  const { nickname, activity, loading, error } = useSelector((state) => state.myPage);
+  const [newNickname, setNewNickname] = useState("");
   const folderData = useSelector(
     (state) => state.folder?.folders || { content: [] }
   );
@@ -26,11 +35,31 @@ const Mypage = () => {
   const [activeFolderId, setActiveFolderId] = useState(null);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [nickname, setNickname] = useState("카리나"); // Dummy data
-  const [newNickname, setNewNickname] = useState("");
+  // Add calendar data generation
+  const generateCalendarData = () => {
+    const today = new Date();
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const date = subMonths(today, 11 - i);
+      return {
+        month: format(date, 'MMM'),
+        fullName: format(date, 'MMMM'),
+        days: eachDayOfInterval({
+          start: startOfMonth(date),
+          end: endOfMonth(date)
+        })
+      };
+    });
+    return months;
+  };
+
+  const months = generateCalendarData();
+
+  // ... other code remains the same
 
   // Fetch folders when component mounts
   useEffect(() => {
+    dispatch(fetchNickname());
+    dispatch(fetchActivity());
     dispatch(fetchFolders());
   }, [dispatch]);
 
@@ -110,21 +139,9 @@ const Mypage = () => {
   };
 
   const handleEditClick = () => {
-    setNewNickname(nickname);
+    setNewNickname(nickname || "");
     setIsModalOpen(true);
   };
-
-  // Dummy data for activity statistics
-  const stats = {
-    readArticles: 153,
-    scrappedArticles: 21,
-    solvedQuizzes: 5,
-  };
-
-  // Dummy data for quiz history (March 2024)
-  const quizHistory = Array(31)
-    .fill(0)
-    .map(() => Math.floor(Math.random() * 4)); // 0-3 quizzes per day
 
   const [folderModalType, setFolderModalType] = useState(null);
 
@@ -170,45 +187,93 @@ const Mypage = () => {
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3 mt-2">
                 <BsNewspaper className="text-gray-600" size={20} />
-                <span>총 {stats.readArticles}개의 기사를 읽었습니다.</span>
+                <span>총 {activity.readArticlesCount}개의 기사를 읽었습니다.</span>
               </div>
               <hr className="md-2" />
               <div className="flex items-center gap-3">
                 <BsBookmark className="text-gray-600" size={20} />
                 <span>
-                  총 {stats.scrappedArticles}개의 기사를 스크랩했습니다.
+                  총 {activity.scrapArticlesCount}개의 기사를 스크랩했습니다.
                 </span>
               </div>
               <hr className="md-2" />
               <div className="flex items-center gap-3 md-2">
                 <BsQuestionCircle className="text-gray-600" size={20} />
-                <span>총 {stats.solvedQuizzes}개의 퀴즈를 풀었습니다.</span>
+                <span>총 {activity.solvedQuizCount}개의 퀴즈를 풀었습니다.</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quiz History */}
+        {/* Quiz History - Updated Design */}
         <div className="w-full md:w-2/3 h-full">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            퀴즈 풀이 현황
-          </h2>
-          <div className="bg-gray-50 rounded-xl p-4 h-[calc(100%-2rem)]">
-            <div className="grid grid-cols-12 gap-2">
-              {quizHistory.map((count, index) => (
-                <div
-                  key={index}
-                  className={`w-full aspect-square rounded-sm ${count === 0
-                      ? "bg-gray-100"
-                      : count === 1
-                        ? "bg-gray-300"
-                        : count === 2
-                          ? "bg-gray-400"
-                          : "bg-gray-600"
-                    }`}
-                  title={`${index + 1}일: ${count}개의 퀴즈`}
-                />
-              ))}
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">퀴즈 풀이 현황</h2>
+          <div className="bg-gray-50 rounded-xl p-4 overflow-x-auto">
+            <div className="min-w-[800px]">
+              <table className="w-full" style={{ borderSpacing: '3px' }}>
+                <thead>
+                  <tr className="h-8 text-xs text-gray-400">
+                    <td style={{ width: '28px' }}></td>
+                    {months.map((month, idx) => (
+                      <td
+                        key={idx}
+                        className="text-left"
+                        colSpan={month.days.length}
+                        style={{ position: 'relative' }}
+                      >
+                        <span style={{ position: 'absolute', top: 0 }}>{month.month}</span>
+                      </td>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIdx) => (
+                    <tr key={day} style={{ height: '10px' }}>
+                      <td className="text-xs text-gray-400" style={{ position: 'relative' }}>
+                        <span style={{
+                          position: 'absolute',
+                          bottom: dayIdx === 0 ? '0' : '5px',
+                          left: '0'
+                        }}>
+                          {day}
+                        </span>
+                      </td>
+                      {months.map(month =>
+                        month.days
+                          .filter(date => date.getDay() === dayIdx)
+                          .map((date, idx) => (
+                            <td
+                              key={date.toISOString()}
+                              className="w-[10px] h-[10px] rounded-sm"
+                              style={{
+                                backgroundColor: '#ebedf0',
+                                cursor: 'pointer'
+                              }}
+                              title={`${format(date, 'yyyy-MM-dd')}: 0개의 퀴즈`}
+                            />
+                          ))
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-2 flex items-center justify-end gap-2 text-xs text-gray-600">
+                <span>퀴즈 풀이 수:</span>
+                <div className="flex gap-1">
+                  {[0, 1, 2, 3].map((level) => (
+                    <div
+                      key={level}
+                      className="w-3 h-3 rounded-sm"
+                      style={{
+                        backgroundColor: level === 0 ? '#ebedf0'
+                          : level === 1 ? '#9be9a8'
+                            : level === 2 ? '#40c463'
+                              : '#216e39'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -256,9 +321,9 @@ const Mypage = () => {
                       <button
                         key={folder.folderId}
                         className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${activeFolder === folder.folderName
-                            ? "text-black border-b-2 border-black -mb-1"
-                            : "text-gray-500"
-                        }`}
+                          ? "text-black border-b-2 border-black -mb-1"
+                          : "text-gray-500"
+                          }`}
                         onClick={() => {
                           setActiveFolder(folder.folderName);
                           setActiveFolderId(folder.folderId);
@@ -272,8 +337,8 @@ const Mypage = () => {
               <button
                 onClick={() => handleScroll("right")}
                 className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${currentIndex >= folderData.content.length - 3
-                    ? "opacity-30"
-                    : ""
+                  ? "opacity-30"
+                  : ""
                   }`}
                 disabled={currentIndex >= folderData.content.length - 3}
               >
