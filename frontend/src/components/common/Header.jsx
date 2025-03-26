@@ -4,6 +4,7 @@ import { FiSearch } from 'react-icons/fi';
 import { RiMenu3Line } from 'react-icons/ri';
 import { IoClose } from 'react-icons/io5';
 import { FaRegUser, FaSignOutAlt } from 'react-icons/fa';
+import { FiTrendingUp, FiClock } from 'react-icons/fi';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,11 +77,29 @@ const Header = () => {
 
             {/* 사이드 패널 */}
             <div
-                className={`fixed top-0 right-0 h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[90] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[50] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col justify-between">
-                    <div className="px-4 md:px-10 py-6">
+                    <div className="px-4 md:px-10 py-3">
+                        {/* <div className="mt-8 flex gap-4">
+                            <Link
+                                to="/home?category=hot"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <FiTrendingUp className="text-xl" />
+                                <span className="font-medium">인기 뉴스</span>
+                            </Link>
+                            <Link
+                                to="/home?category=recent"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <FiClock className="text-xl" />
+                                <span className="font-medium">최신 뉴스</span>
+                            </Link>
+                        </div> */}
                         {/* 닫기 버튼 */}
                         <div className="flex justify-end mb-4 md:mb-6">
                             <button
@@ -92,7 +111,7 @@ const Header = () => {
                         </div>
 
                         {/* 메뉴 내용 */}
-                        <div className="px-4 md:px-20 pt-2 md:pt-5">
+                        <div className="px-4 md:px-0 pt-2 md:pt-0">
                             {/* 검색바 */}
                             <div className="flex-1 relative border-b-2 border-black pb-2 md:pb-3">
                                 <form onSubmit={handleSearch} className="flex items-center">
@@ -106,12 +125,34 @@ const Header = () => {
                                     />
                                 </form>
                             </div>
-                            <ul className="pt-8 md:pt-12 space-y-5 md:space-y-7">
+
+                            {/* Special Categories */}
+                            <div className="pt-6 md:pt-8 flex flex-wrap gap-4">
+                                <Link
+                                    to="/home?category=hot"
+                                    className="flex items-center gap-2 text-lg font-bold text-red-500 hover:text-red-600 transition-colors"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    <FiTrendingUp className="text-xl" />
+                                    인기 뉴스
+                                </Link>
+                                <Link
+                                    to="/home?category=recent"
+                                    className="flex items-center gap-2 text-lg font-bold text-blue-500 hover:text-blue-600 transition-colors"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    <FiClock className="text-xl" />
+                                    최신 뉴스
+                                </Link>
+                            </div>
+
+                            {/* Regular Categories */}
+                            <ul className="pt-6 md:pt-8 space-y-4 md:space-y-3">
                                 {['전체', 'IT 일반', '모바일', 'SNS', '통신', '보안', 'AI', '게임'].map((item) => (
                                     <li key={item}>
                                         <Link
-                                            to={`/category/${item}`}
-                                            className="block text-lg md:text-2xl font-medium hover:font-bold transition-all"
+                                            to={`/home?category=${item === '전체' ? 'all' : item}`}
+                                            className="block text-lg md:text-h2 font-black hover:text-gray-600 transition-all"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             {item}
@@ -119,6 +160,8 @@ const Header = () => {
                                     </li>
                                 ))}
                             </ul>
+
+
                         </div>
 
                         {/* 하단 버튼 영역 */}
