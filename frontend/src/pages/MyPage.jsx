@@ -1,25 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "../components/common/Modal";
+import Modal from "../components/common/modal";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { IoAdd } from "react-icons/io5";
 import { BsNewspaper, BsBookmark, BsQuestionCircle } from "react-icons/bs";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5"; // Add this import at the top
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFolders, createFolder, deleteFolder, updateFolder } from "../store/slices/folderSlice";
 
 const Mypage = () => {
+  const dispatch = useDispatch();
+  // Fix the selector to match the store structure
+  const folderData = useSelector((state) => state.folder?.folders || { content: [] });
+  const [activeFolder, setActiveFolder] = useState(null);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nickname, setNickname] = useState("카리나"); // Dummy data
   const [newNickname, setNewNickname] = useState("");
 
+  // Fetch folders when component mounts
+  useEffect(() => {
+    dispatch(fetchFolders());
+  }, [dispatch]);
+
+  // Update activeFolder when folders are loaded
+  useEffect(() => {
+    if (folderData.content.length > 0 && !activeFolder) {
+      setActiveFolder(folderData.content[0].folderName);
+    }
+  }, [folderData.content, activeFolder]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirm = () => {
-    if (newNickname.trim()) {
+  const handleConfirm = async () => {
+    if (folderModalType === "add" && newFolderName.trim()) {
+      // console.log("Creating new folder:", newFolderName);
+      await dispatch(createFolder(newFolderName));
+    } else if (folderModalType === "edit" && newFolderName.trim()) {
+      const folderToEdit = folderData.content.find(f => f.folderName === activeFolder);
+      if (folderToEdit) {
+        // console.log("Updating folder:", folderToEdit.folderId, "with new name:", newFolderName);
+        await dispatch(updateFolder({ folderId: folderToEdit.folderId, folderName: newFolderName }));
+      }
+    } else if (!folderModalType && newNickname.trim()) {
       setNickname(newNickname);
     }
+    // console.log("Modal state before closing:", { folderModalType, newFolderName });
     handleCloseModal();
   };
 
@@ -40,19 +68,27 @@ const Mypage = () => {
     .fill(0)
     .map(() => Math.floor(Math.random() * 4)); // 0-3 quizzes per day
 
-  const [folders, setFolders] = useState([
-    "종류1",
-    "종류2",
-    "종류3",
-    "종류4",
-    "종류5",
-  ]); // Dummy folder data
-  const [activeFolder, setActiveFolder] = useState("종류2");
   const [folderModalType, setFolderModalType] = useState(null);
 
+  const [newFolderName, setNewFolderName] = useState("");
+
   const handleFolderAction = (type, folder = null) => {
+    console.log("Folder action triggered:", { type, folder });
+    const activeFolder = folderData.content.find(f => f.folderName === folder);
+    if (type === "delete" && activeFolder) {
+      // console.log("Deleting folder:", activeFolder.folderId);
+      dispatch(deleteFolder(activeFolder.folderId));
+      return;
+    }
+    if (type === "edit" && activeFolder) {
+      // console.log("Setting up edit for folder:", activeFolder.folderName);
+      setNewFolderName(activeFolder.folderName);
+    } else {
+      setNewFolderName("");
+    }
     setFolderModalType(type);
     setIsModalOpen(true);
+    // console.log("Modal state after action:", { isModalOpen: true, folderModalType: type, newFolderName });
   };
 
   const scrollRef = React.useRef(null);
@@ -63,7 +99,7 @@ const Mypage = () => {
     if (direction === "left") {
       setCurrentIndex((prev) => Math.max(0, prev - 1));
     } else {
-      setCurrentIndex((prev) => Math.min(folders.length - 3, prev + 1));
+      setCurrentIndex((prev) => Math.min(folderData.content.length - 3, prev + 1));
     }
   };
 
@@ -173,20 +209,21 @@ const Mypage = () => {
                 <IoChevronBack className="w-4 h-4 md:w-5 md:h-5" />
               </button>
               <div className="w-full md:w-[300px] lg:w-[400px]">
+                {/* Update the folders mapping */}
                 <div className="flex justify-between">
-                  {folders
+                  {folderData.content
                     .slice(currentIndex, currentIndex + 3)
                     .map((folder) => (
                       <button
-                        key={folder}
+                        key={folder.folderId}
                         className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${
-                          activeFolder === folder
+                          activeFolder === folder.folderName
                             ? "text-black border-b-2 border-black -mb-1"
                             : "text-gray-500"
                         }`}
-                        onClick={() => setActiveFolder(folder)}
+                        onClick={() => setActiveFolder(folder.folderName)}
                       >
-                        {folder}
+                        {folder.folderName}
                       </button>
                     ))}
                 </div>
@@ -194,9 +231,11 @@ const Mypage = () => {
               <button
                 onClick={() => handleScroll("right")}
                 className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${
-                  currentIndex >= folders.length - 3 ? "opacity-30" : ""
+                  currentIndex >= folderData.content.length - 3
+                    ? "opacity-30"
+                    : ""
                 }`}
-                disabled={currentIndex >= folders.length - 3}
+                disabled={currentIndex >= folderData.content.length - 3}
               >
                 <IoChevronForward className="w-4 h-4 md:w-5 md:h-5" />
               </button>
@@ -239,19 +278,23 @@ const Mypage = () => {
               : "폴더 삭제"
           }
           message={
-            folderModalType === "delete" 
-              ? <div className="text-center">
-                  <p>폴더를 삭제하시겠습니까?</p>
-                  <p>삭제하신다면 모든 스크랩 내용은 없어집니다.</p>
-                </div>
-              : null
+            folderModalType === "delete" ? (
+              <div className="text-center">
+                <p>폴더를 삭제하시겠습니까?</p>
+                <p>삭제하신다면 모든 스크랩 내용은 없어집니다.</p>
+              </div>
+            ) : null
           }
           onClose={handleCloseModal}
           onConfirm={handleConfirm}
+          value={newFolderName}
+          onChange={(e) => setNewFolderName(e.target.value)}
         >
           {folderModalType !== "delete" && (
             <input
               type="text"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
               placeholder="폴더명을 입력하세요"
               className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             />

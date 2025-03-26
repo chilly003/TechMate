@@ -47,8 +47,8 @@ const Modal = ({
                     <div className="my-5">
                         <input
                             type="text"
-                            value={value}
-                            onChange={onChange}
+                            value={value || ''}
+                            onChange={(e) => onChange && onChange(e)}
                             placeholder="폴더명을 입력하세요"
                             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                             autoFocus

@@ -7,7 +7,7 @@ import FloatingButton from '../components/ui/FloatingButton';
 import { FiEdit3 } from 'react-icons/fi';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { BsBookmark, BsFillBookmarkFill } from 'react-icons/bs';
-import Modal from '../components/common/Modal';
+import Modal from '../components/common/modal';
 import Quiz from '../components/article/Quiz';
 
 const ArticlePage = () => {
@@ -79,11 +79,13 @@ const ArticlePage = () => {
                 return;
             }
             setIsScraped(true);
+            setShowQuiz(false); // Add this line
             setIsSidePanelOpen(true);
             setShowModal(false);
         } else if (modalType === 'edit') {
             if (folderName.trim()) {
                 setIsScraped(true);
+                setShowQuiz(false); // Add this line
                 setIsSidePanelOpen(true);
                 setShowModal(false);
             }
@@ -147,7 +149,10 @@ const ArticlePage = () => {
             >
                 <div className="h-full p-8 overflow-hidden">
                     <button
-                        onClick={() => setIsSidePanelOpen(false)}
+                        onClick={() => {
+                            setIsSidePanelOpen(false);
+                            setShowQuiz(false); // Add this line
+                        }}
                         className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

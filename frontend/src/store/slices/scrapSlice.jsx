@@ -1,6 +1,6 @@
 // scrapeSlice.jsx
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api/axios';
 
 const initialState = {
   scraps: {
@@ -18,12 +18,12 @@ const initialState = {
   error: null
 };
 
-// 비동기 액션 생성자
+// 비동기 액션 생성자 수정
 export const fetchScraps = createAsyncThunk(
   'scraps/fetch',
   async (folderId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`v1/scraps/${folderId}`);
+      const res = await api.get(`/scraps/${folderId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -35,7 +35,7 @@ export const addScrap = createAsyncThunk(
   'scraps/add',
   async ({ articleId, folderId }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`v1/scraps/${articleId}/folders/${folderId}`);
+      const res = await api.post(`/scraps/${articleId}/folders/${folderId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -47,7 +47,7 @@ export const removeScrap = createAsyncThunk(
   'scraps/remove',
   async (scrapId, { rejectWithValue }) => {
     try {
-      await axios.delete(`v1/scraps/${scrapId}`);
+      await api.delete(`/scraps/${scrapId}`);
       return scrapId;
     } catch (err) {
       return rejectWithValue(err.response.data);

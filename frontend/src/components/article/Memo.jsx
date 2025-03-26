@@ -5,26 +5,6 @@ import FloatingButton from "../ui/FloatingButton";
 import "../../styles/memo.css";
 import { MdEdit, MdPreview } from 'react-icons/md';  // Add this import at the top
 
-/**
- * @description 스크랩된 기사의 메모 컴포넌트
- *
- * @todo [메모 내용] 기존 작성된 메모 내용 불러오기
- * @todo [메모 내용] 구현 방법: [서버에서 저장된 메모 데이터 조회]
- * @todo [메모 내용] 요구사항: [텍스트 에디터로 메모 내용 편집 가능]
- *
- * @todo [저장 기능] 메모 내용 서버 저장
- * @todo [저장 기능] 구현 방법: [작성된 메모 데이터를 서버로 전송]
- * @todo [저장 기능] 요구사항: [하단에 저장 버튼 배치]
- *
- * @todo [폴더 관리] 메모가 속한 폴더 수정 기능
- * @todo [폴더 관리] 구현 방법: [폴더 선택 드롭다운 구현]
- * @todo [폴더 관리] 요구사항: [현재 폴더 표시 및 변경 가능]
- *
- * @todo [작성일] 메모 작성일 표시
- * @todo [작성일] 구현 방법: [서버에서 받은 작성일 데이터 포맷팅]
- * @todo [작성일] 요구사항: [날짜 형식으로 표시]
- */
-
 const CustomComponents = {
     h1: ({ children }) => (
         <h1 className="text-3xl font-bold text-blue-600">{children}</h1>
