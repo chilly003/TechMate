@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "../components/common/modal";
+import Modal from "../components/common/Modal";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { IoAdd } from "react-icons/io5";
 import { BsNewspaper, BsBookmark, BsQuestionCircle } from "react-icons/bs";
@@ -157,15 +157,14 @@ const Mypage = () => {
               {quizHistory.map((count, index) => (
                 <div
                   key={index}
-                  className={`w-full aspect-square rounded-sm ${
-                    count === 0
+                  className={`w-full aspect-square rounded-sm ${count === 0
                       ? "bg-gray-100"
                       : count === 1
-                      ? "bg-gray-300"
-                      : count === 2
-                      ? "bg-gray-400"
-                      : "bg-gray-600"
-                  }`}
+                        ? "bg-gray-300"
+                        : count === 2
+                          ? "bg-gray-400"
+                          : "bg-gray-600"
+                    }`}
                   title={`${index + 1}일: ${count}개의 퀴즈`}
                 />
               ))}
@@ -201,9 +200,8 @@ const Mypage = () => {
             <div className="flex items-center flex-1">
               <button
                 onClick={() => handleScroll("left")}
-                className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${
-                  currentIndex === 0 ? "opacity-30" : ""
-                }`}
+                className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${currentIndex === 0 ? "opacity-30" : ""
+                  }`}
                 disabled={currentIndex === 0}
               >
                 <IoChevronBack className="w-4 h-4 md:w-5 md:h-5" />
@@ -216,11 +214,10 @@ const Mypage = () => {
                     .map((folder) => (
                       <button
                         key={folder.folderId}
-                        className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${
-                          activeFolder === folder.folderName
+                        className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${activeFolder === folder.folderName
                             ? "text-black border-b-2 border-black -mb-1"
                             : "text-gray-500"
-                        }`}
+                          }`}
                         onClick={() => setActiveFolder(folder.folderName)}
                       >
                         {folder.folderName}
@@ -230,11 +227,10 @@ const Mypage = () => {
               </div>
               <button
                 onClick={() => handleScroll("right")}
-                className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${
-                  currentIndex >= folderData.content.length - 3
+                className={`p-2 text-gray-600 hover:bg-gray-100 rounded-full ${currentIndex >= folderData.content.length - 3
                     ? "opacity-30"
                     : ""
-                }`}
+                  }`}
                 disabled={currentIndex >= folderData.content.length - 3}
               >
                 <IoChevronForward className="w-4 h-4 md:w-5 md:h-5" />
@@ -274,8 +270,8 @@ const Mypage = () => {
             folderModalType === "add"
               ? "폴더 추가"
               : folderModalType === "edit"
-              ? "폴더명 수정"
-              : "폴더 삭제"
+                ? "폴더명 수정"
+                : "폴더 삭제"
           }
           message={
             folderModalType === "delete" ? (
