@@ -1,9 +1,10 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import FloatingButton from "../ui/FloatingButton";
 import "../../styles/memo.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMemo, updateMemo } from "../../store/slices/memoSlice";
 
 /**
  * @description 스크랩된 기사의 메모 컴포넌트
@@ -75,8 +76,33 @@ const CustomComponents = {
     },
 };
 
-const Memo = () => {
+const Memo = ({ articleId }) => {
+    const dispatch = useDispatch();
+    const { memo, loading, error } = useSelector((state) => state.memo);
     const [markdown, setMarkdown] = useState("# 마크다운을 입력하세요");
+    
+    useEffect(() => {
+        console.log('📝 메모 컴포넌트가 마운트되었습니다');
+        console.log('현재 기사 ID:', articleId);
+        
+        if (articleId) {
+            console.log('메모 데이터 요청 중:', articleId);
+            dispatch(fetchMemo(articleId));
+        }
+    }, [dispatch, articleId]);
+
+    useEffect(() => {
+        if (memo?.content) {
+            setMarkdown(memo.content);
+        }
+    }, [memo]);
+
+    // Format date from memo
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`;
+    };
     const [isPreview, setIsPreview] = useState(false);
     const [category, setCategory] = useState("프론트엔드");
 
@@ -96,6 +122,16 @@ const Memo = () => {
 
     // 카테고리 더미 데이터
     const categories = ["프론트엔드", "관심 유"];
+
+    const handleSave = () => {
+        console.log('현재 메모 데이터:', memo);  // 디버깅용
+        if (memo?.memoId) {  // memo 객체에서 memoId를 확인
+            dispatch(updateMemo({
+                memoId: memo.memoId,  
+                content: markdown
+            }));
+        }
+    };
 
     return (
         <div className="markdown-container p-4 h-full flex flex-col">
@@ -120,7 +156,7 @@ const Memo = () => {
                     </div>
                     <div>
                         <label className="text-sm text-gray-500">작성일자</label>
-                        <div>{formattedDate}</div>
+                        <div>{memo ? formatDate(memo.createdAt) : formattedDate}</div>
                     </div>
                 </div>
 
@@ -180,7 +216,10 @@ const Memo = () => {
 
             {/* 저장 버튼 */}
             <div className="mt-4 text-center flex-shrink-0">
-                <button className="preview-button bg-blue-500 text-white px-4 py-2 rounded">
+                <button 
+                    onClick={handleSave} 
+                    className="preview-button bg-[#1E4C9A] text-white px-4 py-2 rounded"
+                >
                     저장하기
                 </button>
             </div>
