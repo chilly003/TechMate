@@ -59,7 +59,7 @@ const Header = () => {
                     }`}
             >
                 <div className="max-w-[2000px] mx-auto px-8 md:px-12 h-24 flex items-center justify-between">
-                    <Link to="/userprofile" className="inline-flex items-center">
+                    <Link to="/Home" className="inline-flex items-center">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
                             TechMate
                         </h1>
