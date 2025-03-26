@@ -6,7 +6,7 @@ export const fetchRandomArticles = createAsyncThunk(
     'userProfile/fetchRandomArticles',
     async (nickname, { rejectWithValue }) => {
         try {
-            const response = await api.get('/articles/random', {
+            const response = await api.get('/user-preference/random', {
                 data: { nickname },
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ export const registerPreferredArticles = createAsyncThunk(
     async (articleIds, { rejectWithValue }) => {
         try {
             console.log('📝 선호 기사 등록 시도:', articleIds);
-            const response = await api.post('/articles/random', {
+            const response = await api.post('/user-preference/random', {
                 article_id: articleIds
             });
 

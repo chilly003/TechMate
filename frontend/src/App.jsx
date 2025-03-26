@@ -2,8 +2,8 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
+import ArticlePage from './pages/articlepage';
 import HomePage from './pages/HomePage';
-import ArticlePage from './pages/ArticlePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
 

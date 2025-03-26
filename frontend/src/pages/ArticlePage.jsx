@@ -5,11 +5,11 @@ import ListImage from '../assets/images/ArticleCardImage.jpg';  // Changed fro
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
 import Quiz from '../components/article/Quiz';
-
 import { fetchArticleDetail } from '../store/slices/articleSilce';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
+    // url 파라미터를 통해 기사 id 추출 (메모 컴포넌트 전달용)
     const { id } = useParams();
     const [scrollPosition, setScrollPosition] = useState(0);
     const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
@@ -24,6 +24,7 @@ const ArticlePage = () => {
         dispatch(fetchArticleDetail(id));
     }, [dispatch, id]);
 
+    // console.log(article)
 
     // Move the function definition here, before it's used
     const handleSidePanelToggle = () => {
@@ -142,7 +143,11 @@ const ArticlePage = () => {
                         onScroll={(e) => e.stopPropagation()}
                         style={{ overscrollBehavior: 'contain' }}
                     >
-                        {showQuiz ? <Quiz quizzes={article?.quizzes} onClose={handleCloseSidePanel} /> : <Memo />}
+                        {showQuiz ? 
+                            <Quiz quizzes={article?.quizzes} onClose={handleCloseSidePanel} /> 
+                            : 
+                            <Memo articleId={id} />
+                        }
                     </div>
                 </div>
             </div>
@@ -197,7 +202,7 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex flex-col items-center">
-                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 py-16 md:py-24`}>
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 pt-16 pb-4 md:pt-24 pb-10`}>
                                 <div className="text-left space-y-8">
                                     {article?.content?.split('\n').map((paragraph, index) => {
                                         // Skip empty paragraphs
@@ -223,7 +228,7 @@ const ArticlePage = () => {
                             </div>
 
                             {/* 퀴즈 풀기 버튼 */}
-                            <div className="mt-8 text-center flex-shrink-0">
+                            <div className="mt-8 text-center flex-shrink-0 mb-12">
                                 <button
                                     onClick={handleQuizClick}
                                     className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"

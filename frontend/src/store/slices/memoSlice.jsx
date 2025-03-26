@@ -1,78 +1,92 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
+// 메모 조회 액션
+export const fetchMemo = createAsyncThunk(
+    'memo/fetchMemo',
+    async (articleId, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`/scraps/memos/${articleId}`);
+            console.log('✅ 메모 조회 응답:', {
+                메모ID: response.data.data.memoId,
+                메모내용: response.data.data.content
+            });
+            return response.data.data;
+        } catch (err) {
+            console.error('❌ 메모 조회 실패:', {
+                에러_메시지: err.message,
+                상태_코드: err.response?.status,
+                응답_데이터: err.response?.data
+            });
+            return rejectWithValue(err.response?.data || err.message);
+        }
+    }
+);
+
+// 메모 수정 액션
+export const updateMemo = createAsyncThunk(
+    'memo/updateMemo',
+    async ({ memoId, content }, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(`/scraps/memos/${memoId}`, {
+                content: content
+            });
+
+            console.log('✅ 메모 수정 성공:', response.data);
+            return response.data.data;
+        } catch (err) {
+            console.error('❌ 메모 수정 실패:', {
+                에러_메시지: err.message,
+                상태_코드: err.response?.status,
+                응답_데이터: err.response?.data
+            });
+            return rejectWithValue(err.response?.data || err.message);
+        }
+    }
+);
+
 const initialState = {
-  memo: {
-    memoId: null,
-    content: '',
-    createdAt: '',
-    lastModifiedAt: ''
-  },
-  loading: false,
-  error: null
+    memo: null,
+    loading: false,
+    error: null
 };
 
-// 메모 조회 (articleId를 1로 고정)
-export const fetchMemo = createAsyncThunk(
-  'memo/fetch',
-  async (_, { rejectWithValue }) => {
-    try {
-      const articleId = 1; // 테스트를 위해 articleId를 1로 고정
-      const res = await api.get(`/scraps/memos/${articleId}`);
-      console.log('API 응답:', res.data); // 응답 로깅
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-// 메모 수정
-export const updateMemo = createAsyncThunk(
-  'memo/update',
-  async ({ memoId, content }, { rejectWithValue }) => {
-    try {
-      const res = await api.patch(`/scraps/memos/${memoId}`, { content });
-      console.log('API 응답:', res.data); // 응답 로깅
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
 const memoSlice = createSlice({
-  name: 'memo',
-  initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      // 조회 처리
-      .addCase(fetchMemo.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchMemo.fulfilled, (state, action) => {
-        state.memo = action.payload.data;
-        state.loading = false;
-      })
-      .addCase(fetchMemo.rejected, (state, action) => {
-        state.error = action.payload;
-        state.loading = false;
-      })
-      
-      // 수정 처리
-      .addCase(updateMemo.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updateMemo.fulfilled, (state, action) => {
-        state.memo = action.payload.data;
-        state.loading = false;
-      })
-      .addCase(updateMemo.rejected, (state, action) => {
-        state.error = action.payload;
-        state.loading = false;
-      });
-  }
+    name: 'memo',
+    initialState,
+    reducers: {
+        resetMemo: (state) => initialState
+    },
+    extraReducers: (builder) => {
+        builder
+            // 메모 조회
+            .addCase(fetchMemo.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMemo.fulfilled, (state, action) => {
+                state.loading = false;
+                state.memo = action.payload;
+            })
+            .addCase(fetchMemo.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // 메모 수정
+            .addCase(updateMemo.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateMemo.fulfilled, (state, action) => {
+                state.loading = false;
+                state.memo = action.payload;
+            })
+            .addCase(updateMemo.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+    }
 });
 
+export const { resetMemo } = memoSlice.actions;
 export default memoSlice.reducer;
