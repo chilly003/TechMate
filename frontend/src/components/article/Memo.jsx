@@ -5,6 +5,7 @@ import FloatingButton from "../ui/FloatingButton";
 import "../../styles/memo.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMemo, updateMemo } from "../../store/slices/memoSlice";
+import { fetchFolders } from "../../store/slices/folderSlice";
 
 /**
  * @description 스크랩된 기사의 메모 컴포넌트

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ListImage from '../assets/images/ArticleCardImage.jpg';  // Changed fro
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
+import { FiEdit } from 'react-icons/fi';
+import ListImage from '../assets/images/ArticleCardImage.jpg';
 import ArticleCard from '../components/article/ArticleCard';
 import Memo from '../components/article/Memo';
 import Quiz from '../components/article/Quiz';
-import { fetchArticleDetail } from '../store/slices/articleSilce';
+import Modal from '../components/common/Modal';
+import { fetchFolders } from '../store/slices/folderSlice';
+import { fetchArticleDetail, toggleLikeArticle } from '../store/slices/articleSilce';
+import { addScrap, removeScrap } from '../store/slices/scrapSlice';
+import FloatingButton from '../components/ui/FloatingButton';
 
 const ArticlePage = () => {
     const navigate = useNavigate();
@@ -16,13 +23,24 @@ const ArticlePage = () => {
     const [textColor, setTextColor] = useState('text-black');
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isScraped, setIsScraped] = useState(false);
+    const [showFolderModal, setShowFolderModal] = useState(false);
 
     const { article, status, error } = useSelector((state) => state.article);
+    const { scraps } = useSelector((state) => state.scrap);
+    const { folders } = useSelector((state) => state.folder);
 
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchArticleDetail(id));
-    }, [dispatch, id]);
+        dispatch(fetchFolders());
+        // Check if article is already scraped
+        if (scraps?.content) {
+            const isArticleScraped = scraps.content.some(scrap => scrap.articleId === parseInt(id));
+            setIsScraped(isArticleScraped);
+        }
+    }, [dispatch, id, scraps?.content]);
 
     // console.log(article)
 
@@ -110,17 +128,65 @@ const ArticlePage = () => {
     };
 
     return (
-        <div className="relative">
-            {/* Floating Button */}
-            <button
-                onClick={handleSidePanelToggle}
-                className={`fixed bottom-8 right-8 z-50 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 md:right-8 ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-            </button>
+        <div className="relative ">
+            {/* Floating Buttons */}
+            <div className={`z-50 flex flex-col gap-2 fixed bottom-8 right-8 
+        ${isSidePanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <FloatingButton
+                    text={<FiEdit size={24} />}
+                    color="from-green-500 to-green-600"
+                    onClick={handleSidePanelToggle}
+                    className={isScraped ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+                />
+
+                <FloatingButton
+                    text={isLiked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />}
+                    color="from-pink-500 to-pink-600"
+                    onClick={() => {
+                        dispatch(toggleLikeArticle(id));
+                        setIsLiked(!isLiked);
+                    }}
+                />
+                <FloatingButton
+                    text={isScraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />}
+                    color="from-blue-500 to-blue-600"
+                    onClick={() => {
+                        if (isScraped) {
+                            // Find the scrap ID for the current article
+                            const currentScrap = scraps.content.find(scrap => scrap.articleId === parseInt(id));
+                            if (currentScrap) {
+                                dispatch(removeScrap(currentScrap.scrapId));
+                                setIsScraped(false);
+                            }
+                        } else {
+                            setShowFolderModal(true);
+                        }
+                    }}
+                />
+            </div>
+
+            {/* Folder Selection Modal */}
+            {showFolderModal && (
+                <Modal
+                    type="select"
+                    title="스크랩할 폴더 선택"
+                    options={folders?.content?.map(folder => ({
+                        label: folder.folderName,
+                        value: folder.folderId
+                    }))}
+                    onClose={() => setShowFolderModal(false)}
+                    onConfirm={(option) => {
+                        if (option.type === 'new_folder') {
+                            // Handle new folder creation
+                            return;
+                        }
+                        dispatch(addScrap({ articleId: id, folderId: option.value }));
+                        setIsScraped(true);
+                        setShowFolderModal(false);
+                        setIsSidePanelOpen(true);
+                    }}
+                />
+            )}
 
             {/* Side Panel */}
             <div
@@ -202,7 +268,7 @@ const ArticlePage = () => {
                     <div className="h-[50vh] md:h-screen" />
                     <div className="relative bg-white min-h-screen z-10">
                         <div className="w-full flex flex-col items-center">
-                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 pt-16 pb-4 md:pt-24 pb-10`}>
+                            <div className={`w-full px-8 ${isSidePanelOpen ? 'md:w-[85%]' : 'md:w-[50%]'} md:px-0 pt-16 md:pt-24 pb-10`}>
                                 <div className="text-left space-y-8">
                                     {article?.content?.split('\n').map((paragraph, index) => {
                                         // Skip empty paragraphs
