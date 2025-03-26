@@ -244,7 +244,7 @@ const ArticlePage = () => {
                                     <div className="relative">
                                         <div className="overflow-x-auto pb-4 hide-scrollbar">
                                             <div className="flex gap-6 w-max">
-                                                {article?.similarArticles?.map((relatedArticle) => (
+                                                {article?.similarArticles?.slice(0, 4).map((relatedArticle) => (
                                                     <div
                                                         key={relatedArticle.articleId}
                                                         className="w-[300px] flex-shrink-0 cursor-pointer group"

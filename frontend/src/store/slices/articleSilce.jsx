@@ -1,48 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from "../../api/axios";
-import MainArticleImage from '../../assets/images/MainArticleImage.jpg';
 
-// Create dummy articles
-const dummyArticles = Array.from({ length: 100 }, (_, index) => ({
-    article_id: index + 1,
-    title: index % 3 === 0
-        ? "삼성전자, AI 반도체로 새로운 시장 개척 나서"
-        : index % 3 === 1
-            ? "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"
-            : "현대차, 자율주행 기술 혁신으로 미래 모빌리티 선도",
-    content: "자회사그룹과 MWC 2025사업 업무협약...사우디에 연내 및 출시 목표",
-    category: index % 3 === 0 ? "테크" : index % 3 === 1 ? "경제" : "산업",
-    publisher: index % 2 === 0 ? "IT/일반" : "통신",
-    imageUrl: MainArticleImage,
-    isFeatured: index % 10 === 0
-}));
-
-export const fetchArticles = createAsyncThunk(
-    'article/fetchArticles',
-    async () => {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return dummyArticles;
-    }
-);
-
-export const fetchArticle = createAsyncThunk(
-    'article/fetchArticle',
-    async (articleId) => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const article = dummyArticles.find(a => a.article_id === articleId);
-        if (!article) throw new Error('Article not found');
-        return article;
-    }
-);
-
-/**
- * 추천 기사 리스트 조회
- * @param page : 요청 할 페이지
- * @param size : 요청 할 기사의 개수
- * 
- * @return articles [] : 기사 배열
- */
 const initialState = {
     articles: [],
     currentArticle: null,
@@ -54,6 +12,13 @@ const initialState = {
     currentPage: 0
 };
 
+/**
+ * 추천 기사 리스트 조회
+ * @param page : 요청 할 페이지
+ * @param size : 요청 할 기사의 개수
+ * 
+ * @return articles [] : 기사 배열
+ */
 export const fetchRecommendArticles = createAsyncThunk(
     "article/fetchRecommendArticles",
     async (page = 0) => {
@@ -63,7 +28,6 @@ export const fetchRecommendArticles = createAsyncThunk(
                 size: 5,
             }
         });
-        console.log(response.data.data);
         return response.data.data;
     }
 );
@@ -78,7 +42,7 @@ export const fetchRecommendArticles = createAsyncThunk(
  */
 export const fetchCategoryArticles = createAsyncThunk(
     "article/fetchCategoryArticles",
-    async ({ category, page = 1, size = 10 }) => {
+    async ({ category = "", page = 1, size = 10 } = {}) => {
         const response = await api.get("/articles/category", {
             params: {
                 category,
@@ -89,6 +53,47 @@ export const fetchCategoryArticles = createAsyncThunk(
         return response.data;
     }
 )
+
+/**
+ * 인기 기사 조회
+ * @param page : 요청 할 페이지
+ * @param size : 요청 할 기사의 개수
+ * 
+ * @return articles [] : 기사 배열
+ */
+export const fetchHotArticles = createAsyncThunk(
+    "article/fetchHotArticles",
+    async ({ page = 1, size = 10 } = {}) => {
+        const response = await api.get("/articles/hot", {
+            params: {
+                page,
+                size,
+            }
+        });
+        return response.data;
+    }
+)
+
+/**
+ * 최신 기사 조회
+ * @param page : 요청 할 페이지
+ * @param size : 요청 할 기사의 개수
+ * 
+ * @return articles [] : 기사 배열
+ */
+export const fetchRecentArticles = createAsyncThunk(
+    "article/fetchRecentArticles",
+    async ({ page = 1, size = 10 } = {}) => {
+        const response = await api.get("/articles/recent", {
+            params: {
+                page,
+                size,
+            }
+        });
+        return response.data;
+    }
+)
+
 
 /**
  * 기사 상세 조회
@@ -128,21 +133,7 @@ const articleSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Handle fetchArticles
-            .addCase(fetchArticles.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchArticles.fulfilled, (state, action) => {
-                state.loading = false;
-                state.articles = action.payload;
-            })
-            .addCase(fetchArticles.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
-            })
-
-            // Handle fetchArticleDetail
+            // 상세 기사 조회 상태 관리
             .addCase(fetchArticleDetail.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -156,7 +147,7 @@ const articleSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Handle fetchRecommendArticles
+            // 추천 기사 조회 상태 관리
             .addCase(fetchRecommendArticles.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -183,20 +174,58 @@ const articleSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Handle fetchCategoryArticles
+            // 카테고리 별 기사 조회 상태 관리
             .addCase(fetchCategoryArticles.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchCategoryArticles.fulfilled, (state, action) => {
                 state.loading = false;
-                state.categoryArticles = action.payload;
+                // Check if it's the first page
+                if (state.currentPage === 0) {
+                    state.articles = action.payload.data.content;
+                } else {
+                    // Filter out duplicates when adding new articles
+                    const newArticles = action.payload.data.content.filter(newArticle =>
+                        !state.articles.some(existingArticle =>
+                            existingArticle.articleId === newArticle.articleId
+                        )
+                    );
+                    state.articles = [...state.articles, ...newArticles];
+                }
+                state.hasMore = action.payload.data.content.length === 5;
+                state.currentPage += 1;
             })
             .addCase(fetchCategoryArticles.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })
-
+            // 인기 기사 조회 상태 관리
+            .addCase(fetchHotArticles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchHotArticles.fulfilled, (state, action) => {
+                state.loading = false;
+                // Check if it's the first page
+                if (state.currentPage === 0) {
+                    state.articles = action.payload.data.content;
+                } else {
+                    // Filter out duplicates when adding new articles
+                    const newArticles = action.payload.data.content.filter(newArticle =>
+                        !state.articles.some(existingArticle =>
+                            existingArticle.articleId === newArticle.articleId
+                        )
+                    );
+                    state.articles = [...state.articles, ...newArticles];
+                }
+                state.hasMore = action.payload.data.content.length === 5;
+                state.currentPage += 1;
+            })
+            .addCase(fetchHotArticles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
             // Handle toggleLikeArticle
             .addCase(toggleLikeArticle.pending, (state) => {
                 state.loading = true;
@@ -221,7 +250,34 @@ const articleSlice = createSlice({
             .addCase(toggleLikeArticle.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            });
+            })  // Remove semicolon here
+
+            // 최신 기사 조회 상태 관리
+            .addCase(fetchRecentArticles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRecentArticles.fulfilled, (state, action) => {
+                state.loading = false;
+                // Check if it's the first page
+                if (state.currentPage === 0) {
+                    state.articles = action.payload.data.content;
+                } else {
+                    // Filter out duplicates when adding new articles
+                    const newArticles = action.payload.data.content.filter(newArticle =>
+                        !state.articles.some(existingArticle =>
+                            existingArticle.articleId === newArticle.articleId
+                        )
+                    );
+                    state.articles = [...state.articles, ...newArticles];
+                }
+                state.hasMore = action.payload.data.content.length === 5;
+                state.currentPage += 1;
+            })
+            .addCase(fetchRecentArticles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
     }
 });
 
