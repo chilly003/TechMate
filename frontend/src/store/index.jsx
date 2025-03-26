@@ -3,8 +3,6 @@ import articleReducer from './slices/articleSilce';
 import memoReducer from './slices/memoSlice';
 import folderReducer from './slices/folderSlice';
 import userProfileReducer from './slices/userProfileSlice';
-import memoReducer from './slices/memoSlice';
-
 
 
 const store = configureStore({
