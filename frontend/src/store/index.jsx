@@ -8,7 +8,6 @@ import userProfileReducer from './slices/userProfileSlice';
 const store = configureStore({
     reducer: {
         article: articleReducer,
-        memo: memoReducer,
         folder: folderReducer,
         userProfile: userProfileReducer,
         memo: memoReducer
