@@ -4,15 +4,26 @@ import Modal from "../components/common/Modal";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { IoAdd } from "react-icons/io5";
 import { BsNewspaper, BsBookmark, BsQuestionCircle } from "react-icons/bs";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5"; // Add this import at the top
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchFolders, createFolder, deleteFolder, updateFolder } from "../store/slices/folderSlice";
+import ArticleCard from "../components/article/ArticleCard";
+import {
+  fetchFolders,
+  createFolder,
+  deleteFolder,
+  updateFolder,
+} from "../store/slices/folderSlice";
+import { fetchScraps } from "../store/slices/scrapSlice";
 
 const Mypage = () => {
   const dispatch = useDispatch();
   // Fix the selector to match the store structure
-  const folderData = useSelector((state) => state.folder?.folders || { content: [] });
+  const folderData = useSelector(
+    (state) => state.folder?.folders || { content: [] }
+  );
+  const scraps = useSelector((state) => state.scrap?.scraps?.content || []);
   const [activeFolder, setActiveFolder] = useState(null);
+  const [activeFolderId, setActiveFolderId] = useState(null);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nickname, setNickname] = useState("카리나"); // Dummy data
@@ -26,28 +37,75 @@ const Mypage = () => {
   // Update activeFolder when folders are loaded
   useEffect(() => {
     if (folderData.content.length > 0 && !activeFolder) {
-      setActiveFolder(folderData.content[0].folderName);
+      const firstFolder = folderData.content[0];
+      setActiveFolder(firstFolder.folderName);
+      setActiveFolderId(firstFolder.folderId);
     }
   }, [folderData.content, activeFolder]);
+
+  useEffect(() => {
+    if (activeFolderId) {
+      console.log('Dispatching fetchScraps for folder ID:', activeFolderId);
+      dispatch(fetchScraps(activeFolderId));
+    }
+  }, [activeFolderId, dispatch]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
+  const handleFolderAction = (type, folder = null) => {
+    const activeFolder = folderData.content.find(
+      (f) => f.folderName === folder
+    );
+    if (type === "delete" && activeFolder) {
+      setFolderModalType(type);
+      setIsModalOpen(true);
+      return;
+    }
+    if (type === "edit" && activeFolder) {
+      setNewFolderName(activeFolder.folderName);
+    } else {
+      setNewFolderName("");
+    }
+    setFolderModalType(type);
+    setIsModalOpen(true);
+  };
+
   const handleConfirm = async () => {
     if (folderModalType === "add" && newFolderName.trim()) {
-      // console.log("Creating new folder:", newFolderName);
       await dispatch(createFolder(newFolderName));
     } else if (folderModalType === "edit" && newFolderName.trim()) {
-      const folderToEdit = folderData.content.find(f => f.folderName === activeFolder);
+      const folderToEdit = folderData.content.find(
+        (f) => f.folderName === activeFolder
+      );
       if (folderToEdit) {
-        // console.log("Updating folder:", folderToEdit.folderId, "with new name:", newFolderName);
-        await dispatch(updateFolder({ folderId: folderToEdit.folderId, folderName: newFolderName }));
+        await dispatch(
+          updateFolder({
+            folderId: folderToEdit.folderId,
+            folderName: newFolderName,
+          })
+        );
+      }
+    } else if (folderModalType === "delete") {
+      const folderToDelete = folderData.content.find(
+        (f) => f.folderName === activeFolder
+      );
+      if (folderToDelete) {
+        await dispatch(deleteFolder(folderToDelete.folderId));
+        if (folderData.content.length > 1) {
+          const nextFolder = folderData.content.find(f => f.folderId !== folderToDelete.folderId);
+          setActiveFolder(nextFolder.folderName);
+          setActiveFolderId(nextFolder.folderId);
+        } else {
+          setActiveFolder(null);
+          setActiveFolderId(null);
+        }
+        await dispatch(fetchFolders());
       }
     } else if (!folderModalType && newNickname.trim()) {
       setNickname(newNickname);
     }
-    // console.log("Modal state before closing:", { folderModalType, newFolderName });
     handleCloseModal();
   };
 
@@ -72,25 +130,6 @@ const Mypage = () => {
 
   const [newFolderName, setNewFolderName] = useState("");
 
-  const handleFolderAction = (type, folder = null) => {
-    console.log("Folder action triggered:", { type, folder });
-    const activeFolder = folderData.content.find(f => f.folderName === folder);
-    if (type === "delete" && activeFolder) {
-      // console.log("Deleting folder:", activeFolder.folderId);
-      dispatch(deleteFolder(activeFolder.folderId));
-      return;
-    }
-    if (type === "edit" && activeFolder) {
-      // console.log("Setting up edit for folder:", activeFolder.folderName);
-      setNewFolderName(activeFolder.folderName);
-    } else {
-      setNewFolderName("");
-    }
-    setFolderModalType(type);
-    setIsModalOpen(true);
-    // console.log("Modal state after action:", { isModalOpen: true, folderModalType: type, newFolderName });
-  };
-
   const scrollRef = React.useRef(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -99,7 +138,9 @@ const Mypage = () => {
     if (direction === "left") {
       setCurrentIndex((prev) => Math.max(0, prev - 1));
     } else {
-      setCurrentIndex((prev) => Math.min(folderData.content.length - 3, prev + 1));
+      setCurrentIndex((prev) =>
+        Math.min(folderData.content.length - 3, prev + 1)
+      );
     }
   };
 
@@ -217,8 +258,11 @@ const Mypage = () => {
                         className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${activeFolder === folder.folderName
                             ? "text-black border-b-2 border-black -mb-1"
                             : "text-gray-500"
-                          }`}
-                        onClick={() => setActiveFolder(folder.folderName)}
+                        }`}
+                        onClick={() => {
+                          setActiveFolder(folder.folderName);
+                          setActiveFolderId(folder.folderId);
+                        }}
                       >
                         {folder.folderName}
                       </button>
@@ -260,6 +304,28 @@ const Mypage = () => {
             </div>
           </div>
         </div>
+
+        {/* Article Cards Grid */}
+        <div className="mt-8">
+          {scraps.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">이 폴더에 스크랩된 뉴스가 없습니다.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {scraps.map((scrap) => (
+                <ArticleCard
+                  key={scrap.scrapId}
+                  id={scrap.articleId}
+                  title={scrap.title}
+                  journal={scrap.journal}
+                  summary={scrap.summary}
+                  category={scrap.category}
+                  imageUrl={scrap.images?.[0]?.imageUrl}
+                  datetime={scrap.datetime}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal for folder actions */}
@@ -277,7 +343,7 @@ const Mypage = () => {
             folderModalType === "delete" ? (
               <div className="text-center">
                 <p>폴더를 삭제하시겠습니까?</p>
-                <p>삭제하신다면 모든 스크랩 내용은 없어집니다.</p>
+                <p>삭제 후 모든 스크랩 내용은 없어집니다.</p>
               </div>
             ) : null
           }
