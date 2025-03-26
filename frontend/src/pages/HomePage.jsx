@@ -1,20 +1,26 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MainArticle from '../components/article/MainArticle';
 import ArticleCard from '../components/article/ArticleCard';
 import MainArticleSkeleton from '../components/article/MainArticleSkeleton';
 import ArticleCardSkeleton from '../components/article/ArticleCardSkeleton';
-import { fetchRecommendArticles } from '../store/slices/articleSilce';
+// Update the import to include fetchRecentArticles
+import { fetchCategoryArticles, fetchRecommendArticles, resetArticle, fetchHotArticles, fetchRecentArticles } from '../store/slices/articleSilce';
 
 const HomePage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const articles = useSelector((state) => state.article.articles || []);
     const loading = useSelector((state) => state.article.loading);
     const error = useSelector((state) => state.article.error);
     const hasMore = useSelector((state) => state.article.hasMore);
     const currentPage = useSelector((state) => state.article.currentPage);
+
+    // Get category from URL query params
+    const searchParams = new URLSearchParams(location.search);
+    const category = searchParams.get('category');
 
     // Create sections of articles (10 articles per section)
     const sections = [];
@@ -24,21 +30,67 @@ const HomePage = () => {
 
     // Intersection Observer for infinite scroll
     const observer = useRef();
+    // Update the Intersection Observer callback
     const lastArticleElementRef = useCallback(node => {
         if (loading) return;
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasMore) {
-                // Pass the current page number
-                dispatch(fetchRecommendArticles(currentPage));
+                if (category === 'hot') {
+                    dispatch(fetchHotArticles({
+                        page: currentPage,
+                        size: 5
+                    }));
+                } else if (category === 'recent') {
+                    dispatch(fetchRecentArticles({
+                        page: currentPage,
+                        size: 5
+                    }));
+                } else if (category && category !== 'all') {
+                    dispatch(fetchCategoryArticles({
+                        category,
+                        page: currentPage,
+                        size: 5
+                    }));
+                } else {
+                    dispatch(fetchRecommendArticles(currentPage));
+                }
             }
         });
         if (node) observer.current.observe(node);
-    }, [loading, hasMore, currentPage]);
+    }, [loading, hasMore, currentPage, category]);
 
+    // Update the initial data fetch
     useEffect(() => {
-        dispatch(fetchRecommendArticles(0));
-    }, [dispatch]);
+        dispatch(resetArticle()); // Reset state when category changes
+        if (category === 'hot') {
+            dispatch(fetchHotArticles({ page: 0, size: 5 }));
+        } else if (category === 'recent') {
+            dispatch(fetchRecentArticles({ page: 0, size: 5 }));
+        } else if (category && category !== 'all') {
+            dispatch(fetchCategoryArticles({ category, page: 0, size: 5 }));
+        } else {
+            dispatch(fetchRecommendArticles(0));
+        }
+    }, [dispatch, category]);
+
+    // Add scroll to top effect when category changes
+    useLayoutEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, [category]);
+
+    // Initial data fetch based on category
+    useEffect(() => {
+        dispatch(resetArticle()); // Reset state when category changes
+        if (category && category !== 'all') {
+            dispatch(fetchCategoryArticles({ category, page: 0, size: 5 }));
+        } else {
+            dispatch(fetchRecommendArticles(0));
+        }
+    }, [dispatch, category]);
 
     if (error) return <div className="min-h-screen flex items-center justify-center">Error: {error}</div>;
 

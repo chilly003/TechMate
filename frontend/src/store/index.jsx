@@ -5,10 +5,10 @@ import folderReducer from './slices/folderSlice';
 import userProfileReducer from './slices/userProfileSlice';
 import scrapSlice from './slices/scrapSlice';
 
+
 const store = configureStore({
     reducer: {
         article: articleReducer,
-        memo: memoReducer,
         folder: folderReducer,
         userProfile: userProfileReducer,
         scrap : scrapSlice,
