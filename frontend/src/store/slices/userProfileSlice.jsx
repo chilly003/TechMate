@@ -7,7 +7,10 @@ export const fetchRandomArticles = createAsyncThunk(
     async (nickname, { rejectWithValue }) => {
         try {
             const response = await api.get('/articles/random', {
-                data: { nickname }
+                data: { nickname },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             
             // response 구조 확인을 위한 상세 로깅
