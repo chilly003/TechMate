@@ -18,7 +18,7 @@ const initialState = {
   error: null
 };
 
-// 비동기 액션 생성자 수정
+// 스크랩 폴더 기준으로 조회
 export const fetchScraps = createAsyncThunk(
   'scraps/fetch',
   async (folderId, { rejectWithValue }) => {
@@ -55,7 +55,7 @@ export const removeScrap = createAsyncThunk(
   }
 );
 
-const scrapeSlice = createSlice({
+const scrapSlice = createSlice({
   name: 'scrap',
   initialState,
   reducers: {},
@@ -89,4 +89,4 @@ const scrapeSlice = createSlice({
   }
 });
 
-export default scrapeSlice.reducer;
+export default scrapSlice.reducer;
