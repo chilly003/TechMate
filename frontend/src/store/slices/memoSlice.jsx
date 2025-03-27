@@ -9,7 +9,9 @@ export const fetchMemo = createAsyncThunk(
             const response = await api.get(`/scraps/memos/${articleId}`);
             console.log('✅ 메모 조회 응답:', {
                 메모ID: response.data.data.memoId,
-                메모내용: response.data.data.content
+                메모내용: response.data.data.content,
+                폴더아이디: response.data.data.folderId,
+                스크랩아이디: response.data.data.folderId,
             });
             return response.data.data;
         } catch (err) {
