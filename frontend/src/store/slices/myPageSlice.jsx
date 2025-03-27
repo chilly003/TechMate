@@ -31,6 +31,31 @@ export const fetchActivity = createAsyncThunk(
     }
 );
 
+// 퀴즈 풀이 현황 조회 액션 
+export const fetchQuizHistory = createAsyncThunk(
+    'myPage/fetchQuizHistory',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/users/quiz');
+            console.log('✅ 퀴즈 풀이 현황 조회 성공:', response.data);
+            
+            // 퀴즈 풀이 횟수에 따른 레벨 계산
+            const quizLevels = {};
+            const dates = response.data.data?.tryToDates || {};
+            
+            Object.entries(dates).forEach(([date, count]) => {
+                // 실제 퀴즈 풀이 횟수를 그대로 사용
+                quizLevels[date] = count;
+            });
+            
+            return quizLevels;
+        } catch (err) {
+            console.error('❌ 퀴즈 풀이 현황 조회 실패:', err);
+            return rejectWithValue(err.response?.data || err.message);
+        }
+    }
+);
+
 const initialState = {
     nickname: null,
     activity: {
@@ -38,6 +63,7 @@ const initialState = {
         scrapArticlesCount: 0,
         solvedQuizCount: 0
     },
+    quizHistory: {},  // 퀴즈 풀이 현황 데이터 추가
     loading: false,
     error: null
 };
@@ -75,6 +101,19 @@ const myPageSlice = createSlice({
                 };
             })
             .addCase(fetchActivity.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // 퀴즈 풀이 현황 조회
+            .addCase(fetchQuizHistory.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchQuizHistory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.quizHistory = action.payload;
+            })
+            .addCase(fetchQuizHistory.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
