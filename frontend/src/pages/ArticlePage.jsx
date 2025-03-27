@@ -9,7 +9,7 @@ import ArticleCard from "../components/article/ArticleCard";
 import Memo from "../components/article/Memo";
 import Quiz from "../components/article/Quiz";
 import Modal from "../components/common/Modal";
-import { fetchFolders } from "../store/slices/folderSlice";
+import { fetchFolders, createFolder } from "../store/slices/folderSlice";
 import {
   fetchArticleDetail,
   toggleLikeArticle,
@@ -29,6 +29,8 @@ const ArticlePage = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isScraped, setIsScraped] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
+  const [showFolderNameModal, setShowFolderNameModal] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
   const { article, status, error } = useSelector((state) => state.article);
@@ -198,14 +200,40 @@ const ArticlePage = () => {
           }))}
           onClose={() => setShowFolderModal(false)}
           onConfirm={(option) => {
-            if (option.type === "new_folder") {
-              // Handle new folder creation
+            if (option.type === 'new_folder') {
+              setShowFolderModal(false);
+              setShowFolderNameModal(true);
               return;
             }
             dispatch(addScrap({ articleId: id, folderId: option.value }));
             setIsScraped(true);
             setShowFolderModal(false);
             setIsSidePanelOpen(true);
+          }}
+        />
+      )}
+
+      {/* New Folder Name Modal */}
+      {showFolderNameModal && (
+        <Modal
+          type="edit"
+          title="새 폴더 만들기"
+          value={newFolderName}
+          onChange={(e) => setNewFolderName(e.target.value)}
+          onClose={() => {
+            setShowFolderNameModal(false);
+            setNewFolderName('');
+          }}
+          onConfirm={() => {
+            if (newFolderName.trim()) {
+              dispatch(createFolder(newFolderName.trim()))
+                .then(() => {
+                  dispatch(fetchFolders());  // 폴더 목록 새로고침
+                  setShowFolderNameModal(false);
+                  setNewFolderName('');
+                  setShowFolderModal(true);  // 폴더 선택 모달 다시 열기
+                });
+            }
           }}
         />
       )}

@@ -11,7 +11,7 @@ export const fetchMemo = createAsyncThunk(
                 메모ID: response.data.data.memoId,
                 메모내용: response.data.data.content,
                 폴더아이디: response.data.data.folderId,
-                스크랩아이디: response.data.data.folderId,
+                스크랩아이디: response.data.data.scrapId,
             });
             return response.data.data;
         } catch (err) {

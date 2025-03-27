@@ -35,13 +35,17 @@ const Modal = ({
                         ))}
                         <div 
                             className="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer text-gray-600"
-                            onClick={() => onConfirm({ type: 'new_folder' })}
+                            onClick={() => {
+                                onClose();
+                                onConfirm({ type: 'new_folder', showNameInput: true });
+                            }}
                         >
                             <span className="mr-3 text-xl">+</span>
                             새 폴더 만들기
                         </div>
                     </div>
                 );
+
             case 'edit':
                 return (
                     <div className="my-5">
