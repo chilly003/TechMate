@@ -34,6 +34,7 @@ const ArticlePage = () => {
   const { article, status, error } = useSelector((state) => state.article);
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
+  const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -385,8 +386,8 @@ const ArticlePage = () => {
                       <p
                         key={index}
                         className={`${isPhotoDesc
-                            ? "text-gray-500 text-sm italic"
-                            : "text-lg leading-relaxed text-gray-800"
+                          ? "text-gray-500 text-sm italic"
+                          : "text-lg leading-relaxed text-gray-800"
                           } ${index === 0 ? "font-semibold text-xl" : ""}`}
                       >
                         {paragraph.trim()}
