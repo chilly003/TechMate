@@ -10,6 +10,7 @@ import Memo from "../components/article/Memo";
 import Quiz from "../components/article/Quiz";
 import Modal from "../components/common/Modal";
 import { fetchFolders } from "../store/slices/folderSlice";
+import { fetchQuizzes } from "../store/slices/quizSlice";
 import {
   fetchArticleDetail,
   toggleLikeArticle,
@@ -61,6 +62,7 @@ const ArticlePage = () => {
 
   // 퀴즈 버튼 클릭 핸들러 추가
   const handleQuizClick = () => {
+    dispatch(fetchQuizzes(id));
     setShowQuiz(true);
     setIsSidePanelOpen(true);
   };
