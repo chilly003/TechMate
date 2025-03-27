@@ -233,9 +233,8 @@ const ArticlePage = () => {
 
       {/* Side Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
-          isSidePanelOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="h-full  overflow-hidden">
           <button
@@ -265,9 +264,24 @@ const ArticlePage = () => {
             style={{ overscrollBehavior: "contain" }}
           >
             {showQuiz ? (
-              <Quiz quizzes={article?.quizzes} onClose={handleCloseSidePanel} />
+              quizLoading ? (
+                <div className="flex items-center justify-center h-[calc(100vh-16rem)]">
+                  <div className="flex flex-col items-center">
+                    <div className="relative flex items-center justify-center mb-6">
+                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+                      <div className="absolute animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xl font-semibold text-gray-800">퀴즈 생성중...</p>
+                      <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Quiz articleId={id} quizzes={quizzes} onClose={handleCloseSidePanel} />
+              )
             ) : (
-              <Memo articleId={id} />
+              <Memo />
             )}
           </div>
         </div>
@@ -275,21 +289,18 @@ const ArticlePage = () => {
 
       {/* Main Content Wrapper */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSidePanelOpen ? "md:w-1/2" : "w-full"
-        }`}
+        className={`transition-all duration-300 ease-in-out ${isSidePanelOpen ? "md:w-1/2" : "w-full"
+          }`}
       >
         {/* Hero Section */}
         <div
-          className={`fixed inset-0 flex flex-col ${
-            isSidePanelOpen ? "" : "md:flex-row"
-          } h-[50vh] md:h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
+          className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? "" : "md:flex-row"
+            } h-[50vh] md:h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
         >
           {/* Image Section */}
           <div
-            className={`relative w-full h-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } overflow-hidden`}
+            className={`relative w-full h-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } overflow-hidden`}
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -299,23 +310,19 @@ const ArticlePage = () => {
               }}
             />
             <div
-              className={`absolute inset-0 bg-black/50 ${
-                isSidePanelOpen ? "" : "md:hidden"
-              }`}
+              className={`absolute inset-0 bg-black/50 ${isSidePanelOpen ? "" : "md:hidden"
+                }`}
             />
           </div>
 
           {/* Text Section */}
           <div
-            className={`absolute ${
-              isSidePanelOpen ? "" : "md:relative"
-            } w-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } h-full flex items-center ${
-              isSidePanelOpen
+            className={`absolute ${isSidePanelOpen ? "" : "md:relative"
+              } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
                 : "md:bg-[rgb(var(--avg-color))]"
-            }`}
+              }`}
             style={{
               ...sharedStyle,
               "--avg-color": `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
@@ -323,34 +330,30 @@ const ArticlePage = () => {
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
-                className={`text-xl text-white font-bold ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } mb-4`}
+                className={`text-xl text-white font-bold ${isSidePanelOpen ? "" : "md:" + textColor
+                  } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
                 className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 underline underline-offset-8 ${
-                                  isSidePanelOpen
-                                    ? "decoration-white"
-                                    : "md:decoration-current"
-                                }`}
+                                decoration-4 underline underline-offset-8 ${isSidePanelOpen
+                    ? "decoration-white"
+                    : "md:decoration-current"
+                  }`}
               >
                 {article?.title}
               </h1>
               <p
-                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-80`}
+                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-80`}
               >
                 {article?.summary}
               </p>
               <p
-                className={`text-sm md:text-base text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-70`}
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
               >
                 {article?.reporter}
               </p>
@@ -364,9 +367,8 @@ const ArticlePage = () => {
           <div className="relative bg-white min-h-screen z-10">
             <div className="w-full flex flex-col items-center">
               <div
-                className={`w-full px-8 ${
-                  isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
-                } md:px-0 pt-16 md:pt-24 pb-10`}
+                className={`w-full px-8 ${isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
+                  } md:px-0 pt-16 md:pt-24 pb-10`}
               >
                 <div className="text-left space-y-8">
                   {article?.content?.split("\n").map((paragraph, index) => {
@@ -382,11 +384,10 @@ const ArticlePage = () => {
                     return (
                       <p
                         key={index}
-                        className={`${
-                          isPhotoDesc
+                        className={`${isPhotoDesc
                             ? "text-gray-500 text-sm italic"
                             : "text-lg leading-relaxed text-gray-800"
-                        } ${index === 0 ? "font-semibold text-xl" : ""}`}
+                          } ${index === 0 ? "font-semibold text-xl" : ""}`}
                       >
                         {paragraph.trim()}
                       </p>
