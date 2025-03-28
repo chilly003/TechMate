@@ -142,7 +142,7 @@ const HomePage = () => {
                                 />
                             </div>
                             <div className={`
-                                w-full md:w-1/2 min-h-screen p-4 bg-gray-100
+                                w-full md:w-1/2 min-h-screen p-4 bg-[#F7EDE2]
                                 ${sectionIndex % 2 === 1 ? 'order-1' : 'order-2'}
                             `}>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
