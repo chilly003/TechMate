@@ -11,7 +11,8 @@ const initialState = {
     hasMore: true,
     currentPage: 0,
     liked: false,
-    scraped: false
+    scraped: false,
+    scrapId: null  // Add scrapId to track current scrap
 };
 
 /**
@@ -146,6 +147,7 @@ const articleSlice = createSlice({
                 state.article = action.payload;
                 state.liked = action.payload.liked;
                 state.scraped = action.payload.scraped;
+                state.scrapId = action.payload.scrapId;  // Store scrapId from API response
             })
 
             // 추천 기사 조회 상태 관리
