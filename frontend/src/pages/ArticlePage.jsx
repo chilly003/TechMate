@@ -268,15 +268,16 @@ const ArticlePage = () => {
           >
             {showQuiz ? (
               quizLoading ? (
-                <div className="flex items-center justify-center h-[calc(100vh-16rem)]">
-                  <div className="flex flex-col items-center">
-                    <div className="relative flex items-center justify-center mb-6">
-                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-                      <div className="absolute animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+                <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
+                  <div className="flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
+                      <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
                     </div>
-                    <div className="text-center">
-                      <p className="text-xl font-semibold text-gray-800">퀴즈 생성중...</p>
-                      <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요</p>
+                    <div>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">퀴즈 생성 중</p>
+                      <p className="text-xl text-gray-600">잠시만 기다려주세요</p>
+                      <p className="text-sm text-gray-500 mt-2">곧 퀴즈가 준비됩니다!</p>
                     </div>
                   </div>
                 </div>
