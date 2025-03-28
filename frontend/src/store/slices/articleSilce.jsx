@@ -9,7 +9,9 @@ const initialState = {
     loading: false,
     error: null,
     hasMore: true,
-    currentPage: 0
+    currentPage: 0,
+    liked: false,
+    scraped: false
 };
 
 /**
@@ -118,7 +120,8 @@ export const fetchArticleDetail = createAsyncThunk(
 export const toggleLikeArticle = createAsyncThunk(
     "article/toggleLikeArticle",
     async (articleId) => {
-        const response = await api.get(`/articles/like/${articleId}`);
+        const response = await api.post(`/article-like/${articleId}`);
+        console.log('좋아요 응답 데이터:', response.data);
         return response.data;
     }
 )
@@ -141,10 +144,8 @@ const articleSlice = createSlice({
             .addCase(fetchArticleDetail.fulfilled, (state, action) => {
                 state.loading = false;
                 state.article = action.payload;
-            })
-            .addCase(fetchArticleDetail.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
+                state.liked = action.payload.liked;
+                state.scraped = action.payload.scraped;
             })
 
             // 추천 기사 조회 상태 관리
@@ -226,6 +227,7 @@ const articleSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message;
             })
+
             // Handle toggleLikeArticle
             .addCase(toggleLikeArticle.pending, (state) => {
                 state.loading = true;
@@ -233,24 +235,27 @@ const articleSlice = createSlice({
             })
             .addCase(toggleLikeArticle.fulfilled, (state, action) => {
                 state.loading = false;
-                // Update the like status in the current article if it exists
-                if (state.currentArticle && state.currentArticle.article_id === action.payload.article_id) {
-                    state.currentArticle = {
-                        ...state.currentArticle,
-                        isLiked: action.payload.isLiked
+                state.liked = !state.liked;  // 좋아요 상태 토글
+
+                // 현재 기사의 좋아요 상태 업데이트
+                if (state.article) {
+                    state.article = {
+                        ...state.article,
+                        liked: !state.article.liked
                     };
                 }
-                // Update the like status in the articles list if it exists
+
+                // 기사 목록의 좋아요 상태 업데이트
                 state.articles = state.articles.map(article =>
-                    article.article_id === action.payload.article_id
-                        ? { ...article, isLiked: action.payload.isLiked }
+                    article.articleId === action.payload.articleId
+                        ? { ...article, liked: !article.liked }
                         : article
                 );
             })
             .addCase(toggleLikeArticle.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            })  // Remove semicolon here
+            })
 
             // 최신 기사 조회 상태 관리
             .addCase(fetchRecentArticles.pending, (state) => {

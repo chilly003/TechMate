@@ -111,7 +111,7 @@ const Header = () => {
                         </div>
 
                         {/* 메뉴 내용 */}
-                        <div className="px-4 md:px-0 pt-2 md:pt-0">
+                        <div className="px-8 md:px-8 pt-2 md:pt-0">
                             {/* 검색바 */}
                             <div className="flex-1 relative border-b-2 border-black pb-2 md:pb-3">
                                 <form onSubmit={handleSearch} className="flex items-center">
@@ -147,7 +147,7 @@ const Header = () => {
                             </div>
 
                             {/* Regular Categories */}
-                            <ul className="pt-6 md:pt-8 space-y-4 md:space-y-3">
+                            <ul className="pt-6 pb-26 md:pt-8 space-y-4 md:space-y-3">
                                 {['전체', 'IT 일반', '모바일', 'SNS', '통신', '보안', 'AI', '게임'].map((item) => (
                                     <li key={item}>
                                         <Link
@@ -166,7 +166,7 @@ const Header = () => {
 
                         {/* 하단 버튼 영역 */}
                         <div className="px-4 md:px-6 flex justify-end gap-2 mt-8 md:mt-0">
-                            <Link to="/mypage">
+                            <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                                 <button className='p-2 md:p-3 hover:bg-gray-100 rounded-full transition-colors'>
                                     <FaRegUser className="text-xl md:text-2xl" />
                                 </button>

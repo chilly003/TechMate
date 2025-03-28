@@ -32,7 +32,7 @@ const ArticlePage = () => {
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error } = useSelector((state) => state.article);
+  const { article, liked, status, error } = useSelector((state) => state.article);
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
@@ -72,6 +72,12 @@ const ArticlePage = () => {
     setIsSidePanelOpen(false);
     setShowQuiz(false);
   };
+
+  const handleLikeClick = () => {
+    if (article) {
+        dispatch(toggleLikeArticle(article.articleId));
+    }
+};
 
   // Add this useEffect for scroll reset
   // Modify the scroll reset useEffect
@@ -161,14 +167,14 @@ const ArticlePage = () => {
 
         <FloatingButton
           text={
-            isLiked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />
+            liked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />
           }
           color="from-pink-500 to-pink-600"
           onClick={() => {
             dispatch(toggleLikeArticle(id));
-            setIsLiked(!isLiked);
           }}
         />
+
         <FloatingButton
           text={
             isScraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />
