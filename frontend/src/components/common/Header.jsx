@@ -67,17 +67,44 @@ const Header = () => {
 
                     <button
                         onClick={() => setIsMenuOpen(true)}
-                        className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${isMenuOpen ? 'opacity-0' : 'opacity-100'
-                            }`}
+                        className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
                     >
-                        <RiMenu3Line className="text-2xl" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="36"
+                            height="36"
+                            viewBox="0 0 36 36"
+                            className="text-white"
+                        >
+                            <rect
+                                x="4"
+                                y="8"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                            <rect
+                                x="4"
+                                y="16"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                            <rect
+                                x="4"
+                                y="24"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                        </svg>
                     </button>
                 </div>
             </header>
 
             {/* 사이드 패널 */}
             <div
-                className={`fixed top-0 right-0 h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[50] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-screen bg-[#FDFBF7] shadow-lg transform transition-transform duration-300 ease-in-out z-[50] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col justify-between">
