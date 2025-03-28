@@ -388,9 +388,9 @@ const ArticlePage = () => {
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white
+                className={`text-4xl md:text-h1 font-extrabold mb-6 md:mb-8 leading-tight text-white
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 md:decoration-8 underline underline-offset-8 ${isSidePanelOpen
+                                decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] ${isSidePanelOpen
                     ? "decoration-white"
                     : "md:decoration-current"
                   }`}
