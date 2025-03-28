@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { submitQuizAnswers } from '../../store/slices/quizSlice';
 
 const Quiz = ({ articleId, quizzes, onClose }) => {
@@ -37,6 +37,28 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   const [showFinalResults, setShowFinalResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+
+  const quizAttemptStatus = useSelector((state) => state.quiz.quizAttemptStatus);
+  const selectedOptions = useSelector((state) => state.quiz.selectOptions);
+
+  // 이미 퀴즈를 푼 경우 초기 상태 설정
+  useEffect(() => {
+    if (quizAttemptStatus && selectedOptions && quizData.quizzes.length > 0) {
+      // 참조 동등성 문제 방지를 위해 map 함수 내부에서 직접 찾기
+      const initialAnswers = quizData.quizzes.map(quiz => {
+        const attemptedQuiz = selectedOptions.find(opt => opt.quizId === quiz.quiz_id);
+        return attemptedQuiz ? attemptedQuiz.optionId : null;
+      });
+
+      // 상태 업데이트 전에 변경 확인
+      setSelectedAnswers(prevAnswers => {
+        const isChanged = initialAnswers.some((answer, index) => answer !== prevAnswers[index]);
+        return isChanged ? initialAnswers : prevAnswers;
+      });
+
+      setShowFinalResults(true);
+    }
+  }, [quizAttemptStatus, selectedOptions, quizData.quizzes]);
 
   // 진행 상태 계산
   const progress = ((currentQuestion + 1) / quizData.quizzes.length) * 100;
@@ -151,7 +173,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-600">
-                {quiz.explanation}
+                {quiz.reason}
               </p>
             </div>
           </div>
@@ -173,8 +195,10 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
         <div className="flex flex-col md:flex-row justify-between gap-4 mt-16 mb-8">
           <button
-            onClick={async () => {
-              await submitQuizResults();
+            onClick={() => {
+              if (!quizAttemptStatus) {
+                submitQuizResults();
+              }
               onClose();
             }}
             className="px-8 md:px-16 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors w-full md:w-auto"
@@ -182,8 +206,10 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
             기사 보기
           </button>
           <button
-            onClick={async () => {
-              await submitQuizResults();
+            onClick={() => {
+              if (!quizAttemptStatus) {
+                submitQuizResults();
+              }
               window.location.href = '/home';
             }}
             className="px-8 md:px-16 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors w-full md:w-auto"
@@ -254,7 +280,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           {currentQuestion > 0 && (
             <button
               onClick={handlePrevResult}
-              className="px-10 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-10 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200"
             >
               이전
             </button>
