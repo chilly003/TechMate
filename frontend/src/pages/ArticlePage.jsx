@@ -298,7 +298,7 @@ const ArticlePage = () => {
         {/* Hero Section */}
         <div
           className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? "" : "md:flex-row"
-            } h-[50vh] md:h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
+            } h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
         >
           {/* Image Section */}
           <div
@@ -313,8 +313,7 @@ const ArticlePage = () => {
               }}
             />
             <div
-              className={`absolute inset-0 bg-black/50 ${isSidePanelOpen ? "" : "md:hidden"
-                }`}
+              className={`absolute inset-0 bg-black/50`}
             />
           </div>
 
@@ -366,7 +365,7 @@ const ArticlePage = () => {
 
         {/* Content Section - Adjust width when side panel is open */}
         <div className="relative">
-          <div className="h-[50vh] md:h-screen" />
+          <div className="h-screen" />
           <div className="relative bg-white min-h-screen z-10">
             <div className="w-full flex flex-col items-center">
               <div
