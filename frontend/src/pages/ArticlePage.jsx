@@ -373,7 +373,7 @@ const ArticlePage = () => {
               } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
               } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
-                : "md:bg-[rgb(var(--avg-color))]"
+                : "md:bg-[#967259]"
               }`}
             style={{
               ...sharedStyle,
@@ -382,15 +382,15 @@ const ArticlePage = () => {
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
-                className={`text-xl text-white font-bold ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-xl text-white font-bold ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
                   } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
+                className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 underline underline-offset-8 ${isSidePanelOpen
+                                decoration-4 md:decoration-8 underline underline-offset-8 ${isSidePanelOpen
                     ? "decoration-white"
                     : "md:decoration-current"
                   }`}
@@ -409,6 +409,12 @@ const ArticlePage = () => {
               >
                 {article?.reporter}
               </p>
+              <p
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
+              >
+                {article?.datetime}
+              </p>
             </div>
           </div>
         </div>
@@ -416,7 +422,7 @@ const ArticlePage = () => {
         {/* Content Section - Adjust width when side panel is open */}
         <div className="relative">
           <div className="h-screen" />
-          <div className="relative bg-white min-h-screen z-10">
+          <div className="relative bg-[#FDFBF7] min-h-screen z-10">
             <div className="w-full flex flex-col items-center">
               <div
                 className={`w-full px-8 ${isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
@@ -459,7 +465,7 @@ const ArticlePage = () => {
               </div>
 
               {/* Related Articles Section - Full width */}
-              <div className="w-full bg-gray-50 py-16">
+              <div className="w-full bg-[#FDFBF7] py-16">
                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                   <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
                   <div className="relative">
