@@ -179,7 +179,7 @@ const Header = () => {
                                     <li key={item}>
                                         <Link
                                             to={`/home?category=${item === '전체' ? 'all' : item}`}
-                                            className="block text-lg md:text-h2 font-black hover:text-gray-600 transition-all"
+                                            className="block text-h3 md:text-h2 font-black hover:text-gray-600 transition-all"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             {item}
