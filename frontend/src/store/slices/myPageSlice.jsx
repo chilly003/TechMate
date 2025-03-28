@@ -16,6 +16,18 @@ export const fetchNickname = createAsyncThunk(
     }
 );
 
+// 닉네임 수정 액션
+export const updateNickname = createAsyncThunk(
+    'myPage/updateNickname',
+    async (nickname) => {
+        console.log('닉네임 수정 요청:', nickname);
+        const response = await api.patch('/users/nickname', { nickname });
+        console.log('✅ 닉네임 수정 성공:', response.data);
+        return response.data.data;
+    }
+);
+
+
 // 활동 내역 조회 액션
 export const fetchActivity = createAsyncThunk(
     'myPage/fetchActivity',
@@ -38,16 +50,16 @@ export const fetchQuizHistory = createAsyncThunk(
         try {
             const response = await api.get('/users/quiz');
             console.log('✅ 퀴즈 풀이 현황 조회 성공:', response.data);
-            
+
             // 퀴즈 풀이 횟수에 따른 레벨 계산
             const quizLevels = {};
             const dates = response.data.data?.tryToDates || {};
-            
+
             Object.entries(dates).forEach(([date, count]) => {
                 // 실제 퀴즈 풀이 횟수를 그대로 사용
                 quizLevels[date] = count;
             });
-            
+
             return quizLevels;
         } catch (err) {
             console.error('❌ 퀴즈 풀이 현황 조회 실패:', err);
@@ -87,6 +99,20 @@ const myPageSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            //  닉네임 수정
+            .addCase(updateNickname.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateNickname.fulfilled, (state, action) => {
+                state.loading = false;
+                state.nickname = action.payload.nickname;
+            })
+            .addCase(updateNickname.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
             // 활동 내역 조회
             .addCase(fetchActivity.pending, (state) => {
                 state.loading = true;

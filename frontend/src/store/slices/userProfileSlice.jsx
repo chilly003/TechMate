@@ -7,7 +7,6 @@ export const fetchRandomArticles = createAsyncThunk(
     async (nickname, { rejectWithValue }) => {
         try {
             const response = await api.get('/user-preference/random', {
-                data: { nickname },
                 headers: {
                     'Content-Type': 'application/json'
                 }

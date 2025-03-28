@@ -9,7 +9,7 @@ import ArticleCard from "../components/article/ArticleCard";
 import Memo from "../components/article/Memo";
 import Quiz from "../components/article/Quiz";
 import Modal from "../components/common/Modal";
-import { fetchFolders } from "../store/slices/folderSlice";
+import { fetchFolders, createFolder } from "../store/slices/folderSlice";
 import { fetchQuizzes } from "../store/slices/quizSlice";
 import {
   fetchArticleDetail,
@@ -27,12 +27,13 @@ const ArticlePage = () => {
   const [textColor, setTextColor] = useState("text-black");
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isScraped, setIsScraped] = useState(false);
+  const [currentScrapId, setCurrentScrapId] = useState(null);
+  const [isNewFolderMode, setIsNewFolderMode] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error } = useSelector((state) => state.article);
+  const { article, liked, scraped, scrapId, status, error } = useSelector((state) => state.article);
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
@@ -41,16 +42,14 @@ const ArticlePage = () => {
   useEffect(() => {
     dispatch(fetchArticleDetail(id));
     dispatch(fetchFolders());
-    // Check if article is already scraped
-    if (scraps?.content) {
-      const isArticleScraped = scraps.content.some(
+    // Find and set current scrap ID
+    if (scraped) {
+      const scrap = scraps?.content?.find(
         (scrap) => scrap.articleId === parseInt(id)
       );
-      setIsScraped(isArticleScraped);
+      setCurrentScrapId(scrap?.scrapId || null);
     }
-  }, [dispatch, id, scraps?.content]);
-
-  // console.log(article)
+  }, [dispatch, id, scraped]);
 
   // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
@@ -72,6 +71,39 @@ const ArticlePage = () => {
     setIsSidePanelOpen(false);
     setShowQuiz(false);
   };
+
+
+  // Modal handlers
+  const handleAddScrap = (folderId) => {
+    dispatch(addScrap({ articleId: id, folderId }))
+      .unwrap()
+      .then(() => {
+        setShowFolderModal(false);
+        setIsSidePanelOpen(true);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
+  const handleRemoveScrap = () => {
+    dispatch(removeScrap(scrapToRemove))
+      .unwrap()
+      .then(() => {
+        setShowUnscrapModal(false);
+        setIsSidePanelOpen(false);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
+  // Modify scrap button click handler
+  const handleScrapButtonClick = () => {
+    if (scraped) {
+      setScrapToRemove(scrapId);  // articleSlice의 scrapId 사용
+      setShowUnscrapModal(true);
+    } else {
+      setShowFolderModal(true);
+    }
+  };
+
 
   // Add this useEffect for scroll reset
   // Modify the scroll reset useEffect
@@ -155,65 +187,43 @@ const ArticlePage = () => {
           color="from-green-500 to-green-600"
           onClick={handleSidePanelToggle}
           className={
-            isScraped ? "opacity-100" : "opacity-0 pointer-events-none"
+            scraped ? "opacity-100" : "opacity-0 pointer-events-none"
           }
         />
 
         <FloatingButton
           text={
-            isLiked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />
+            liked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />
           }
           color="from-pink-500 to-pink-600"
           onClick={() => {
             dispatch(toggleLikeArticle(id));
-            setIsLiked(!isLiked);
           }}
         />
+
         <FloatingButton
           text={
-            isScraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />
+            scraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />
           }
           color="from-blue-500 to-blue-600"
-          onClick={() => {
-            if (isScraped) {
-              const currentScrap = scraps.content.find(
-                (scrap) => scrap.articleId === parseInt(id)
-              );
-              if (currentScrap) {
-                setScrapToRemove(currentScrap.scrapId);
-                setShowUnscrapModal(true);
-              }
-            } else {
-              setShowFolderModal(true);
-            }
-          }}
+          // onClick={() => {
+          //   if (scraped) {
+          //     const currentScrap = scraps.content.find(
+          //       (scrap) => scrap.articleId === parseInt(id)
+          //     );
+          //     if (currentScrap) {
+          //       setScrapToRemove(currentScrap.scrapId);
+          //       setShowUnscrapModal(true);
+          //     }
+          //   } else {
+          //     setShowFolderModal(true);
+          //   }
+          // }}
+          onClick={handleScrapButtonClick}
         />
       </div>
 
-      {/* Folder Selection Modal */}
-      {showFolderModal && (
-        <Modal
-          type="select"
-          title="스크랩할 폴더 선택"
-          options={folders?.content?.map((folder) => ({
-            label: folder.folderName,
-            value: folder.folderId,
-          }))}
-          onClose={() => setShowFolderModal(false)}
-          onConfirm={(option) => {
-            if (option.type === "new_folder") {
-              // Handle new folder creation
-              return;
-            }
-            dispatch(addScrap({ articleId: id, folderId: option.value }));
-            setIsScraped(true);
-            setShowFolderModal(false);
-            setIsSidePanelOpen(true);
-          }}
-        />
-      )}
-
-      {/* scrap remove Modal */}
+      {/*scrap remove Modal */}
       {showUnscrapModal && (
         <Modal
           type="confirm"
@@ -225,11 +235,50 @@ const ArticlePage = () => {
             </>
           }
           onClose={() => setShowUnscrapModal(false)}
-          onConfirm={() => {
-            dispatch(removeScrap(scrapToRemove));
-            setIsScraped(false);
-            setShowUnscrapModal(false);
-            setIsSidePanelOpen(false);
+          onConfirm={handleRemoveScrap}
+        />
+      )}
+
+      {/* Folder Selection Modal */}
+      {showFolderModal && !isNewFolderMode && (
+        <Modal
+          type="select"
+          title="스크랩할 폴더 선택"
+          options={folders?.content?.map((folder) => ({
+            label: folder.folderName,
+            value: folder.folderId,
+          }))}
+          onClose={() => setShowFolderModal(false)}
+          onConfirm={(option) => {
+            if (option.type === "new_folder") {
+              setIsNewFolderMode(true);
+            } else {
+              handleAddScrap(option.value);
+            }
+          }}
+        />
+      )}
+
+      {showFolderModal && isNewFolderMode && (
+        <Modal
+          type="edit"
+          title="새 폴더 만들기"
+          value={newFolderName}
+          onChange={(e) => setNewFolderName(e.target.value)}
+          onClose={() => {
+            setIsNewFolderMode(false);
+            setShowFolderModal(false);
+          }}
+          onConfirm={async () => {
+            try {
+              const result = await dispatch(createFolder(newFolderName)).unwrap();
+              await dispatch(fetchFolders());
+              handleAddScrap(result.data.folderId);
+              setIsNewFolderMode(false);
+              setNewFolderName("");
+            } catch (error) {
+              console.error('Failed to create folder:', error);
+            }
           }}
         />
       )}
