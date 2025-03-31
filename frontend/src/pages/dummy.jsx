@@ -27,14 +27,13 @@ const ArticlePage = () => {
   const [textColor, setTextColor] = useState("text-black");
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [showFolderModal, setShowFolderModal] = useState(false);
-  const [showFolderNameModal, setShowFolderNameModal] = useState(false);
+  const [currentScrapId, setCurrentScrapId] = useState(null);
+  const [isNewFolderMode, setIsNewFolderMode] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [showFolderModal, setShowFolderModal] = useState(false);
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error, liked, scraped, scrapId } = useSelector(
-    (state) => state.article
-  );
+  const { article, liked, scraped, scrapId, status, error } = useSelector((state) => state.article);
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
@@ -43,10 +42,14 @@ const ArticlePage = () => {
   useEffect(() => {
     dispatch(fetchArticleDetail(id));
     dispatch(fetchFolders());
-    // Remove the unnecessary scraped state check since we're using Redux store
-  }, [dispatch, id]);
-
-  // console.log(article)
+    // Find and set current scrap ID
+    if (scraped) {
+      const scrap = scraps?.content?.find(
+        (scrap) => scrap.articleId === parseInt(id)
+      );
+      setCurrentScrapId(scrap?.scrapId || null);
+    }
+  }, [dispatch, id, scraped]);
 
   // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
@@ -69,15 +72,38 @@ const ArticlePage = () => {
     setShowQuiz(false);
   };
 
+
+  // Modal handlers
+  const handleAddScrap = (folderId) => {
+    dispatch(addScrap({ articleId: id, folderId }))
+      .unwrap()
+      .then(() => {
+        setShowFolderModal(false);
+        setIsSidePanelOpen(true);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
+  const handleRemoveScrap = () => {
+    dispatch(removeScrap(scrapToRemove))
+      .unwrap()
+      .then(() => {
+        setShowUnscrapModal(false);
+        setIsSidePanelOpen(false);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
   // Modify scrap button click handler
   const handleScrapButtonClick = () => {
     if (scraped) {
-      setScrapToRemove(scrapId); // articleSlice의 scrapId 사용
+      setScrapToRemove(scrapId);  // articleSlice의 scrapId 사용
       setShowUnscrapModal(true);
     } else {
       setShowFolderModal(true);
     }
   };
+
 
   // Add this useEffect for scroll reset
   // Modify the scroll reset useEffect
@@ -160,7 +186,9 @@ const ArticlePage = () => {
           text={<FiEdit size={24} />}
           color="from-green-500 to-green-600"
           onClick={handleSidePanelToggle}
-          className={scraped ? "opacity-100" : "opacity-0 pointer-events-none"}
+          className={
+            scraped ? "opacity-100" : "opacity-0 pointer-events-none"
+          }
         />
 
         <FloatingButton
@@ -172,43 +200,30 @@ const ArticlePage = () => {
             dispatch(toggleLikeArticle(id));
           }}
         />
+
         <FloatingButton
           text={
             scraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />
           }
           color="from-blue-500 to-blue-600"
+          // onClick={() => {
+          //   if (scraped) {
+          //     const currentScrap = scraps.content.find(
+          //       (scrap) => scrap.articleId === parseInt(id)
+          //     );
+          //     if (currentScrap) {
+          //       setScrapToRemove(currentScrap.scrapId);
+          //       setShowUnscrapModal(true);
+          //     }
+          //   } else {
+          //     setShowFolderModal(true);
+          //   }
+          // }}
           onClick={handleScrapButtonClick}
         />
       </div>
 
-      {/* Folder Selection Modal */}
-      {showFolderModal && (
-        <Modal
-          type="select"
-          title="스크랩할 폴더 선택"
-          options={folders?.content?.map((folder) => ({
-            label: folder.folderName,
-            value: folder.folderId,
-          }))}
-          onClose={() => setShowFolderModal(false)}
-          onConfirm={(option) => {
-            if (option.type === "new_folder") {
-              setShowFolderModal(false);
-              setShowFolderNameModal(true);
-              return;
-            }
-            dispatch(addScrap({ articleId: id, folderId: option.value }))
-              .unwrap()
-              .then(() => {
-                setShowFolderModal(false);
-                setIsSidePanelOpen(true);
-                dispatch(fetchArticleDetail(id)); // 스크랩 후 기사 정보 새로고침
-              });
-          }}
-        />
-      )}
-
-      {/* scrap remove Modal */}
+      {/*scrap remove Modal */}
       {showUnscrapModal && (
         <Modal
           type="confirm"
@@ -220,37 +235,49 @@ const ArticlePage = () => {
             </>
           }
           onClose={() => setShowUnscrapModal(false)}
-          onConfirm={() => {
-            dispatch(removeScrap(scrapToRemove))
-              .unwrap()
-              .then(() => {
-                setShowUnscrapModal(false);
-                setIsSidePanelOpen(false);
-                dispatch(fetchArticleDetail(id)); // 스크랩 취소 후 기사 정보 새로고침
-              });
+          onConfirm={handleRemoveScrap}
+        />
+      )}
+
+      {/* Folder Selection Modal */}
+      {showFolderModal && !isNewFolderMode && (
+        <Modal
+          type="select"
+          title="스크랩할 폴더 선택"
+          options={folders?.content?.map((folder) => ({
+            label: folder.folderName,
+            value: folder.folderId,
+          }))}
+          onClose={() => setShowFolderModal(false)}
+          onConfirm={(option) => {
+            if (option.type === "new_folder") {
+              setIsNewFolderMode(true);
+            } else {
+              handleAddScrap(option.value);
+            }
           }}
         />
       )}
 
-      {/* New Folder Name Modal */}
-      {showFolderNameModal && (
+      {showFolderModal && isNewFolderMode && (
         <Modal
           type="edit"
           title="새 폴더 만들기"
           value={newFolderName}
           onChange={(e) => setNewFolderName(e.target.value)}
           onClose={() => {
-            setShowFolderNameModal(false);
-            setNewFolderName("");
+            setIsNewFolderMode(false);
+            setShowFolderModal(false);
           }}
-          onConfirm={() => {
-            if (newFolderName.trim()) {
-              dispatch(createFolder(newFolderName.trim())).then(() => {
-                dispatch(fetchFolders()); // 폴더 목록 새로고침
-                setShowFolderNameModal(false);
-                setNewFolderName("");
-                setShowFolderModal(true); // 폴더 선택 모달 다시 열기
-              });
+          onConfirm={async () => {
+            try {
+              const result = await dispatch(createFolder(newFolderName)).unwrap();
+              await dispatch(fetchFolders());
+              handleAddScrap(result.data.folderId);
+              setIsNewFolderMode(false);
+              setNewFolderName("");
+            } catch (error) {
+              console.error('Failed to create folder:', error);
             }
           }}
         />
@@ -258,9 +285,8 @@ const ArticlePage = () => {
 
       {/* Side Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
-          isSidePanelOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="h-full  overflow-hidden">
           <button
@@ -298,24 +324,14 @@ const ArticlePage = () => {
                       <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
                     </div>
                     <div>
-                      <p className="text-3xl font-bold text-gray-800 mb-4">
-                        퀴즈 생성 중
-                      </p>
-                      <p className="text-xl text-gray-600">
-                        잠시만 기다려주세요
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        곧 퀴즈가 준비됩니다!
-                      </p>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">퀴즈 생성 중</p>
+                      <p className="text-xl text-gray-600">잠시만 기다려주세요</p>
+                      <p className="text-sm text-gray-500 mt-2">곧 퀴즈가 준비됩니다!</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <Quiz
-                  articleId={id}
-                  quizzes={quizzes}
-                  onClose={handleCloseSidePanel}
-                />
+                <Quiz articleId={id} quizzes={quizzes} onClose={handleCloseSidePanel} />
               )
             ) : (
               <Memo />
@@ -326,21 +342,18 @@ const ArticlePage = () => {
 
       {/* Main Content Wrapper */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSidePanelOpen ? "md:w-1/2" : "w-full"
-        }`}
+        className={`transition-all duration-300 ease-in-out ${isSidePanelOpen ? "md:w-1/2" : "w-full"
+          }`}
       >
         {/* Hero Section */}
         <div
-          className={`fixed inset-0 flex flex-col ${
-            isSidePanelOpen ? "" : "md:flex-row"
-          } h-[50vh] md:h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
+          className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? "" : "md:flex-row"
+            } h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
         >
           {/* Image Section */}
           <div
-            className={`relative w-full h-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } overflow-hidden`}
+            className={`relative w-full h-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } overflow-hidden`}
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -350,23 +363,18 @@ const ArticlePage = () => {
               }}
             />
             <div
-              className={`absolute inset-0 bg-black/50 ${
-                isSidePanelOpen ? "" : "md:hidden"
-              }`}
+              className={`absolute inset-0 bg-black/50`}
             />
           </div>
 
           {/* Text Section */}
           <div
-            className={`absolute ${
-              isSidePanelOpen ? "" : "md:relative"
-            } w-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } h-full flex items-center ${
-              isSidePanelOpen
+            className={`absolute ${isSidePanelOpen ? "" : "md:relative"
+              } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
-                : "md:bg-[rgb(var(--avg-color))]"
-            }`}
+                : "md:bg-[#967259]"
+              }`}
             style={{
               ...sharedStyle,
               "--avg-color": `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
@@ -374,36 +382,38 @@ const ArticlePage = () => {
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
-                className={`text-xl text-white font-bold ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } mb-4`}
+                className={`text-xl text-white font-bold ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
+                  } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
+                className={`text-4xl md:text-h1 font-extrabold mb-6 md:mb-8 leading-tight text-white
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 underline underline-offset-8 ${
-                                  isSidePanelOpen
-                                    ? "decoration-white"
-                                    : "md:decoration-current"
-                                }`}
+                                decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] ${isSidePanelOpen
+                    ? "decoration-white"
+                    : "md:decoration-current"
+                  }`}
               >
                 {article?.title}
               </h1>
               <p
-                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-80`}
+                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-80`}
               >
                 {article?.summary}
               </p>
               <p
-                className={`text-sm md:text-base text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-70`}
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
               >
                 {article?.reporter}
+              </p>
+              <p
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
+              >
+                {article?.datetime}
               </p>
             </div>
           </div>
@@ -411,13 +421,12 @@ const ArticlePage = () => {
 
         {/* Content Section - Adjust width when side panel is open */}
         <div className="relative">
-          <div className="h-[50vh] md:h-screen" />
-          <div className="relative bg-white min-h-screen z-10">
+          <div className="h-screen" />
+          <div className="relative bg-[#FDFBF7] min-h-screen z-10">
             <div className="w-full flex flex-col items-center">
               <div
-                className={`w-full px-8 ${
-                  isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
-                } md:px-0 pt-16 md:pt-24 pb-10`}
+                className={`w-full px-8 ${isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
+                  } md:px-0 pt-16 md:pt-24 pb-10`}
               >
                 <div className="text-left space-y-8">
                   {article?.content?.split("\n").map((paragraph, index) => {
@@ -433,11 +442,10 @@ const ArticlePage = () => {
                     return (
                       <p
                         key={index}
-                        className={`${
-                          isPhotoDesc
-                            ? "text-gray-500 text-sm italic"
-                            : "text-lg leading-relaxed text-gray-800"
-                        } ${index === 0 ? "font-semibold text-xl" : ""}`}
+                        className={`${isPhotoDesc
+                          ? "text-gray-500 text-sm italic"
+                          : "text-lg leading-relaxed text-gray-800"
+                          } ${index === 0 ? "font-semibold text-xl" : ""}`}
                       >
                         {paragraph.trim()}
                       </p>
@@ -455,9 +463,6 @@ const ArticlePage = () => {
                   퀴즈 풀기
                 </button>
               </div>
-
-              {/* Related Articles Section - Full width */}
-              <div className="w-full bg-gray-50 py-16"></div>
 
               {/* Related Articles Section - Full width */}
               <div className="w-full bg-[#FDFBF7] py-16">

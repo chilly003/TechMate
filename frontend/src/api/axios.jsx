@@ -12,7 +12,7 @@ api.interceptors.request.use(
         // }
         // return config;
 
-        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MzM3OTE1Miwic3ViIjoiMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiVVNFUiIsImV4cCI6MTc0MzU1OTE1Mn0.h3TToWJyAY72vJM43aQBzWXucFsRxzh_5-lOUnaRcvI';
+        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MzM5Mjc4OCwic3ViIjoiMTciLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicm9sZSI6IlVTRVIiLCJleHAiOjE3NDM1NzI3ODh9.nq1oKwfEO8nwHYM0oXqvu_gVIIltVTHO6zxQJWH5FPo';
 
         return config;
     },

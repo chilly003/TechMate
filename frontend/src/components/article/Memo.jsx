@@ -64,32 +64,48 @@ const Memo = ({ articleId }) => {
   const [isPreview, setIsPreview] = useState(false);
   const [category, setCategory] = useState("");
   
-  
-  // Update the useEffect that handles memo data
-  useEffect(() => {
-    if (memo?.content) {
-      setMarkdown(memo.content);
-      setCategory(memo.folderId.toString()); // Set the category when memo data arrives
+  const handleFolderChange = async (e) => {
+    const newFolderId = e.target.value;
+    
+    if (memo?.scrapId && articleId) {
+      try {
+        await dispatch(removeScrap(memo.scrapId));
+        
+        await dispatch(addScrap({
+          articleId: articleId,
+          folderId: newFolderId
+        }));
+
+        await dispatch(fetchMemo(articleId));
+        
+        setCategory(newFolderId);
+      } catch (error) {
+        console.error("Error changing folder:", error);
+      }
     }
-  }, [memo]);
+  };
+  
 
   useEffect(() => {
     console.log("📝 메모 컴포넌트가 마운트되었습니다");
     console.log("현재 기사 ID:", articleId);
 
     if (articleId) {
-      dispatch(fetchMemo(articleId));
+      dispatch(fetchMemo(articleId)).then((response) => {
+        // 새로운 메모인 경우 (response가 없거나 content가 없는 경우)
+        if (!response.payload || !response.payload.content) {
+          setMarkdown("# 마크다운을 입력하세요");
+          // 새로 생성된 폴더 ID를 찾아서 설정
+          const latestFolder = folders?.content?.[0];
+          if (latestFolder) {
+            setCategory(latestFolder.folderId.toString());
+          }
+        }
+      });
+      dispatch(fetchFolders());
     }
-    dispatch(fetchFolders()); // Add this line to fetch folders
-  }, [dispatch, articleId]);
-
-  useEffect(() => {
-    if (memo?.content) {
-      setMarkdown(memo.content);
-    }
-  }, [memo]);
-
-  // Format date from memo
+  }, [dispatch, articleId]); // folders 제거
+  
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -112,9 +128,6 @@ const Memo = ({ articleId }) => {
     currentDate.getMonth() + 1
   ).padStart(2, "0")}/${String(currentDate.getDate()).padStart(2, "0")}`;
 
-  // 카테고리 더미 데이터
-  // Remove the categories dummy data
-  // const categories = ["프론트엔드", "관심 유"];
 
   const handleSave = () => {
     console.log("현재 메모 데이터:", memo); // 디버깅용
@@ -177,7 +190,7 @@ const Memo = ({ articleId }) => {
             <label className="text-sm text-gray-500">파일</label>
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={handleFolderChange}
               className="block w-full mt-1 text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:outline-none"
             >
               {folders?.content &&
