@@ -5,12 +5,14 @@ import { RiMenu3Line } from 'react-icons/ri';
 import { IoClose } from 'react-icons/io5';
 import { FaRegUser, FaSignOutAlt } from 'react-icons/fa';
 import { FiTrendingUp, FiClock } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,9 +49,11 @@ const Header = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // TODO: 검색 로직 구현
-        console.log('Search term:', searchTerm);
-        setSearchTerm('');
+        if (searchTerm.trim()) {
+            navigate(`/home?search=${encodeURIComponent(searchTerm.trim())}`);
+            setIsMenuOpen(false); // Close the menu after search
+            setSearchTerm(''); // Clear the search input
+        }
     };
 
     return (
