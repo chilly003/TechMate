@@ -147,14 +147,16 @@ const Memo = ({ articleId }) => {
 
 
   const handleSave = async () => {
-    if (memo?.memoId) {
-      await dispatch(updateMemo({
-        memoId: memo.memoId,
+    // 최신 메모 데이터를 먼저 조회
+    const memoResponse = await dispatch(fetchMemo(articleId)).unwrap();
+    
+    if (memoResponse?.memoId) {
+      const updateResponse = await dispatch(updateMemo({
+        memoId: memoResponse.memoId,  // 최신 메모 ID 사용
         content: markdown,
-      }));
-      // 저장 후 메모 다시 불러오기
-      const response = await dispatch(fetchMemo(articleId));
-      console.log("수정된 메모 데이터:", response.payload); // 업데이트된 데이터 로깅
+      })).unwrap();
+
+      console.log("수정된 메모 데이터:", updateResponse);
       setShowSaveConfirmModal(true);
     }
   };

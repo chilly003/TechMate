@@ -7,6 +7,10 @@ export const fetchMemo = createAsyncThunk(
     async (articleId, { rejectWithValue }) => {
         try {
             const response = await api.get(`/scraps/memos/${articleId}`);
+            if (!response.data.data) {
+                console.log('📝 메모가 없습니다.');
+                return null;
+            }
             console.log('✅ 메모 조회 응답:', {
                 메모ID: response.data.data.memoId,
                 메모내용: response.data.data.content,
