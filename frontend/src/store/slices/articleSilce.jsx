@@ -97,6 +97,25 @@ export const fetchRecentArticles = createAsyncThunk(
     }
 )
 
+/**
+ * @param keyword : 검색 키워드
+ * @param page : 요청 할 페이지
+ * @param size : 요청 할 기사의 개수
+ */
+export const fetchSearchArticles = createAsyncThunk(
+    "article/fetchSearchArticles",  // Add this action type string
+    async ({ keyword = "", page = 1, size = 10 } = {}) => {
+        const response = await api.get("/articles/search", {
+            params: {
+                keyword,
+                page,
+                size,
+            }
+        });
+        return response.data;
+    }
+)
+
 
 /**
  * 기사 상세 조회
@@ -282,6 +301,30 @@ const articleSlice = createSlice({
                 state.currentPage += 1;
             })
             .addCase(fetchRecentArticles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            // 검색 기사 조회 상태 관리
+            .addCase(fetchSearchArticles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSearchArticles.fulfilled, (state, action) => {
+                state.loading = false;
+                if (state.currentPage === 0) {
+                    state.articles = action.payload.data.content;
+                } else {
+                    const newArticles = action.payload.data.content.filter(newArticle =>
+                        !state.articles.some(existingArticle =>
+                            existingArticle.articleId === newArticle.articleId
+                        )
+                    );
+                    state.articles = [...state.articles, ...newArticles];
+                }
+                state.hasMore = action.payload.data.content.length === 5;
+                state.currentPage += 1;
+            })
+            .addCase(fetchSearchArticles.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })
