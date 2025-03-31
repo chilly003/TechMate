@@ -14,7 +14,7 @@ import {
   updateFolder,
 } from "../store/slices/folderSlice";
 import { fetchScraps } from "../store/slices/scrapSlice";
-import { fetchNickname, fetchActivity, fetchQuizHistory } from "../store/slices/myPageSlice";
+import { fetchNickname, updateNickname, fetchActivity, fetchQuizHistory } from "../store/slices/myPageSlice";
 import { format, subMonths, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 
 
@@ -172,15 +172,39 @@ const Mypage = () => {
         }
         await dispatch(fetchFolders());
       }
-    } else if (!folderModalType && newNickname.trim()) {
-      setNickname(newNickname);
     }
+    // else if (!folderModalType && newNickname.trim()) {
+    //   setNickname(newNickname);
+    // }
     handleCloseModal();
   };
 
-  const handleEditClick = () => {
+
+  // Separate modal state for nickname
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+
+  const handleNicknameEdit = () => {
     setNewNickname(nickname || "");
-    setIsModalOpen(true);
+    setIsNicknameModalOpen(true);
+  };
+
+  // Add new state for success modal
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const handleNicknameUpdate = async () => {
+    try {
+      if (newNickname.trim()) {
+        const result = await dispatch(updateNickname(newNickname)).unwrap();
+        if (result) {
+          await dispatch(fetchNickname());
+          setIsNicknameModalOpen(false);
+          setNewNickname("");
+          setIsSuccessModalOpen(true); // Show success modal
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update nickname:', error);
+    }
   };
 
   const [folderModalType, setFolderModalType] = useState(null);
@@ -212,7 +236,7 @@ const Mypage = () => {
         </div>
         <div
           className="text-[#666] bg-gray-100 p-2 rounded-full cursor-pointer hover:bg-gray-200"
-          onClick={handleEditClick}
+          onClick={handleNicknameEdit}
         >
           <FiEdit2 size={20} />
         </div>
@@ -294,7 +318,7 @@ const Mypage = () => {
                             }}
                           />
                         );
-                        
+
                         const formattedDate = format(date, 'yyyy-MM-dd');
                         // console.log(formattedDate)
                         // Convert string to number and ensure it's a valid number
@@ -310,7 +334,7 @@ const Mypage = () => {
                           if (numCount >= 3) return '#216e39';
                           return '#ebedf0';  // default color
                         };
-                        
+
                         return (
                           <td
                             key={weekIdx}
@@ -351,23 +375,6 @@ const Mypage = () => {
         </div>
       </div>
 
-      {/* Existing Modal */}
-      {isModalOpen && (
-        <Modal
-          type="edit"
-          title="닉네임 수정"
-          onClose={handleCloseModal}
-          onConfirm={handleConfirm}
-        >
-          <input
-            type="text"
-            value={newNickname}
-            onChange={(e) => setNewNickname(e.target.value)}
-            placeholder="닉네임을 입력하세요"
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-          />
-        </Modal>
-      )}
 
       {/* Scrap Management Section - Moved inside main container */}
       <div className="w-full">
@@ -391,8 +398,8 @@ const Mypage = () => {
                       <button
                         key={folder.folderId}
                         className={`flex-1 px-2 relative whitespace-nowrap text-center text-sm md:text-base ${activeFolder === folder.folderName
-                            ? "text-black border-b-2 border-black -mb-1"
-                            : "text-gray-500"
+                          ? "text-black border-b-2 border-black -mb-1"
+                          : "text-gray-500"
                           }`}
                         onClick={() => {
                           setActiveFolder(folder.folderName);
@@ -437,6 +444,7 @@ const Mypage = () => {
           </div>
         </div>
 
+
         {/* Article Cards Grid */}
         <div className="mt-8">
           {scraps.length === 0 ? (
@@ -459,6 +467,30 @@ const Mypage = () => {
           )}
         </div>
       </div>
+
+      {/* 닉네임 수정 모달 */}
+      {isNicknameModalOpen && (
+        <Modal
+          type="edit"
+          title="닉네임 수정"
+          onClose={() => setIsNicknameModalOpen(false)}
+          onConfirm={handleNicknameUpdate}
+          value={newNickname}
+          onChange={(e) => setNewNickname(e.target.value)}
+          placeholder="닉네임을 입력하세요"
+        />
+      )}
+
+      {/* 닉네임 수정 완료 모달 */}
+      {isSuccessModalOpen && (
+        <Modal
+          type="confirm"
+          title="닉네임 수정"
+          message="닉네임이 변경되었습니다."
+          onClose={() => setIsSuccessModalOpen(false)}
+          onConfirm={() => setIsSuccessModalOpen(false)}
+        />
+      )}
 
       {/* Modal for folder actions */}
       {isModalOpen && folderModalType && (
