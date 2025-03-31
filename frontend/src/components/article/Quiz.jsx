@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitQuizAnswers } from '../../store/slices/quizSlice';
 
-const Quiz = ({ quizzes, onClose }) => {
-  // Add early return if no quizzes
+const Quiz = ({ articleId, quizzes, onClose }) => {
+  // 퀴즈가 없을 경우 처리
   if (!quizzes || quizzes.length === 0) {
     return (
       <div className="max-w-3xl mx-auto md:px-20 py-8 flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
@@ -16,33 +18,87 @@ const Quiz = ({ quizzes, onClose }) => {
     );
   }
 
+  // 퀴즈 데이터 가공
   const quizData = {
     quizzes: quizzes.map(quiz => ({
       ...quiz,
       options: quiz.options.map(option => ({
         ...option,
-        choice_rate: 0.33
+        choice_rate: option.option_selection_rate
       }))
     }))
   };
 
+  // 상태 관리 훅들
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState(new Array(quizzes?.length || 0).fill(null));
   const [showWarning, setShowWarning] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showFinalResults, setShowFinalResults] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
+  const quizAttemptStatus = useSelector((state) => state.quiz.quizAttemptStatus);
+  const selectedOptions = useSelector((state) => state.quiz.selectOptions);
+
+  // 이미 퀴즈를 푼 경우 초기 상태 설정
+  useEffect(() => {
+    if (quizAttemptStatus && selectedOptions && quizData.quizzes.length > 0) {
+      // 참조 동등성 문제 방지를 위해 map 함수 내부에서 직접 찾기
+      const initialAnswers = quizData.quizzes.map(quiz => {
+        const attemptedQuiz = selectedOptions.find(opt => opt.quizId === quiz.quiz_id);
+        return attemptedQuiz ? attemptedQuiz.optionId : null;
+      });
+
+      // 상태 업데이트 전에 변경 확인
+      setSelectedAnswers(prevAnswers => {
+        const isChanged = initialAnswers.some((answer, index) => answer !== prevAnswers[index]);
+        return isChanged ? initialAnswers : prevAnswers;
+      });
+
+      setShowFinalResults(true);
+    }
+  }, [quizAttemptStatus, selectedOptions, quizData.quizzes]);
+
+  // 진행 상태 계산
   const progress = ((currentQuestion + 1) / quizData.quizzes.length) * 100;
 
-  // handleAnswerSelect 수정
+  const dispatch = useDispatch();
+
+  // 최종 결과 제출 함수 (API 호출)
+  const submitQuizResults = async () => {
+    try {
+      const finalDetailedAnswers = quizData.quizzes.map((quiz, index) => ({
+        quizId: quiz.quiz_id,
+        selectedOptionId: selectedAnswers[index]
+      }));
+
+      console.log(finalDetailedAnswers);
+
+      // API 호출 (주석 해제 필요)
+      const response = await dispatch(submitQuizAnswers({
+        articleId: articleId,
+        answers: finalDetailedAnswers
+      })).unwrap();
+
+      console.log('퀴즈 답변 제출 성공', response);
+    } catch (error) {
+      console.error('퀴즈 답변 제출 실패', error);
+      setSubmitError('퀴즈 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // 답변 선택 핸들러
   const handleAnswerSelect = (optionId) => {
     const newAnswers = [...selectedAnswers];
     newAnswers[currentQuestion] = optionId;
     setSelectedAnswers(newAnswers);
-    setShowWarning(false); // 선택하면 경고 메시지 숨기기
+    setShowWarning(false);
   };
 
-  // handleNext 수정
+  // 다음 단계로 진행 핸들러
   const handleNext = () => {
     if (selectedAnswers[currentQuestion] === null) {
       setShowWarning(true);
@@ -52,12 +108,13 @@ const Quiz = ({ quizzes, onClose }) => {
     setShowResult(true);
   };
 
-
+  // 이전 결과 보기 핸들러
   const handlePrevResult = () => {
     setShowResult(true);
     setCurrentQuestion(currentQuestion - 1);
   };
 
+  // 계속 진행 핸들러
   const handleContinue = () => {
     setShowResult(false);
     if (currentQuestion < quizData.quizzes.length - 1) {
@@ -67,21 +124,13 @@ const Quiz = ({ quizzes, onClose }) => {
     }
   };
 
+  // 현재 퀴즈 가져오기
   const getCurrentQuiz = () => quizData.quizzes[currentQuestion];
 
-  const calculateScore = () => {
-    const correctAnswers = selectedAnswers.filter((answer, index) => {
-      const quiz = quizData.quizzes[index];
-      const selectedOption = quiz.options.find(opt => opt.option_id === answer);
-      return selectedOption?.is_correct;
-    }).length;
-    return (correctAnswers / quizData.quizzes.length) * 100;
-  };
-
+  // 최종 결과 화면
   if (showFinalResults) {
     return (
       <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
-        {/* <h2 className="text-2xl font-bold mb-8">퀴즈 결과</h2> */}
         {quizData.quizzes.map((quiz, index) => (
           <div key={quiz.quiz_id} className="mb-12">
             <h3 className="text-xl font-semibold mb-6">
@@ -101,7 +150,6 @@ const Quiz = ({ quizzes, onClose }) => {
                       : 'border-gray-200 bg-white'
                     }`}
                 >
-                  {/* Background bar for choice rate */}
                   <div
                     className={`absolute top-0 left-0 h-full transition-all duration-500 ${option.is_correct
                       ? 'bg-green-100'
@@ -111,7 +159,6 @@ const Quiz = ({ quizzes, onClose }) => {
                       }`}
                     style={{ width: `${option.choice_rate * 100}%` }}
                   />
-                  {/* Content */}
                   <div className="relative flex justify-between items-center z-10">
                     <div>
                       {String.fromCharCode(64 + option.option_id)}. {option.text}
@@ -126,16 +173,32 @@ const Quiz = ({ quizzes, onClose }) => {
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-600">
-                {quiz.explanation}
+                {quiz.reason}
               </p>
             </div>
           </div>
         ))}
 
-        {/* Navigation buttons */}
+        {/* 제출 오류 메시지 */}
+        {submitError && (
+          <div className="bg-red-50 border border-red-500 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            {submitError}
+          </div>
+        )}
+
+        {/* 제출 로딩 상태 */}
+        {isSubmitting && (
+          <div className="text-center text-gray-600 mb-4">
+            퀴즈 결과를 제출하는 중입니다...
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row justify-between gap-4 mt-16 mb-8">
           <button
             onClick={() => {
+              if (!quizAttemptStatus) {
+                submitQuizResults();
+              }
               onClose();
             }}
             className="px-8 md:px-16 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors w-full md:w-auto"
@@ -143,7 +206,12 @@ const Quiz = ({ quizzes, onClose }) => {
             기사 보기
           </button>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => {
+              if (!quizAttemptStatus) {
+                submitQuizResults();
+              }
+              window.location.href = '/home';
+            }}
             className="px-8 md:px-16 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors w-full md:w-auto"
           >
             홈으로 가기
@@ -153,17 +221,16 @@ const Quiz = ({ quizzes, onClose }) => {
     );
   }
 
+  // 결과 화면
   if (showResult) {
     const quiz = getCurrentQuiz();
     const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestion]);
     return (
       <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
-        {/* Question Counter */}
         <div className="text-right mb-4">
           Question {currentQuestion + 1} / {quizData.quizzes.length}
         </div>
 
-        {/* Progress Bar */}
         <div className="relative">
           <div className="w-full h-2 bg-gray-200 rounded-full">
             <div
@@ -213,7 +280,7 @@ const Quiz = ({ quizzes, onClose }) => {
           {currentQuestion > 0 && (
             <button
               onClick={handlePrevResult}
-              className="px-10 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-10 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200"
             >
               이전
             </button>
@@ -229,6 +296,7 @@ const Quiz = ({ quizzes, onClose }) => {
     );
   }
 
+  // 기본 퀴즈 화면
   return (
     <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
       <div className="text-right mb-4">
@@ -263,7 +331,6 @@ const Quiz = ({ quizzes, onClose }) => {
       </h2>
 
       <div className="flex flex-col gap-4">
-
         {getCurrentQuiz().options.map((option) => (
           <button
             key={option.option_id}
@@ -281,7 +348,6 @@ const Quiz = ({ quizzes, onClose }) => {
             정답을 선택해주세요
           </div>
         )}
-
       </div>
 
       <div className="flex justify-end gap-4 mt-10">

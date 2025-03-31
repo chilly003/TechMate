@@ -67,17 +67,44 @@ const Header = () => {
 
                     <button
                         onClick={() => setIsMenuOpen(true)}
-                        className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${isMenuOpen ? 'opacity-0' : 'opacity-100'
-                            }`}
+                        className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
                     >
-                        <RiMenu3Line className="text-2xl" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="36"
+                            height="36"
+                            viewBox="0 0 36 36"
+                            className="text-white"
+                        >
+                            <rect
+                                x="4"
+                                y="8"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                            <rect
+                                x="4"
+                                y="16"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                            <rect
+                                x="4"
+                                y="24"
+                                width="28"
+                                height="4"
+                                fill="currentColor"
+                            />
+                        </svg>
                     </button>
                 </div>
             </header>
 
             {/* 사이드 패널 */}
             <div
-                className={`fixed top-0 right-0 h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[50] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-screen bg-[#FDFBF7] shadow-lg transform transition-transform duration-300 ease-in-out z-[50] w-full md:w-1/2 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col justify-between">
@@ -111,7 +138,7 @@ const Header = () => {
                         </div>
 
                         {/* 메뉴 내용 */}
-                        <div className="px-4 md:px-0 pt-2 md:pt-0">
+                        <div className="px-8 md:px-8 pt-2 md:pt-0">
                             {/* 검색바 */}
                             <div className="flex-1 relative border-b-2 border-black pb-2 md:pb-3">
                                 <form onSubmit={handleSearch} className="flex items-center">
@@ -147,12 +174,12 @@ const Header = () => {
                             </div>
 
                             {/* Regular Categories */}
-                            <ul className="pt-6 md:pt-8 space-y-4 md:space-y-3">
+                            <ul className="pt-6 pb-26 md:pt-8 space-y-4 md:space-y-3">
                                 {['전체', 'IT 일반', '모바일', 'SNS', '통신', '보안', 'AI', '게임'].map((item) => (
                                     <li key={item}>
                                         <Link
                                             to={`/home?category=${item === '전체' ? 'all' : item}`}
-                                            className="block text-lg md:text-h2 font-black hover:text-gray-600 transition-all"
+                                            className="block text-h3 md:text-h2 font-black hover:text-gray-600 transition-all"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             {item}
@@ -166,7 +193,7 @@ const Header = () => {
 
                         {/* 하단 버튼 영역 */}
                         <div className="px-4 md:px-6 flex justify-end gap-2 mt-8 md:mt-0">
-                            <Link to="/mypage">
+                            <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                                 <button className='p-2 md:p-3 hover:bg-gray-100 rounded-full transition-colors'>
                                     <FaRegUser className="text-xl md:text-2xl" />
                                 </button>

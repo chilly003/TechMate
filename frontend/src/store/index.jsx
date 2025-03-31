@@ -3,8 +3,9 @@ import articleReducer from './slices/articleSilce';
 import memoReducer from './slices/memoSlice';
 import folderReducer from './slices/folderSlice';
 import userProfileReducer from './slices/userProfileSlice';
-import scrapSlice from './slices/scrapSlice';
-import { memo } from 'react';
+import quizReducer from './slices/quizSlice';
+import myPageReducer from './slices/myPageSlice';
+import scrapReducer from './slices/scrapSlice';
 
 
 const store = configureStore({
@@ -12,8 +13,10 @@ const store = configureStore({
         article: articleReducer,
         folder: folderReducer,
         userProfile: userProfileReducer,
-        scrap : scrapSlice,
-        memo : memoReducer,
+        myPage: myPageReducer,
+        scrap: scrapReducer,
+        memo: memoReducer,
+        quiz: quizReducer,
         // ... other reducers
     },
 });
