@@ -258,9 +258,8 @@ const ArticlePage = () => {
 
       {/* Side Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
-          isSidePanelOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="h-full  overflow-hidden">
           <button
@@ -326,21 +325,18 @@ const ArticlePage = () => {
 
       {/* Main Content Wrapper */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSidePanelOpen ? "md:w-1/2" : "w-full"
-        }`}
+        className={`transition-all duration-300 ease-in-out ${isSidePanelOpen ? "md:w-1/2" : "w-full"
+          }`}
       >
         {/* Hero Section */}
         <div
-          className={`fixed inset-0 flex flex-col ${
-            isSidePanelOpen ? "" : "md:flex-row"
-          } h-[50vh] md:h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
+          className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? "" : "md:flex-row"
+            } h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
         >
           {/* Image Section */}
           <div
-            className={`relative w-full h-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } overflow-hidden`}
+            className={`relative w-full h-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } overflow-hidden`}
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -350,23 +346,18 @@ const ArticlePage = () => {
               }}
             />
             <div
-              className={`absolute inset-0 bg-black/50 ${
-                isSidePanelOpen ? "" : "md:hidden"
-              }`}
+              className={`absolute inset-0 bg-black/50`}
             />
           </div>
 
           {/* Text Section */}
           <div
-            className={`absolute ${
-              isSidePanelOpen ? "" : "md:relative"
-            } w-full ${
-              isSidePanelOpen ? "" : "md:w-1/2"
-            } h-full flex items-center ${
-              isSidePanelOpen
+            className={`absolute ${isSidePanelOpen ? "" : "md:relative"
+              } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
+              } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
-                : "md:bg-[rgb(var(--avg-color))]"
-            }`}
+                : "md:bg-[#967259]"
+              }`}
             style={{
               ...sharedStyle,
               "--avg-color": `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
@@ -374,36 +365,38 @@ const ArticlePage = () => {
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
-                className={`text-xl text-white font-bold ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } mb-4`}
+                className={`text-xl text-white font-bold ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
+                  } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-7xl font-extrabold mb-6 md:mb-8 leading-tight text-white 
+                className={`text-4xl md:text-h1 font-extrabold mb-6 md:mb-8 leading-tight text-white
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 underline underline-offset-8 ${
-                                  isSidePanelOpen
-                                    ? "decoration-white"
-                                    : "md:decoration-current"
-                                }`}
+                                decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] ${isSidePanelOpen
+                    ? "decoration-white"
+                    : "md:decoration-current"
+                  }`}
               >
                 {article?.title}
               </h1>
               <p
-                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-80`}
+                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-80`}
               >
                 {article?.summary}
               </p>
               <p
-                className={`text-sm md:text-base text-white ${
-                  isSidePanelOpen ? "" : "md:" + textColor
-                } opacity-70`}
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
               >
                 {article?.reporter}
+              </p>
+              <p
+                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                  } opacity-70`}
+              >
+                {article?.datetime}
               </p>
             </div>
           </div>
@@ -411,37 +404,62 @@ const ArticlePage = () => {
 
         {/* Content Section - Adjust width when side panel is open */}
         <div className="relative">
-          <div className="h-[50vh] md:h-screen" />
-          <div className="relative bg-white min-h-screen z-10">
+          <div className="h-screen" />
+          <div className="relative bg-[#FDFBF7] min-h-screen z-10">
             <div className="w-full flex flex-col items-center">
               <div
-                className={`w-full px-8 ${
-                  isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
-                } md:px-0 pt-16 md:pt-24 pb-10`}
+                className={`w-full px-8 ${isSidePanelOpen ? "md:w-[85%]" : "md:w-[50%]"
+                  } md:px-0 pt-16 md:pt-24 pb-10`}
               >
                 <div className="text-left space-y-8">
-                  {article?.content?.split("\n").map((paragraph, index) => {
+                  {article?.content?.split("\n").map((paragraph, index, paragraphs) => {
                     // Skip empty paragraphs
                     if (!paragraph.trim()) return null;
 
-                    // Check if paragraph is a photo description (contains reporter name and email)
+                    const elements = [];
+
+                    // Check if we should insert an image before this paragraph
+                    // Skip first image as it's used in the hero section
+                    if (article?.images && article.images.length > 1 && index > 0) {
+                      // Calculate which image to show (excluding the first image)
+                      const currentImageIndex = Math.floor(index / 3) + 1; // Every 3 paragraphs
+                      if (currentImageIndex < article.images.length && index % 3 === 0) {
+                        const image = article.images[currentImageIndex];
+                        elements.push(
+                          <div key={`image-${currentImageIndex}`} className="my-8">
+                            <img
+                              src={image.imageUrl}
+                              alt={image.caption || "Article image"}
+                              className="w-full h-auto rounded-lg shadow-lg"
+                            />
+                            {image.caption && (
+                              <p className="mt-2 text-sm text-gray-500 italic">
+                                {image.caption}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      }
+                    }
+
+                    // Check if paragraph is a photo description
                     const isPhotoDesc =
                       paragraph.includes("@") &&
                       (paragraph.includes("기자") ||
                         paragraph.includes("연합뉴스"));
 
-                    return (
+                    // Add the paragraph
+                    elements.push(
                       <p
-                        key={index}
-                        className={`${
-                          isPhotoDesc
-                            ? "text-gray-500 text-sm italic"
-                            : "text-lg leading-relaxed text-gray-800"
-                        } ${index === 0 ? "font-semibold text-xl" : ""}`}
+                        key={`paragraph-${index}`}
+                        className={`${isPhotoDesc ? "text-gray-500 text-sm italic" : "text-lg leading-relaxed text-gray-800"} 
+                        ${index === 0 ? "font-semibold text-xl" : ""}`}
                       >
                         {paragraph.trim()}
                       </p>
                     );
+
+                    return elements;
                   })}
                 </div>
               </div>
