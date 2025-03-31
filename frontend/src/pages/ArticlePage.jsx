@@ -317,7 +317,7 @@ const ArticlePage = () => {
                 />
               )
             ) : (
-              <Memo />
+              <Memo articleId={id} />
             )}
           </div>
         </div>

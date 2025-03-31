@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMemo, updateMemo } from "../../store/slices/memoSlice";
 import { fetchFolders } from "../../store/slices/folderSlice";
 import { addScrap, removeScrap } from "../../store/slices/scrapSlice";
+import Modal from "../common/Modal";
 
 const CustomComponents = {
   h1: ({ children }) => (
@@ -63,28 +64,29 @@ const Memo = ({ articleId }) => {
   const [markdown, setMarkdown] = useState("# 마크다운을 입력하세요");
   const [isPreview, setIsPreview] = useState(false);
   const [category, setCategory] = useState("");
-  
+  const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
+
   const handleFolderChange = async (e) => {
     const newFolderId = e.target.value;
-    
+
     if (memo?.scrapId && articleId) {
       try {
         await dispatch(removeScrap(memo.scrapId));
-        
+
         await dispatch(addScrap({
           articleId: articleId,
           folderId: newFolderId
         }));
 
         await dispatch(fetchMemo(articleId));
-        
+
         setCategory(newFolderId);
       } catch (error) {
         console.error("Error changing folder:", error);
       }
     }
   };
-  
+
 
   useEffect(() => {
     console.log("📝 메모 컴포넌트가 마운트되었습니다");
@@ -92,20 +94,35 @@ const Memo = ({ articleId }) => {
 
     if (articleId) {
       dispatch(fetchMemo(articleId)).then((response) => {
-        // 새로운 메모인 경우 (response가 없거나 content가 없는 경우)
-        if (!response.payload || !response.payload.content) {
-          setMarkdown("# 마크다운을 입력하세요");
-          // 새로 생성된 폴더 ID를 찾아서 설정
-          const latestFolder = folders?.content?.[0];
-          if (latestFolder) {
-            setCategory(latestFolder.folderId.toString());
+        // 기존 메모가 있는 경우
+        if (response.payload?.content) {
+          setMarkdown(response.payload.content);
+          // 메모의 폴더 ID로 카테고리 설정
+          if (response.payload.folderId) {
+            setCategory(response.payload.folderId.toString());
           }
+
+        // 새로운 메모인 경우
+        } else {
+          setMarkdown("# 마크다운을 입력하세요");
         }
+        // 폴더 ID 설정
+        // const latestFolder = folders?.content?.[0];
+        // if (latestFolder) {
+        //   setCategory(latestFolder.folderId.toString());
+        // }
       });
       dispatch(fetchFolders());
     }
-  }, [dispatch, articleId]); // folders 제거
-  
+  }, [dispatch, articleId]);
+
+  // Add this new useEffect to update markdown when memo changes
+  useEffect(() => {
+    if (memo?.content) {
+      setMarkdown(memo.content);
+    }
+  }, [memo]);
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -129,16 +146,16 @@ const Memo = ({ articleId }) => {
   ).padStart(2, "0")}/${String(currentDate.getDate()).padStart(2, "0")}`;
 
 
-  const handleSave = () => {
-    console.log("현재 메모 데이터:", memo); // 디버깅용
+  const handleSave = async () => {
     if (memo?.memoId) {
-      // memo 객체에서 memoId를 확인
-      dispatch(
-        updateMemo({
-          memoId: memo.memoId,
-          content: markdown,
-        })
-      );
+      await dispatch(updateMemo({
+        memoId: memo.memoId,
+        content: markdown,
+      }));
+      // 저장 후 메모 다시 불러오기
+      const response = await dispatch(fetchMemo(articleId));
+      console.log("수정된 메모 데이터:", response.payload); // 업데이트된 데이터 로깅
+      setShowSaveConfirmModal(true);
     }
   };
 
@@ -187,7 +204,7 @@ const Memo = ({ articleId }) => {
             </svg>
           </div>
           <div className="flex-grow">
-            <label className="text-sm text-gray-500">파일</label>
+            <label className="text-sm text-gray-500">폴더</label>
             <select
               value={category}
               onChange={handleFolderChange}
@@ -240,6 +257,17 @@ const Memo = ({ articleId }) => {
         color="from-[#1B2C7A] to-[#72B7CA] fixed bottom-8 right-8"
         onClick={togglePreview}
       />
+
+      {/* 메모 저장 확인 모달 */}
+      {showSaveConfirmModal && (
+        <Modal
+          type="confirm"
+          title="메모 저장"
+          message="메모가 저장되었습니다."
+          onClose={() => setShowSaveConfirmModal(false)}
+          onConfirm={() => setShowSaveConfirmModal(false)}
+        />
+      )}
     </div>
   );
 };
