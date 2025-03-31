@@ -19,11 +19,15 @@ export const fetchNickname = createAsyncThunk(
 // 닉네임 수정 액션
 export const updateNickname = createAsyncThunk(
     'myPage/updateNickname',
-    async (nickname) => {
-        console.log('닉네임 수정 요청:', nickname);
-        const response = await api.patch('/users/nickname', { nickname });
-        console.log('✅ 닉네임 수정 성공:', response.data);
-        return response.data.data;
+    async (nickname, { rejectWithValue }) => {
+        try {
+            const response = await api.patch('/users/nickname', { nickname });
+            console.log('✅ 닉네임 수정 성공:', response.data);
+            return response.data.data;
+        } catch (err) {
+            console.error('❌ 닉네임 수정 실패:', err);
+            return rejectWithValue(err.response?.data?.message || '닉네임 수정에 실패했습니다.');
+        }
     }
 );
 
@@ -110,7 +114,7 @@ const myPageSlice = createSlice({
             })
             .addCase(updateNickname.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;  // Now contains the error message
             })
 
             // 활동 내역 조회

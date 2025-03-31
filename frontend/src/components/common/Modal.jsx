@@ -10,6 +10,7 @@ const Modal = ({
     options,
     value,
     onChange,
+    placeholder = "폴더명을 입력하세요",  // Add default placeholder
     children
 }) => {
     const renderContent = () => {
@@ -53,7 +54,7 @@ const Modal = ({
                             type="text"
                             value={value || ''}
                             onChange={(e) => onChange && onChange(e)}
-                            placeholder="폴더명을 입력하세요"
+                            placeholder={placeholder}  // Use the placeholder prop
                             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                             autoFocus
                         />
