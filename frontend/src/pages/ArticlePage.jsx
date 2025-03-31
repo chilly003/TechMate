@@ -475,9 +475,6 @@ const ArticlePage = () => {
               </div>
 
               {/* Related Articles Section - Full width */}
-              <div className="w-full bg-gray-50 py-16"></div>
-
-              {/* Related Articles Section - Full width */}
               <div className="w-full bg-[#FDFBF7] py-16">
                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
                   <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
