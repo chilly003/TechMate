@@ -10,6 +10,7 @@ import Memo from "../components/article/Memo";
 import Quiz from "../components/article/Quiz";
 import Modal from "../components/common/Modal";
 import { fetchFolders, createFolder } from "../store/slices/folderSlice";
+import { fetchQuizzes } from "../store/slices/quizSlice";
 import {
   fetchArticleDetail,
   toggleLikeArticle,
@@ -31,9 +32,12 @@ const ArticlePage = () => {
   const [newFolderName, setNewFolderName] = useState("");
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error, liked, scraped, scrapId } = useSelector((state) => state.article);
+  const { article, status, error, liked, scraped, scrapId } = useSelector(
+    (state) => state.article
+  );
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
+  const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -54,6 +58,7 @@ const ArticlePage = () => {
 
   // 퀴즈 버튼 클릭 핸들러 추가
   const handleQuizClick = () => {
+    dispatch(fetchQuizzes(id));
     setShowQuiz(true);
     setIsSidePanelOpen(true);
   };
@@ -155,9 +160,7 @@ const ArticlePage = () => {
           text={<FiEdit size={24} />}
           color="from-green-500 to-green-600"
           onClick={handleSidePanelToggle}
-          className={
-            scraped ? "opacity-100" : "opacity-0 pointer-events-none"
-          }
+          className={scraped ? "opacity-100" : "opacity-0 pointer-events-none"}
         />
 
         <FloatingButton
@@ -253,7 +256,6 @@ const ArticlePage = () => {
         />
       )}
 
-
       {/* Side Panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${
@@ -288,9 +290,35 @@ const ArticlePage = () => {
             style={{ overscrollBehavior: "contain" }}
           >
             {showQuiz ? (
-              <Quiz quizzes={article?.quizzes} onClose={handleCloseSidePanel} />
+              quizLoading ? (
+                <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
+                  <div className="flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
+                      <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">
+                        퀴즈 생성 중
+                      </p>
+                      <p className="text-xl text-gray-600">
+                        잠시만 기다려주세요
+                      </p>
+                      <p className="text-sm text-gray-500 mt-2">
+                        곧 퀴즈가 준비됩니다!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Quiz
+                  articleId={id}
+                  quizzes={quizzes}
+                  onClose={handleCloseSidePanel}
+                />
+              )
             ) : (
-              <Memo articleId={id} />
+              <Memo />
             )}
           </div>
         </div>
