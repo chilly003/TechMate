@@ -34,7 +34,7 @@ export default {
       fontSize: {
         display: ["3.75rem", { lineHeight: "1.2" }], // 60px
         h1: ["5rem", { lineHeight: "1.2" }], // 48px
-        h2: ["3.25rem", { lineHeight: "1.3" }], // 36px
+        h2: ["2.25rem", { lineHeight: "1.3" }], // 36px
         h3: ["1.875rem", { lineHeight: "1.4" }], // 30px
         h4: ["1.5rem", { lineHeight: "1.4" }], // 24px
         h5: ["1.25rem", { lineHeight: "1.4" }], // 20px
