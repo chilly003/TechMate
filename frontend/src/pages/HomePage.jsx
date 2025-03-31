@@ -6,7 +6,7 @@ import ArticleCard from '../components/article/ArticleCard';
 import MainArticleSkeleton from '../components/article/MainArticleSkeleton';
 import ArticleCardSkeleton from '../components/article/ArticleCardSkeleton';
 // Update the import to include fetchRecentArticles
-import { fetchCategoryArticles, fetchRecommendArticles, resetArticle, fetchHotArticles, fetchRecentArticles } from '../store/slices/articleSilce';
+import { fetchCategoryArticles, fetchRecommendArticles, resetArticle, fetchHotArticles, fetchRecentArticles, fetchSearchArticles } from '../store/slices/articleSilce';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -21,6 +21,7 @@ const HomePage = () => {
     // Get category from URL query params
     const searchParams = new URLSearchParams(location.search);
     const category = searchParams.get('category');
+    const keyword = searchParams.get('search');
 
     // Create sections of articles (10 articles per section)
     const sections = [];
@@ -52,18 +53,31 @@ const HomePage = () => {
                         page: currentPage,
                         size: 5
                     }));
+                } else if (category == "" && keyword) {
+                    dispatch(fetchSearchArticles({
+                        keyword,
+                        page: currentPage,
+                        size: 5
+                    }));
+
                 } else {
                     dispatch(fetchRecommendArticles(currentPage));
                 }
             }
         });
         if (node) observer.current.observe(node);
-    }, [loading, hasMore, currentPage, category]);
+    }, [loading, hasMore, currentPage, category, keyword]); // Add keyword to dependency array
 
     // Update the initial data fetch
     useEffect(() => {
-        dispatch(resetArticle()); // Reset state when category changes
-        if (category === 'hot') {
+        dispatch(resetArticle()); // Reset state when search or category changes
+        if (keyword) {
+            dispatch(fetchSearchArticles({
+                keyword,
+                page: 0,
+                size: 20
+            }));
+        } else if (category === 'hot') {
             dispatch(fetchHotArticles({ page: 0, size: 5 }));
         } else if (category === 'recent') {
             dispatch(fetchRecentArticles({ page: 0, size: 5 }));
@@ -72,15 +86,16 @@ const HomePage = () => {
         } else {
             dispatch(fetchRecommendArticles(0));
         }
-    }, [dispatch, category]);
+    }, [dispatch, category, keyword]); // Add keyword to dependency array
 
-    // Add scroll to top effect when category changes
+    // Remove the duplicate useEffect for initial data fetch
+    // Keep only the useLayoutEffect for scroll behavior
     useLayoutEffect(() => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
-    }, [category]);
+    }, [category, keyword]);
 
     // Initial data fetch based on category
     useEffect(() => {
