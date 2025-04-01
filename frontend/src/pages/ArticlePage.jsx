@@ -365,13 +365,13 @@ const ArticlePage = () => {
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
-                className={`text-xl text-white font-bold ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-xl text-white font-['Pretendard-Black'] ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
                   } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-h1 font-extrabold mb-6 md:mb-8 leading-tight text-white
+                className={`text-4xl md:text-h1 font-['Pretendard-Black'] mb-6 md:mb-8 leading-tight text-white
                                 ${isSidePanelOpen ? "" : "md:" + textColor}
                                 decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] ${isSidePanelOpen
                     ? "decoration-white"

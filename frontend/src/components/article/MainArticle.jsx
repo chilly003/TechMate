@@ -28,7 +28,7 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
                         {category}
                     </h2>
 
-                    <h2 className="font-['Pretendard-Black'] text-3xl md:text-h2 leading-tight tracking-tight">
+                    <h2 className="font-['Pretendard-Black'] text-3xl md:text-h1 leading-tight tracking-tight">
                         {title}
                     </h2>
 
