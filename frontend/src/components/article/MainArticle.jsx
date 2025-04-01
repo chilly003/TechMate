@@ -24,11 +24,11 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
 
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 text-white z-20">
                 <div className="space-y-4 w-[80%]">
-                    <h2 className="text-xl md:text-2xl font-bold leading-tight tracking-tight">
+                    <h2 className="font-['Pretendard-Black'] text-xl md:text-2xl leading-tight tracking-tight">
                         {category}
                     </h2>
 
-                    <h2 className="text-3xl md:text-5xl font-bold leading-tight tracking-tight">
+                    <h2 className="font-['Pretendard-Black'] text-3xl md:text-h2 leading-tight tracking-tight">
                         {title}
                     </h2>
 
