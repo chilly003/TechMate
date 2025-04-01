@@ -33,7 +33,7 @@ const KakaoCallback = () => {
       // 3. 회원가입/로그인 분기 처리
       const endpoint = isRegistered ? '/login' : '';
       const authResponse = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}api/v1/credentials${endpoint}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials${endpoint}`,
         null,
         {
           params: {
