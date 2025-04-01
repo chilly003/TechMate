@@ -27,14 +27,13 @@ const ArticlePage = () => {
   const [textColor, setTextColor] = useState("text-black");
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [showFolderModal, setShowFolderModal] = useState(false);
-  const [showFolderNameModal, setShowFolderNameModal] = useState(false);
+  const [currentScrapId, setCurrentScrapId] = useState(null);
+  const [isNewFolderMode, setIsNewFolderMode] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [showFolderModal, setShowFolderModal] = useState(false);
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error, liked, scraped, scrapId } = useSelector(
-    (state) => state.article
-  );
+  const { article, liked, scraped, scrapId, status, error } = useSelector((state) => state.article);
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
@@ -43,10 +42,14 @@ const ArticlePage = () => {
   useEffect(() => {
     dispatch(fetchArticleDetail(id));
     dispatch(fetchFolders());
-    // Remove the unnecessary scraped state check since we're using Redux store
-  }, [dispatch, id]);
-
-  // console.log(article)
+    // Find and set current scrap ID
+    if (scraped) {
+      const scrap = scraps?.content?.find(
+        (scrap) => scrap.articleId === parseInt(id)
+      );
+      setCurrentScrapId(scrap?.scrapId || null);
+    }
+  }, [dispatch, id, scraped]);
 
   // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
@@ -69,15 +72,38 @@ const ArticlePage = () => {
     setShowQuiz(false);
   };
 
+
+  // Modal handlers
+  const handleAddScrap = (folderId) => {
+    dispatch(addScrap({ articleId: id, folderId }))
+      .unwrap()
+      .then(() => {
+        setShowFolderModal(false);
+        setIsSidePanelOpen(true);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
+  const handleRemoveScrap = () => {
+    dispatch(removeScrap(scrapToRemove))
+      .unwrap()
+      .then(() => {
+        setShowUnscrapModal(false);
+        setIsSidePanelOpen(false);
+        dispatch(fetchArticleDetail(id)); // Refresh article details to update scraped status
+      });
+  };
+
   // Modify scrap button click handler
   const handleScrapButtonClick = () => {
     if (scraped) {
-      setScrapToRemove(scrapId); // articleSlice의 scrapId 사용
+      setScrapToRemove(scrapId);  // articleSlice의 scrapId 사용
       setShowUnscrapModal(true);
     } else {
       setShowFolderModal(true);
     }
   };
+
 
   // Add this useEffect for scroll reset
   // Modify the scroll reset useEffect
@@ -160,7 +186,9 @@ const ArticlePage = () => {
           text={<FiEdit size={24} />}
           color="from-green-500 to-green-600"
           onClick={handleSidePanelToggle}
-          className={scraped ? "opacity-100" : "opacity-0 pointer-events-none"}
+          className={
+            scraped ? "opacity-100" : "opacity-0 pointer-events-none"
+          }
         />
 
         <FloatingButton
@@ -172,43 +200,30 @@ const ArticlePage = () => {
             dispatch(toggleLikeArticle(id));
           }}
         />
+
         <FloatingButton
           text={
             scraped ? <BsBookmarkFill size={24} /> : <BsBookmark size={24} />
           }
           color="from-blue-500 to-blue-600"
+          // onClick={() => {
+          //   if (scraped) {
+          //     const currentScrap = scraps.content.find(
+          //       (scrap) => scrap.articleId === parseInt(id)
+          //     );
+          //     if (currentScrap) {
+          //       setScrapToRemove(currentScrap.scrapId);
+          //       setShowUnscrapModal(true);
+          //     }
+          //   } else {
+          //     setShowFolderModal(true);
+          //   }
+          // }}
           onClick={handleScrapButtonClick}
         />
       </div>
 
-      {/* Folder Selection Modal */}
-      {showFolderModal && (
-        <Modal
-          type="select"
-          title="스크랩할 폴더 선택"
-          options={folders?.content?.map((folder) => ({
-            label: folder.folderName,
-            value: folder.folderId,
-          }))}
-          onClose={() => setShowFolderModal(false)}
-          onConfirm={(option) => {
-            if (option.type === "new_folder") {
-              setShowFolderModal(false);
-              setShowFolderNameModal(true);
-              return;
-            }
-            dispatch(addScrap({ articleId: id, folderId: option.value }))
-              .unwrap()
-              .then(() => {
-                setShowFolderModal(false);
-                setIsSidePanelOpen(true);
-                dispatch(fetchArticleDetail(id)); // 스크랩 후 기사 정보 새로고침
-              });
-          }}
-        />
-      )}
-
-      {/* scrap remove Modal */}
+      {/*scrap remove Modal */}
       {showUnscrapModal && (
         <Modal
           type="confirm"
@@ -220,37 +235,49 @@ const ArticlePage = () => {
             </>
           }
           onClose={() => setShowUnscrapModal(false)}
-          onConfirm={() => {
-            dispatch(removeScrap(scrapToRemove))
-              .unwrap()
-              .then(() => {
-                setShowUnscrapModal(false);
-                setIsSidePanelOpen(false);
-                dispatch(fetchArticleDetail(id)); // 스크랩 취소 후 기사 정보 새로고침
-              });
+          onConfirm={handleRemoveScrap}
+        />
+      )}
+
+      {/* Folder Selection Modal */}
+      {showFolderModal && !isNewFolderMode && (
+        <Modal
+          type="select"
+          title="스크랩할 폴더 선택"
+          options={folders?.content?.map((folder) => ({
+            label: folder.folderName,
+            value: folder.folderId,
+          }))}
+          onClose={() => setShowFolderModal(false)}
+          onConfirm={(option) => {
+            if (option.type === "new_folder") {
+              setIsNewFolderMode(true);
+            } else {
+              handleAddScrap(option.value);
+            }
           }}
         />
       )}
 
-      {/* New Folder Name Modal */}
-      {showFolderNameModal && (
+      {showFolderModal && isNewFolderMode && (
         <Modal
           type="edit"
           title="새 폴더 만들기"
           value={newFolderName}
           onChange={(e) => setNewFolderName(e.target.value)}
           onClose={() => {
-            setShowFolderNameModal(false);
-            setNewFolderName("");
+            setIsNewFolderMode(false);
+            setShowFolderModal(false);
           }}
-          onConfirm={() => {
-            if (newFolderName.trim()) {
-              dispatch(createFolder(newFolderName.trim())).then(() => {
-                dispatch(fetchFolders()); // 폴더 목록 새로고침
-                setShowFolderNameModal(false);
-                setNewFolderName("");
-                setShowFolderModal(true); // 폴더 선택 모달 다시 열기
-              });
+          onConfirm={async () => {
+            try {
+              const result = await dispatch(createFolder(newFolderName)).unwrap();
+              await dispatch(fetchFolders());
+              handleAddScrap(result.data.folderId);
+              setIsNewFolderMode(false);
+              setNewFolderName("");
+            } catch (error) {
+              console.error('Failed to create folder:', error);
             }
           }}
         />
@@ -297,27 +324,17 @@ const ArticlePage = () => {
                       <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
                     </div>
                     <div>
-                      <p className="text-3xl font-bold text-gray-800 mb-4">
-                        퀴즈 생성 중
-                      </p>
-                      <p className="text-xl text-gray-600">
-                        잠시만 기다려주세요
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        곧 퀴즈가 준비됩니다!
-                      </p>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">퀴즈 생성 중</p>
+                      <p className="text-xl text-gray-600">잠시만 기다려주세요</p>
+                      <p className="text-sm text-gray-500 mt-2">곧 퀴즈가 준비됩니다!</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <Quiz
-                  articleId={id}
-                  quizzes={quizzes}
-                  onClose={handleCloseSidePanel}
-                />
+                <Quiz articleId={id} quizzes={quizzes} onClose={handleCloseSidePanel} />
               )
             ) : (
-              <Memo articleId={id} />
+              <Memo />
             )}
           </div>
         </div>
@@ -477,34 +494,32 @@ const ArticlePage = () => {
               {/* Related Articles Section - Full width */}
               <div className="w-full bg-[#FDFBF7] py-16">
                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8">
-                  <h2 className="text-2xl font-bold mb-8">연관 기사</h2>
+                  <h2 className="text-2xl font-['Pretendard-Black'] mb-8">연관 기사</h2>
                   <div className="relative">
-                    <div className="overflow-x-auto pb-4 hide-scrollbar">
-                      <div className="flex gap-6 w-max">
-                        {article?.similarArticles
-                          ?.slice(0, 4)
-                          .map((relatedArticle) => (
-                            <div
-                              key={relatedArticle.articleId}
-                              className="w-[300px] flex-shrink-0 cursor-pointer group"
-                              onClick={() =>
-                                navigate(`/article/${relatedArticle.articleId}`)
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {article?.similarArticles
+                        ?.slice(0, 4)
+                        .map((relatedArticle) => (
+                          <div
+                            key={relatedArticle.articleId}
+                            className="cursor-pointer group"
+                            onClick={() =>
+                              navigate(`/article/${relatedArticle.articleId}`)
+                            }
+                          >
+                            <ArticleCard
+                              id={relatedArticle.articleId}
+                              title={relatedArticle.title}
+                              journal={relatedArticle.journal}
+                              category={relatedArticle.category}
+                              summary={relatedArticle.summary || ""}
+                              imageUrl={
+                                relatedArticle.thumbnailImageUrl || ListImage
                               }
-                            >
-                              <ArticleCard
-                                id={relatedArticle.articleId}
-                                title={relatedArticle.title}
-                                journal={relatedArticle.journal}
-                                category={relatedArticle.category}
-                                summary={relatedArticle.summary || ""}
-                                imageUrl={
-                                  relatedArticle.thumbnailImageUrl || ListImage
-                                }
-                                datetime={relatedArticle.datetime}
-                              />
-                            </div>
-                          ))}
-                      </div>
+                              datetime={relatedArticle.datetime}
+                            />
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
