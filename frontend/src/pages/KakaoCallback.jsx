@@ -15,7 +15,7 @@ const KakaoCallback = () => {
     try {
       // 1. 회원 여부 확인 요청
       const validationResponse = await axios.get(
-       `${import.meta.env.VITE_API_BASE_URL}/v1/credentials/oauth/valid/register`,
+       `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials/oauth/valid/register`,
         {
           params: {
             code: code,       // 인가 코드 직접 전달
