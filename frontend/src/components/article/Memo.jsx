@@ -57,29 +57,50 @@ const CustomComponents = {
   },
 };
 
-const Memo = ({ articleId }) => {
+const Memo = ({ articleId, initialFolderId }) => {
   const dispatch = useDispatch();
   const { memo, loading, error } = useSelector((state) => state.memo);
   const { folders = [] } = useSelector((state) => state.folder);
   const [markdown, setMarkdown] = useState("# 마크다운을 입력하세요");
   const [isPreview, setIsPreview] = useState(false);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(initialFolderId ? String(initialFolderId) : "");
   const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
 
+
+  // const handleFolderChange = async (e) => {
+  //   const newFolderId = e.target.value;
+
+  //   if (memo?.scrapId && articleId) {
+  //     try {
+  //       await dispatch(removeScrap(memo.scrapId));
+
+  //       await dispatch(addScrap({
+  //         articleId: articleId,
+  //         folderId: newFolderId
+  //       }));
+
+  //       await dispatch(fetchMemo(articleId));
+
+  //       setCategory(newFolderId);
+  //     } catch (error) {
+  //       console.error("Error changing folder:", error);
+  //     }
+  //   }
+  // };
+
+
+  // handleFolderChange도 수정
   const handleFolderChange = async (e) => {
-    const newFolderId = e.target.value;
+    const newFolderId = String(e.target.value);  // 문자열로 변환
 
     if (memo?.scrapId && articleId) {
       try {
         await dispatch(removeScrap(memo.scrapId));
-
         await dispatch(addScrap({
           articleId: articleId,
-          folderId: newFolderId
+          folderId: Number(newFolderId)  // API 호출 시에는 숫자로 변환
         }));
-
         await dispatch(fetchMemo(articleId));
-
         setCategory(newFolderId);
       } catch (error) {
         console.error("Error changing folder:", error);
@@ -93,30 +114,35 @@ const Memo = ({ articleId }) => {
     console.log("현재 기사 ID:", articleId);
 
     if (articleId) {
-      dispatch(fetchMemo(articleId)).then((response) => {
-        // 기존 메모가 있는 경우
-        if (response.payload?.content) {
-          setMarkdown(response.payload.content);
-          // 메모의 폴더 ID로 카테고리 설정
-          if (response.payload.folderId) {
-            setCategory(response.payload.folderId.toString());
+      // 폴더 목록과 메모 정보를 동시에 가져오기
+      Promise.all([
+        dispatch(fetchFolders()),
+        dispatch(fetchMemo(articleId))
+      ]).then(([foldersResponse, memoResponse]) => {
+        console.log('폴더 목록:', foldersResponse);
+        console.log('메모 응답:', memoResponse.payload);
+        setCategory(String(memoResponse.payload.folderId));
+        if (memoResponse.payload?.content) {
+          setMarkdown(memoResponse.payload.content);
+          // 스크랩된 폴더 ID가 있으면 해당 ID로 설정
+          if (memoResponse.payload.folderId) {
+            console.log('메모의 폴더 ID:', memoResponse.payload.folderId);
+            console.log('메모의 폴더 이름:', String(memoResponse.payload.folderId));
+            setCategory(String(memoResponse.payload.folderId));
           }
-
-          // 새로운 메모인 경우
         } else {
           setMarkdown("# 마크다운을 입력하세요");
+          // 초기 폴더 ID가 있으면 해당 ID로 설정
+          if (initialFolderId) {
+            console.log('초기 폴더 ID:', initialFolderId);
+            setCategory(String(initialFolderId));
+          }
         }
-        // 폴더 ID 설정
-        // const latestFolder = folders?.content?.[0];
-        // if (latestFolder) {
-        //   setCategory(latestFolder.folderId.toString());
-        // }
       });
-      dispatch(fetchFolders());
     }
-  }, [dispatch, articleId]);
+  }, [dispatch, articleId, initialFolderId]);
 
-  // Add this new useEffect to update markdown when memo changes
+
   useEffect(() => {
     if (memo?.content) {
       setMarkdown(memo.content);
@@ -207,17 +233,25 @@ const Memo = ({ articleId }) => {
           </div>
           <div className="flex-grow">
             <label className="text-sm text-gray-500">폴더</label>
+
+            {/* // select 엘리먼트 수정 */}
             <select
               value={category}
               onChange={handleFolderChange}
               className="block w-full mt-1 text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:outline-none"
             >
+              <option value="">폴더 선택</option>
               {folders?.content &&
-                folders.content.map((folder) => (
-                  <option key={folder.folderId} value={folder.folderId}>
-                    {folder.folderName}
-                  </option>
-                ))}
+                [...folders.content]  // 배열을 복사한 후 정렬
+                  .sort((a, b) => a.folderId - b.folderId)
+                  .map((folder) => (
+                    <option 
+                      key={folder.folderId} 
+                      value={String(folder.folderId)}
+                    >
+                      {folder.folderName}
+                    </option>
+                  ))}
             </select>
           </div>
         </div>
