@@ -17,10 +17,26 @@ const initialState = {
  */
 export const fetchQuizzes = createAsyncThunk(
     'quiz/fetchQuizzes',
-    async (articleId) => {
-        const response = await api.get(`/articles/${articleId}/quiz`);
-
-        return response.data;
+    async (articleId, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`/articles/${articleId}/quiz`);
+            return response.data;
+        } catch (error) {
+            // API 에러 응답이 있는 경우
+            if (error.response) {
+                return rejectWithValue({
+                    status: error.response.status,
+                    reason: error.response.data.reason,
+                    path: error.response.data.path,
+                    success: error.response.data.success,
+                    timeStamp: error.response.data.timeStamp
+                });
+            }
+            // 기타 에러
+            return rejectWithValue({
+                message: error.message || '알 수 없는 오류가 발생했습니다.'
+            });
+        }
     }
 );
 
@@ -74,7 +90,14 @@ const quizSlice = createSlice({
             })
             .addCase(fetchQuizzes.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                // action.payload에 rejectWithValue로 전달한 에러 정보가 들어있음
+                state.error = action.payload || action.error;
+
+                // 퀴즈 생성 중인 상태 확인
+                if (action.payload?.status === 404 &&
+                    action.payload?.reason === "이미 퀴즈가 생성중 입니다.") {
+                    state.isGenerating = true;
+                }
             })
             // Submit answers
             .addCase(submitQuizAnswers.pending, (state) => {

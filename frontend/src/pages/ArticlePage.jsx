@@ -32,12 +32,12 @@ const ArticlePage = () => {
   const [newFolderName, setNewFolderName] = useState("");
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
-  const { article, status, error, liked, scraped, scrapId } = useSelector(
+  const { article, status, liked, scraped, scrapId } = useSelector(
     (state) => state.article
   );
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
-  const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
+  const { loading: quizLoading, error, quizzes } = useSelector((state) => state.quiz);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   const dispatch = useDispatch();
@@ -59,9 +59,30 @@ const ArticlePage = () => {
 
   // 퀴즈 버튼 클릭 핸들러 추가
   const handleQuizClick = () => {
-    dispatch(fetchQuizzes(id));
     setShowQuiz(true);
     setIsSidePanelOpen(true);
+
+    const fetchQuizWithRetry = () => {
+      dispatch(fetchQuizzes(id))
+        .unwrap()
+        .then(() => {
+          // Quiz loaded successfully
+        })
+        .catch((error) => {
+          if (error.status === 404 && error.reason?.includes('퀴즈가 생성중')) {
+            setTimeout(() => {
+              console.log('퀴즈 생성 중... 재시도합니다.');
+              fetchQuizWithRetry();
+            }, 2000);
+          } else {
+            console.error('퀴즈 로딩 실패:', error);
+            setShowQuiz(false);
+            setIsSidePanelOpen(false);
+          }
+        });
+    };
+
+    fetchQuizWithRetry();
   };
 
   // 사이드 패널 닫을 때 퀴즈 상태도 초기화
@@ -294,35 +315,38 @@ const ArticlePage = () => {
             style={{ overscrollBehavior: "contain" }}
           >
             {showQuiz ? (
-              quizLoading ? (
-                <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
-                  <div className="flex flex-col items-center justify-center text-center space-y-6">
-                    <div className="relative">
-                      <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
-                      <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-gray-800 mb-4">
-                        퀴즈 생성 중
-                      </p>
-                      <p className="text-xl text-gray-600">
-                        잠시만 기다려주세요
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        곧 퀴즈가 준비됩니다!
-                      </p>
+              <div className="flex-1 overflow-y-auto p-8">
+                {quizLoading || !quizzes?.length ? (
+                  <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
+                    <div className="flex flex-col items-center justify-center text-center space-y-6">
+                      <div className="relative">
+                        <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
+                        <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-gray-800 mb-4">
+                          퀴즈 생성 중
+                        </p>
+                        <p className="text-xl text-gray-600">
+                          잠시만 기다려주세요
+                        </p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          AI가 기사를 분석하여 퀴즈를 만들고 있습니다
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <Quiz
-                  articleId={id}
-                  quizzes={quizzes}
-                  onClose={handleCloseSidePanel}
-                />
-              )
+                ) : (
+                  <Quiz
+                    articleId={id}
+                    quizzes={quizzes}
+                    onClose={handleCloseSidePanel}
+                  />
+                )}
+              </div>
             ) : (
-              <Memo articleId={id} initialFolderId={selectedFolderId} />)}
+              <Memo articleId={id} />
+            )}
           </div>
         </div>
       </div>
