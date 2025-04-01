@@ -102,7 +102,7 @@ const Memo = ({ articleId }) => {
             setCategory(response.payload.folderId.toString());
           }
 
-        // 새로운 메모인 경우
+          // 새로운 메모인 경우
         } else {
           setMarkdown("# 마크다운을 입력하세요");
         }
@@ -149,7 +149,7 @@ const Memo = ({ articleId }) => {
   const handleSave = async () => {
     // 최신 메모 데이터를 먼저 조회
     const memoResponse = await dispatch(fetchMemo(articleId)).unwrap();
-    
+
     if (memoResponse?.memoId) {
       const updateResponse = await dispatch(updateMemo({
         memoId: memoResponse.memoId,  // 최신 메모 ID 사용
