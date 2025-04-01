@@ -29,6 +29,7 @@ const KakaoCallback = () => {
         isRegistered, 
         idToken 
       } = validationResponse.data.data;
+      console.log('[3] 추출된 idToken:', idToken); // idToken 값 확인
   
       // 3. 회원가입/로그인 분기 처리
       const endpoint = isRegistered ? '/login' : '';
