@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ArticleCard from '../components/article/ArticleCard';
 import '../styles/Logo.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +16,21 @@ const UserProfilePage = () => {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [fadeIn, setFadeIn] = useState(false);
 
+    const location = useLocation(); // 전달된 state를 가져오기 위한 훅
 
+    // 전달된 idToken 확인
+    const idToken = location.state?.idToken; // 전달된 state에서 idToken 추출
+
+    useEffect(() => {
+        if (!idToken) {
+            console.error('idToken이 없습니다.');
+            navigate('/'); // idToken이 없으면 홈으로 리다이렉트
+        } else {
+            console.log('받은 idToken:', idToken); // 디버깅용 로그
+            // 필요 시 API 호출이나 상태 업데이트 수행 가능
+        }
+    }, [idToken, navigate]);
+    
     // 프로그레스 바 단계 정보 추가
     const steps = [
         { number: 1, text: '닉네임 입력' },
