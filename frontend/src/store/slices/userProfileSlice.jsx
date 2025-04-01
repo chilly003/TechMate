@@ -45,30 +45,35 @@ export const fetchRandomArticles = createAsyncThunk(
     }
 );
 
-// 선호 기사 등록 액션
+// 선호 기사 등록 및 회원가입 액션
 export const registerPreferredArticles = createAsyncThunk(
     'userProfile/registerPreferred',
-    async (articleIds, { rejectWithValue }) => {
+    async ({ nickname, selectedArticles, idToken }, { rejectWithValue }) => {
         try {
-            console.log('📝 선호 기사 등록 시도:', articleIds);
-            const response = await api.post('/user-preference/random', {
-                article_id: articleIds
+            console.log('📝 회원가입 요청 데이터:', {
+                nickname,
+                selectedArticles,
+                idToken: idToken.substring(0, 10) + '...' // 보안을 위해 일부만 출력
             });
 
-            console.log('✅ 선호 기사 등록 성공:', {
-                응답_데이터: response.data,
-                상태_코드: response.status,
-                등록된_기사_수: articleIds.length
-            });
-
+            const response = await api.post(
+                `/api/v1/credentials?idToken=${idToken}&provider=KAKAO`,
+                {
+                    nickname: nickname,
+                    articleInitRequest: {
+                        article_id: selectedArticles
+                    }
+                }
+            );
+            console.log('✅ 회원가입 응답:', response.data);
             return response.data;
         } catch (err) {
-            console.error('❌ 선호 기사 등록 실패:', {
-                에러_메시지: err.message,
-                상태_코드: err.response?.status,
-                응답_데이터: err.response?.data
+            console.error('❌ 회원가입 실패:', {
+                status: err.response?.status,
+                error: err.response?.data,
+                message: err.message
             });
-            return rejectWithValue(err.response.data);
+            return rejectWithValue(err.response?.data);
         }
     }
 );
@@ -127,7 +132,7 @@ const userProfileSlice = createSlice({
             .addCase(registerPreferredArticles.fulfilled, (state, action) => {
                 state.loading = false;
                 state.setupComplete = true;
-                // state.selectedArticles = []; // 선택된 기사 목록 초기화
+                // 토큰 정보는 컴포넌트에서 처리
             })
             .addCase(registerPreferredArticles.rejected, (state, action) => {
                 state.loading = false;

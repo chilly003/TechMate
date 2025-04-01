@@ -59,7 +59,7 @@ const UserProfilePage = () => {
     }, [step]);
     // }, [randomArticles, selectedArticles, currentPage]);
 
-    const handleArticleSelect = (articleId) => {
+    const handleArticleSelect = async (articleId) => {
         setIsTransitioning(true);
 
         const currentPageArticles = randomArticles.slice(currentPage * articlesPerPage, (currentPage + 1) * articlesPerPage);
@@ -70,17 +70,26 @@ const UserProfilePage = () => {
         const newSelectedArticles = [...otherPagesSelections, articleId];
         setSelectedArticles(newSelectedArticles);
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (newSelectedArticles.length === 3) {
-                setIsTransitioning(false);
-                dispatch(registerPreferredArticles(newSelectedArticles))
-                    .unwrap()
-                    .then(() => {
-                        setStep(prev => prev + 1);
-                    })
-                    .catch((err) => {
-                        console.error('❌ 선호 기사 등록 실패:', err);
-                    });
+                try {
+                    const response = await dispatch(registerPreferredArticles({
+                        nickname,
+                        selectedArticles: newSelectedArticles,
+                        idToken
+                    })).unwrap();
+
+                    // 토큰 저장
+                    const { accessToken, refreshToken } = response.data;
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+
+                    setIsTransitioning(false);
+                    setStep(prev => prev + 1);
+                } catch (error) {
+                    console.error('회원가입 실패:', error);
+                    setIsTransitioning(false);
+                }
             } else {
                 setCurrentPage(prev => prev + 1);
                 setIsTransitioning(false);
@@ -88,6 +97,8 @@ const UserProfilePage = () => {
         }, 500);
     };
 
+    // handlePreferredArticles 함수 제거
+    // registerPreferredArticles 함수 제거 (더 이상 필요하지 않음)
     // 닉네임 입력 후 랜덤 기사 조회
     const handleNicknameSubmit = () => {
         if (!isNicknameValid) return;
@@ -106,17 +117,17 @@ const UserProfilePage = () => {
     };
 
     // 선호 기사 등록
-    const handlePreferredArticles = () => {
-        dispatch(registerPreferredArticles(selectedArticles))
-            .unwrap()
-            .then(() => {
-                setStep(prev => prev + 1);
-            })
-            .catch((err) => {
-                console.error('❌ 선호 기사 등록 실패:', err);
-            });
-
-    };
+    // Remove extra closing brace and semicolon
+    // const handlePreferredArticles = () => {
+    //     dispatch(registerPreferredArticles(selectedArticles))
+    //         .unwrap()
+    //         .then(() => {
+    //             setStep(prev => prev + 1);
+    //         })
+    //         .catch((err) => {
+    //             console.error('❌ 선호 기사 등록 실패:', err);
+    //         });
+    // };
 
     const handleNext = () => {
         if (step === 1) {
@@ -268,7 +279,7 @@ const UserProfilePage = () => {
                 )}
             </div>
         </div>
-    );
-};
+    );  // This is the closing of the return statement
+};  // This is the closing of the UserProfilePage component
 
 export default UserProfilePage;
