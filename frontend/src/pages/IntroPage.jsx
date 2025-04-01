@@ -6,9 +6,19 @@ import SocialLoginButton from "../components/ui/SocialLoginButton";
 const Intro = () => {
   const navigate = useNavigate();
   const handleSocialLogin = (provider) => {
-    // Handle login logic here
-    console.log(`${provider} login clicked`);
+    if (provider === 'kakao') {
+      const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
+      const REDIRECT_URI =  `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
+      
+      const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+      
+      window.location.href = kakaoURL;
+    } else {
+      console.log(`${provider} login clicked`);
+      // 다른 소셜 로그인 처리
+    }
   };
+  
 
   return (
     <div className="flex flex-row min-h-screen h-screen w-full">
@@ -29,10 +39,10 @@ const Intro = () => {
           <div className="w-full text-center space-y-6">
             <div className="space-y-2 flex flex-col items-center">
               <h1 className="text-h1 md:text-4xl font-bold flex justify-center">
-                <span className="text-[#D2B48C]">Tech</span>
+                <span className="text-primary-500">Tech</span>
                 <span className="text-black">Mate</span>
               </h1>
-              <div className="w-12 md:w-36 h-1 bg-[#D2B48C] mx-auto rounded-full"></div>
+              <div className="w-12 md:w-36 h-1 bg-primary-500 mx-auto rounded-full"></div>
             </div>
             <div className="space-y-1 flex flex-col items-center w-full">
               <div className="w-full">
@@ -47,12 +57,12 @@ const Intro = () => {
           </div>
 
           <div className="w-full space-y-4 mt-12">
-
-            <SocialLoginButton
-              provider="kakao"
-              onClick={() => handleSocialLogin("kakao")}
-            />
-
+  
+              <SocialLoginButton
+                provider="kakao"
+                onClick={() => handleSocialLogin("kakao")}
+              />
+        
             <SocialLoginButton
               provider="google"
               onClick={() => handleSocialLogin("google")}

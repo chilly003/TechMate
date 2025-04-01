@@ -7,6 +7,7 @@ import ArticlePage from './pages/ArticlePage';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
+import KakaoCallback from './pages/KakaoCallback';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/userprofile" element={<UserProfilePage />} />
             <Route path="/article/:id" element={<ArticlePage />} />
             <Route path="/mypage" element={<Mypage />} />
+            <Route path="/auth" element={<KakaoCallback />} />
           </Routes>
         </div>
       </div>
