@@ -38,6 +38,7 @@ const ArticlePage = () => {
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, quizzes } = useSelector((state) => state.quiz);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -191,22 +192,26 @@ const ArticlePage = () => {
             value: folder.folderId,
           }))}
           onClose={() => setShowFolderModal(false)}
+
+          // Modify the onConfirm handler in the Folder Selection Modal
           onConfirm={(option) => {
             if (option.type === "new_folder") {
               setShowFolderModal(false);
               setShowFolderNameModal(true);
               return;
             }
+            setSelectedFolderId(option.value);
             dispatch(addScrap({ articleId: id, folderId: option.value }))
               .unwrap()
               .then(() => {
                 setShowFolderModal(false);
                 setIsSidePanelOpen(true);
-                dispatch(fetchArticleDetail(id)); // 스크랩 후 기사 정보 새로고침
+                dispatch(fetchArticleDetail(id));
               });
           }}
         />
       )}
+
 
       {/* scrap remove Modal */}
       {showUnscrapModal && (
@@ -317,8 +322,7 @@ const ArticlePage = () => {
                 />
               )
             ) : (
-              <Memo articleId={id} />
-            )}
+              <Memo articleId={id} initialFolderId={selectedFolderId} />)}
           </div>
         </div>
       </div>
