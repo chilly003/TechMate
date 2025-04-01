@@ -37,8 +37,8 @@ const ArticleCard = ({ id, title, journal, summary, category, imageUrl, datetime
             {/* Article Content */}
             <div className="flex flex-col flex-grow justify-between">
                 <div>
-                    <div className="font-extrabold text-h4 sm:text-h4 mb-1 sm:mb-2 mr-none sm:mr-2 line-clamp-3">
-                        {title || "김영진 KT 대표 \"호텔 부문선, 본업 아냐...매각해 통신·AI 투자\"[MWC25]"}
+                    <div className="font-['Pretendard-Black'] text-lg sm:text-xl md:text-2xl lg:text-[28.8px] leading-tight mb-1 sm:mb-2 mr-none sm:mr-2 line-clamp-2">
+                        {title || "기사 제목 로드 실패"}
                     </div>
 
                     <h3 className="hidden sm:block text-base line-clamp-2 md:line-clamp-2 mb-2 mr-none sm:mr-5">
