@@ -5,3 +5,10 @@
   font-weight: 400;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "Pretendard-Black";
+  src: url("./Pretendard-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
