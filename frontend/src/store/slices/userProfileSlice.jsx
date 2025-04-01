@@ -57,7 +57,7 @@ export const registerPreferredArticles = createAsyncThunk(
             });
 
             const response = await api.post(
-                `/api/v1/credentials?idToken=${idToken}&provider=KAKAO`,
+                `/credentials?idToken=${idToken}&provider=KAKAO`,
                 {
                     nickname: nickname,
                     articleInitRequest: {
