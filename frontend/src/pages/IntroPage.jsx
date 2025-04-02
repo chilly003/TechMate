@@ -17,7 +17,7 @@ const Intro = () => {
       window.location.href = kakaoURL;
     } else if (provider === "google") {
       const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/callback`;
+      const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
       // const REDIRECT_URI = 'http://localhost:5173/auth/google';
 
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
