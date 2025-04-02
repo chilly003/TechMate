@@ -23,7 +23,6 @@ const ArticlePage = () => {
   // url 파라미터를 통해 기사 id 추출 (메모 컴포넌트 전달용)
   const { id } = useParams();
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [avgColor, setAvgColor] = useState({ r: 128, g: 128, b: 128 });
   const [textColor, setTextColor] = useState("text-black");
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
@@ -38,7 +37,6 @@ const ArticlePage = () => {
   const { scraps } = useSelector((state) => state.scrap);
   const { folders } = useSelector((state) => state.folder);
   const { loading: quizLoading, error, quizzes } = useSelector((state) => state.quiz);
-  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -47,7 +45,9 @@ const ArticlePage = () => {
     // Remove the unnecessary scraped state check since we're using Redux store
   }, [dispatch, id]);
 
-  // console.log(article)
+  if (error) {
+    console.log(error);
+  }
 
   // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
@@ -108,47 +108,6 @@ const ArticlePage = () => {
     setIsSidePanelOpen(false); // Close side panel when article changes
   }, [id]);
 
-  useEffect(() => {
-    // Calculate average color from image
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = ListImage; // Changed back to IntroImage
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      const imageData = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      ).data;
-      let r = 0,
-        g = 0,
-        b = 0;
-
-      for (let i = 0; i < imageData.length; i += 4) {
-        r += imageData[i];
-        g += imageData[i + 1];
-        b += imageData[i + 2];
-      }
-
-      const pixels = imageData.length / 4;
-      const avgR = r / pixels;
-      const avgG = g / pixels;
-      const avgB = b / pixels;
-
-      setAvgColor({ r: avgR, g: avgG, b: avgB });
-
-      // Calculate brightness using relative luminance formula
-      const brightness = (0.299 * avgR + 0.587 * avgG + 0.114 * avgB) / 255;
-      setTextColor(brightness > 0.5 ? "text-black" : "text-white");
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -213,26 +172,22 @@ const ArticlePage = () => {
             value: folder.folderId,
           }))}
           onClose={() => setShowFolderModal(false)}
-
-          // Modify the onConfirm handler in the Folder Selection Modal
           onConfirm={(option) => {
             if (option.type === "new_folder") {
               setShowFolderModal(false);
               setShowFolderNameModal(true);
               return;
             }
-            setSelectedFolderId(option.value);
             dispatch(addScrap({ articleId: id, folderId: option.value }))
               .unwrap()
               .then(() => {
                 setShowFolderModal(false);
                 setIsSidePanelOpen(true);
-                dispatch(fetchArticleDetail(id));
+                dispatch(fetchArticleDetail(id)); // 스크랩 후 기사 정보 새로고침
               });
           }}
         />
       )}
-
 
       {/* scrap remove Modal */}
       {showUnscrapModal && (
@@ -384,12 +339,8 @@ const ArticlePage = () => {
               } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
               } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
-                : "md:bg-[#967259]"
+                : "md:bg-black"
               }`}
-            style={{
-              ...sharedStyle,
-              "--avg-color": `${avgColor.r}, ${avgColor.g}, ${avgColor.b}`,
-            }}
           >
             <div className="px-8 md:px-12 max-w-2xl relative z-10">
               <p
@@ -533,6 +484,48 @@ const ArticlePage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Footer */}
+              <footer className="w-full bg-[#111111] text-white">
+                <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8 py-20">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    {/* Logo and Description */}
+                    <div className="md:col-span-5 space-y-8">
+                      <h2 className="text-4xl font-['Pretendard-Black']">TechMate</h2>
+                      <p className="text-gray-400 text-lg leading-relaxed">
+                        IT 기술 뉴스를 더 쉽게 이해하고<br />
+                        학습할 수 있도록 도와주는 서비스
+                      </p>
+                    </div>
+
+                    {/* Navigation */}
+                    {/* <div className="md:col-span-3 space-y-8">
+                      <h3 className="text-xl font-semibold">Navigation</h3>
+                      <ul className="space-y-4">
+                        <li><a href="/home" className="text-gray-400 hover:text-white transition-colors">홈</a></li>
+                        <li><a href="/scrap" className="text-gray-400 hover:text-white transition-colors">스크랩</a></li>
+                        <li><a href="/mypage" className="text-gray-400 hover:text-white transition-colors">마이페이지</a></li>
+                      </ul>
+                    </div> */}
+
+                    {/* Contact */}
+                    <div className="md:col-span-4 space-y-8">
+                      <h3 className="text-xl font-semibold">Contact</h3>
+                      <ul className="space-y-4">
+                        <li className="text-gray-400">SSAFY 12기 공통 프로젝트</li>
+                        <li className="text-gray-400">B201팀</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Copyright */}
+                  <div className="mt-16 pt-8 border-t border-gray-800">
+                    <p className="text-gray-500 text-sm">
+                      © 2025 TechMate. All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </footer>
             </div>
           </div>
         </div>
