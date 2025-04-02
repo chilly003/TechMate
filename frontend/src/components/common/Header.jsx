@@ -201,16 +201,18 @@ const Header = () => {
                         {/* 하단 버튼 영역 */}
                         <div className="px-4 md:px-6 flex justify-end gap-2 mt-8 md:mt-0">
                             <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
-                                <button className='p-2 md:p-3 hover:bg-gray-100 rounded-full transition-colors'>
-                                    <FaRegUser className="text-xl md:text-2xl" />
-                                </button>
+                                <p className="block text-h4 md:text-h5 font-['Pretendard-Black'] hover:text-gray-600 transition-all">
+                                    마이페이지
+                                </p>
                             </Link>
-                            <button
-                                onClick={() => {/* TODO: 로그아웃 처리 */ }}
-                                className='p-2 md:p-3 hover:bg-gray-100 rounded-full transition-colors'
-                            >
-                                <FaSignOutAlt className="text-xl md:text-2xl" />
-                            </button>
+                            <p> | </p>
+                            <p onClick={() => {/* TODO: 로그아웃 처리 */ }} className="block text-h4 md:text-h5 font-['Pretendard-Black'] hover:text-gray-600 transition-all">
+                                로그아웃
+                            </p>
+                            <p> | </p>
+                            <p onClick={() => {/* TODO: 회원탈퇴 처리 */ }} className="block text-h4 md:text-h5 font-['Pretendard-Black'] hover:text-gray-600 transition-all">
+                                회원탈퇴
+                            </p>
                         </div>
                     </div>
                 </div>
