@@ -2,9 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import IntroImage from "../assets/images/introImage.jpg";
 import SocialLoginButton from "../components/ui/SocialLoginButton";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Intro = () => {
   const navigate = useNavigate();
+
   const handleSocialLogin = (provider) => {
     if (provider === 'kakao') {
       const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
@@ -13,10 +15,15 @@ const Intro = () => {
       const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
       
       window.location.href = kakaoURL;
-    } else {
-      console.log(`${provider} login clicked`);
-      // 다른 소셜 로그인 처리
-    }
+    } else if (provider === "google") {
+      const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      // const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/callback`;
+      const REDIRECT_URI = 'http://localhost:5173/auth/google';
+
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
+
+      window.location.href = googleAuthUrl; // Google OAuth 로그인 페이지로 이동
+    } 
   };
   
 

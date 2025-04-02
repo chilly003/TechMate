@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
 import KakaoCallback from './pages/KakaoCallback';
+import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/article/:id" element={<ArticlePage />} />
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/auth" element={<KakaoCallback />} />
+            <Route path="/auth/google" element={<GoogleCallback />} />
           </Routes>
         </div>
       </div>
