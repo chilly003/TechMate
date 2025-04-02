@@ -32,7 +32,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       // 로그아웃 API 호출
-      const response = await api.get("/credentials/logout");
+      const response = await api.post("/credentials/logout");
 
       if (response.status === 200) {
         // 로그아웃 성공 시 로컬스토리지에서 토큰 삭제
