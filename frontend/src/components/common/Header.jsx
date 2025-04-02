@@ -36,7 +36,8 @@ const Header = () => {
 
       if (response.status === 200) {
         // 로그아웃 성공 시 로컬스토리지에서 토큰 삭제
-        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         alert("로그아웃되었습니다.");
         // 로그인 페이지로 리다이렉트
         window.location.href = "/";
