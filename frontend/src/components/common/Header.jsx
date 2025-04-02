@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
-import { RiMenu3Line } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
-import { FaRegUser, FaSignOutAlt } from "react-icons/fa";
 import { FiTrendingUp, FiClock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
@@ -89,9 +87,33 @@ const Header = () => {
     }
   };
 
-  // 탈퇴용 인가코드 획득 함수
   const getWithdrawAuthorizationCode = (provider) => {
     return new Promise((resolve, reject) => {
+      // 인증 URL 생성
+      let authUrl;
+      if (provider === "kakao") {
+        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${
+          import.meta.env.VITE_KAKAO_REST_API_KEY
+        }&redirect_uri=${
+          import.meta.env.VITE_API_BASE_URL
+        }/auth&response_type=code`;
+      } else if (provider === "google") {
+        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
+          import.meta.env.VITE_GOOGLE_CLIENT_ID
+        }&redirect_uri=${
+          import.meta.env.VITE_API_BASE_URL
+        }/auth/google&response_type=code&scope=openid%20profile%20email`;
+      }
+  
+      // 팝업을 동기적으로 실행
+      const popup = window.open(authUrl, "_blank", "width=500,height=600");
+  
+      // 팝업 차단 처리
+      if (!popup) {
+        reject(new Error("팝업이 차단되었습니다. 허용 후 다시 시도해주세요."));
+        return;
+      }
+  
       // 메시지 리스너 설정
       const codeHandler = (event) => {
         if (event.origin !== import.meta.env.VITE_API_BASE_URL) return;
@@ -101,30 +123,6 @@ const Header = () => {
         }
       };
       window.addEventListener("message", codeHandler);
-
-      // 인증 URL 생성
-      let authUrl;
-      if (provider === "kakao") {
-        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${
-          import.meta.env.VITE_KAKAO_REST_API_KEY
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth/&response_type=code`;
-      } else if (provider === "google") {
-        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
-          import.meta.env.VITE_GOOGLE_CLIENT_ID
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth/google&response_type=code&scope=openid%20profile%20email`;
-      }
-
-      // 팝업으로 실행 (새창에서 인증)
-      const popup = window.open(authUrl, "_blank", "width=500,height=600");
-
-      // 팝업 차단 처리
-      if (!popup) {
-        reject(new Error("팝업이 차단되었습니다. 허용 후 다시 시도해주세요."));
-      }
     });
   };
 
