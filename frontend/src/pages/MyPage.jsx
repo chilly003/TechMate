@@ -20,7 +20,8 @@ import { format, subMonths, startOfMonth, endOfMonth, eachDayOfInterval } from "
 
 const generateCalendarData = () => {
   const today = new Date();
-  const startDate = new Date(today.getFullYear() - 1, today.getMonth(), 1);
+  // 시작일을 6개월 전으로 수정
+  const startDate = new Date(today.getFullYear(), today.getMonth() - 5, 1);
   const endDate = today;
 
   // 시작일을 일요일로 맞추기
@@ -226,13 +227,13 @@ const Mypage = () => {
   };
 
   return (
-    <div className="px-8 pt-20 md:p-24 max-w-7xl mx-auto ">
+    <div className="px-14 py-28 md:pt-36 py-32 max-w-7xl mx-auto ">
       <div className="flex items-center gap-2 mb-8">
         <div className="flex items-center">
           <div className="bg-[#1a237e] text-white text-3xl md:text-5xl font-bold">
             {nickname}
           </div>
-          <span className="text-3xl md:text-5xl font-bold ml-1">님</span>
+          <span className="text-3xl md:text-5xl font-bold ml-1 pe-2">님</span>
         </div>
         <div
           className="text-[#666] bg-gray-100 p-2 rounded-full cursor-pointer hover:bg-gray-200"
@@ -243,131 +244,134 @@ const Mypage = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="flex flex-col gap-8 h-full mt-12 pb-4">
-        {/* Activity Statistics */}
-        <div className="w-full">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">활동 내역</h2>
-          <div className="bg-gray-50 rounded-xl p-4 inline-block">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <BsNewspaper className="text-gray-600" size={20} />
-                <span>총 {activity.readArticlesCount}개의 기사를 읽었습니다.</span>
-              </div>
-              <hr className="md-2" />
-              <div className="flex items-center gap-3">
-                <BsBookmark className="text-gray-600" size={20} />
-                <span>총 {activity.scrapArticlesCount}개의 기사를 스크랩했습니다.</span>
-              </div>
-              <hr className="md-2" />
-              <div className="flex items-center gap-3">
-                <BsQuestionCircle className="text-gray-600" size={20} />
-                <span>총 {activity.solvedQuizCount}개의 퀴즈를 풀었습니다.</span>
+      <div className="flex flex-col gap-8 h-full mt-14 pb-6">
+        {/* Activity and Quiz History Container */}
+        <div className="flex flex-col md:flex-row gap-20">
+          {/* Activity Statistics */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">활동 내역</h2>
+            <div className="bg-gray-50 rounded-xl p-7 w-full">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <BsNewspaper className="text-gray-600" size={20} />
+                  <span>총 {activity.readArticlesCount}개의 기사를 읽었습니다.</span>
+                </div>
+                <hr className="md-2" />
+                <div className="flex items-center gap-3">
+                  <BsBookmark className="text-gray-600" size={20} />
+                  <span>총 {activity.scrapArticlesCount}개의 기사를 스크랩했습니다.</span>
+                </div>
+                <hr className="md-2" />
+                <div className="flex items-center gap-3">
+                  <BsQuestionCircle className="text-gray-600" size={20} />
+                  <span>총 {activity.solvedQuizCount}개의 퀴즈를 풀었습니다.</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Quiz History - Full Width */}
-        <div className="w-full">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4 pt-3">퀴즈 풀이 현황</h2>
-          <div className="bg-gray-50 rounded-xl p-4">
-            <div className="overflow-x-auto">
-              <table className="min-w-full" style={{ borderSpacing: '2px' }}>
-                <thead>
-                  <tr className="h-8 text-xs text-gray-400">
-                    <td className="w-[50px] min-w-[50px]"></td>
-                    {calendarData.months.map((month, idx) => (
-                      <td
-                        key={idx}
-                        className="text-left"
-                        colSpan={month.weeksCount}
-                        style={{
-                          position: 'relative',
-                          height: '20px',
-                          minWidth: `${month.weeksCount * 14}px`
-                        }}
-                      >
-                        <span style={{ position: 'absolute', top: 0 }}>{month.month}</span>
-                      </td>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIdx) => (
-                    <tr key={day}>
-                      <td className="text-xs text-gray-400 h-[12px]" style={{ position: 'relative' }}>
-                        <span style={{
-                          position: 'absolute',
-                          bottom: dayIdx === 0 ? '0' : '1px',
-                          left: '0'
-                        }}>
-                          {day}
-                        </span>
-                      </td>
-
-                      {/* // In the calendar cell rendering part */}
-                      {calendarData.weeks.map((week, weekIdx) => {
-                        const date = week[dayIdx];
-                        if (!date) return (
-                          <td
-                            key={weekIdx}
-                            className="w-[12px] h-[12px]"
-                            style={{
-                              minWidth: '12px',
-                              maxWidth: '12px'
-                            }}
-                          />
-                        );
-
-                        const formattedDate = format(date, 'yyyy-MM-dd');
-                        // console.log(formattedDate)
-                        // Convert string to number and ensure it's a valid number
-                        const quizCount = parseInt(quizHistory?.[formattedDate]) || 0;
-                        // console.log(quizCount)
-
-                        const getBackgroundColor = (count) => {
-                          // Ensure count is treated as a number
-                          const numCount = parseInt(count);
-                          if (numCount === 0) return '#ebedf0';
-                          if (numCount === 1) return '#9be9a8';
-                          if (numCount === 2) return '#40c463';
-                          if (numCount >= 3) return '#216e39';
-                          return '#ebedf0';  // default color
-                        };
-
-                        return (
-                          <td
-                            key={weekIdx}
-                            className="w-[12px] h-[12px] rounded-sm"
-                            style={{
-                              backgroundColor: getBackgroundColor(quizCount),
-                              cursor: 'pointer',
-                              minWidth: '12px',
-                              maxWidth: '12px'
-                            }}
-                            title={`${formattedDate}: ${quizCount}개의 퀴즈`}
-                          />
-                        );
-                      })}
+          {/* Quiz History */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">퀴즈 풀이 현황</h2>
+            <div className="bg-gray-50 rounded-xl ps-12 pe-0 py-4">
+              <div className="overflow-x-auto">
+                <table className="w-full" style={{ borderSpacing: '2px' }}>
+                  <thead>
+                    <tr className="h-8 text-xs text-gray-400">
+                      <td className="w-[50px] min-w-[50px]"></td>
+                      {calendarData.months.map((month, idx) => (
+                        <td
+                          key={idx}
+                          className="text-left"
+                          colSpan={month.weeksCount}
+                          style={{
+                            position: 'relative',
+                            height: '20px',
+                            minWidth: `${month.weeksCount * 14}px`
+                          }}
+                        >
+                          <span style={{ position: 'absolute', top: 0 }}>{month.month}</span>
+                        </td>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="mt-4 flex items-center gap-2 text-xs text-gray-600">
-                <span>퀴즈 풀이 수:</span>
-                <div className="flex gap-1">
-                  {[0, 1, 2, 3].map((level) => (
-                    <div
-                      key={level}
-                      className="w-3 h-3 rounded-sm"
-                      style={{
-                        backgroundColor: level === 0 ? '#ebedf0'
-                          : level === 1 ? '#9be9a8'
-                            : level === 2 ? '#40c463'
-                              : '#216e39'
-                      }}
-                    />
-                  ))}
+                  </thead>
+                  <tbody>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIdx) => (
+                      <tr key={day}>
+                        <td className="text-xs text-gray-400 h-[12px]" style={{ position: 'relative' }}>
+                          <span style={{
+                            position: 'absolute',
+                            bottom: dayIdx === 0 ? '0' : '1px',
+                            left: '0'
+                          }}>
+                            {day}
+                          </span>
+                        </td>
+
+                        {/* // In the calendar cell rendering part */}
+                        {calendarData.weeks.map((week, weekIdx) => {
+                          const date = week[dayIdx];
+                          if (!date) return (
+                            <td
+                              key={weekIdx}
+                              className="w-[12px] h-[12px]"
+                              style={{
+                                minWidth: '12px',
+                                maxWidth: '12px'
+                              }}
+                            />
+                          );
+
+                          const formattedDate = format(date, 'yyyy-MM-dd');
+                          // console.log(formattedDate)
+                          // Convert string to number and ensure it's a valid number
+                          const quizCount = parseInt(quizHistory?.[formattedDate]) || 0;
+                          // console.log(quizCount)
+
+                          const getBackgroundColor = (count) => {
+                            // Ensure count is treated as a number
+                            const numCount = parseInt(count);
+                            if (numCount === 0) return '#ebedf0';
+                            if (numCount === 1) return '#9be9a8';
+                            if (numCount === 2) return '#40c463';
+                            if (numCount >= 3) return '#216e39';
+                            return '#ebedf0';  // default color
+                          };
+
+                          return (
+                            <td
+                              key={weekIdx}
+                              className="w-[12px] h-[12px] rounded-sm"
+                              style={{
+                                backgroundColor: getBackgroundColor(quizCount),
+                                cursor: 'pointer',
+                                minWidth: '12px',
+                                maxWidth: '12px'
+                              }}
+                              title={`${formattedDate}: ${quizCount}개의 퀴즈`}
+                            />
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-4 flex items-center gap-2 text-xs text-gray-600">
+                  <span>퀴즈 풀이 수:</span>
+                  <div className="flex gap-1">
+                    {[0, 1, 2, 3].map((level) => (
+                      <div
+                        key={level}
+                        className="w-3 h-3 rounded-sm"
+                        style={{
+                          backgroundColor: level === 0 ? '#ebedf0'
+                            : level === 1 ? '#9be9a8'
+                              : level === 2 ? '#40c463'
+                                : '#216e39'
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -378,7 +382,7 @@ const Mypage = () => {
 
       {/* Scrap Management Section - Moved inside main container */}
       <div className="w-full">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 pt-8">스크랩한 뉴스</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 pt-12">스크랩한 뉴스</h2>
         <div className="rounded-xl mt-4">
           {/* Folder Tabs */}
           <div className="flex flex-col md:flex-row items-center border-b border-gray-200">

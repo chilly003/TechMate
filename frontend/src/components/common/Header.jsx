@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import { RiMenu3Line } from 'react-icons/ri';
 import { IoClose } from 'react-icons/io5';
@@ -13,6 +13,9 @@ const Header = () => {
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
     const navigate = useNavigate();
+    const location = useLocation();  // Add this line to get current location
+
+    const isMyPage = location.pathname === '/mypage';  // Check if current page is mypage
 
     useEffect(() => {
         const handleScroll = () => {
@@ -64,7 +67,7 @@ const Header = () => {
             >
                 <div className="max-w-[2000px] mx-auto px-8 md:px-12 h-24 flex items-center justify-between">
                     <Link to="/Home" className="inline-flex items-center">
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+                        <h1 className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight ${isMyPage ? 'text-black' : 'text-white'}`}>
                             TechMate
                         </h1>
                     </Link>
@@ -78,7 +81,7 @@ const Header = () => {
                             width="36"
                             height="36"
                             viewBox="0 0 36 36"
-                            className="text-white"
+                            className={isMyPage ? 'text-black' : 'text-white'}
                         >
                             <rect
                                 x="4"
