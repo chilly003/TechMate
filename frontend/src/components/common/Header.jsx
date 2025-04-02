@@ -49,26 +49,36 @@ const Header = () => {
     }
   };
 
-  // 회원탈퇴 핸들러
   const handleWithdraw = async () => {
     try {
-      // 1. OAuth Provider 확인
+      // OAuth Provider 확인
       const provider = await getOAuthProvider();
 
-      // 2. 새 인가코드 발급 (팝업 방식)
-      const code = await getWithdrawAuthorizationCode(provider);
+      // 탈퇴 플로우 설정
+      sessionStorage.setItem("withdraw_flow", "true");
 
-      // 3. 백엔드에 탈퇴 요청
-      const response = await api.delete(`/credentials?code=${code}`);
-
-      if (response.status === 200) {
-        localStorage.clear();
-        alert("회원탈퇴 완료");
-        window.location.href = "/";
+      // 카카오 인증 URL 생성
+      let authUrl;
+      if (provider === "kakao") {
+        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${
+          import.meta.env.VITE_KAKAO_REST_API_KEY
+        }&redirect_uri=${
+          import.meta.env.VITE_API_BASE_URL
+        }/auth&response_type=code`;
+      } else if (provider === "google") {
+        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
+          import.meta.env.VITE_GOOGLE_CLIENT_ID
+        }&redirect_uri=${
+          import.meta.env.VITE_API_BASE_URL
+        }/auth/google&response_type=code&scope=openid%20profile%20email`;
       }
+
+
+      // 리다이렉트 실행
+      window.location.href = authUrl;
     } catch (error) {
-      console.error("탈퇴 실패:", error);
-      alert(error.response?.data?.message || "오류 발생");
+      console.error("회원탈퇴 요청 실패:", error);
+      alert("회원탈퇴 요청 중 오류가 발생했습니다.");
     }
   };
 
@@ -85,45 +95,6 @@ const Header = () => {
       console.error("OAuth Provider 확인 실패:", error);
       throw new Error("OAuth Provider 확인 중 오류가 발생했습니다.");
     }
-  };
-
-  const getWithdrawAuthorizationCode = (provider) => {
-    return new Promise((resolve, reject) => {
-      // 인증 URL 생성
-      let authUrl;
-      if (provider === "kakao") {
-        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${
-          import.meta.env.VITE_KAKAO_REST_API_KEY
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth&response_type=code`;
-      } else if (provider === "google") {
-        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
-          import.meta.env.VITE_GOOGLE_CLIENT_ID
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth/google&response_type=code&scope=openid%20profile%20email`;
-      }
-  
-      // 팝업을 동기적으로 실행
-      const popup = window.open(authUrl, "_blank", "width=500,height=600");
-  
-      // 팝업 차단 처리
-      if (!popup) {
-        reject(new Error("팝업이 차단되었습니다. 허용 후 다시 시도해주세요."));
-        return;
-      }
-  
-      // 메시지 리스너 설정
-      const codeHandler = (event) => {
-        if (event.origin !== import.meta.env.VITE_API_BASE_URL) return;
-        if (event.data.type === "withdraw_code") {
-          window.removeEventListener("message", codeHandler);
-          resolve(event.data.code);
-        }
-      };
-      window.addEventListener("message", codeHandler);
-    });
   };
 
   // 메뉴 열림 상태에 따른 스크롤 제어

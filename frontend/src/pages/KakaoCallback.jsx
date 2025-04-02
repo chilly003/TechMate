@@ -6,61 +6,85 @@ const KakaoCallback = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = new URL(window.location.href).searchParams.get('code');
-    if (code) handleKakaoLogin(code);
-    console.log(code);
+    const urlParams = new URL(window.location.href).searchParams;
+    const code = urlParams.get('code');
+    const isWithdrawFlow = sessionStorage.getItem('withdraw_flow') === 'true'; // 탈퇴 플로우 확인
+
+    if (code) {
+      if (isWithdrawFlow) {
+        handleKakaoWithdraw(code); // 회원탈퇴 처리
+      } else {
+        handleKakaoLogin(code); // 로그인 처리
+      }
+    }
   }, []);
 
+  // 카카오 로그인 처리 함수
   const handleKakaoLogin = async (code) => {
     try {
-      // 1. 회원 여부 확인 요청
       const validationResponse = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials/oauth/valid/register`,
         {
           params: {
-            code: code,       // 인가 코드 직접 전달
-            provider: 'KAKAO' // 공급자 명시
-          }
+            code: code,
+            provider: 'KAKAO',
+          },
         }
       );
-    
-      // 2. 응답 구조 분해 할당
-      const { 
-        isRegistered, 
-        idToken 
-      } = validationResponse.data.data;
+
+      const { isRegistered, idToken } = validationResponse.data.data;
 
       if (!isRegistered) {
-        console.log('[회원가입 필요] idToken:', idToken); // 디버깅용 로그
-        // 회원가입 페이지로 이동하며 idToken 전달
+        console.log('[회원가입 필요] idToken:', idToken);
         navigate('/userprofile', { state: { idToken } });
       } else {
-        console.log('[로그인 성공]'); // 디버깅용 로그
-        // 로그인 API 요청
+        console.log('[로그인 성공]');
         const authResponse = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials/login`,
           null,
           {
             params: {
               idToken: idToken,
-              provider: 'KAKAO'
-            }
+              provider: 'KAKAO',
+            },
           }
         );
-  
+
         localStorage.setItem('accessToken', authResponse.data.accessToken);
         navigate('/home');
       }
     } catch (error) {
-      console.error('API 호출 실패:', {
-        status: error.response?.status,
-        data: error.response?.data
-      });
+      console.error('로그인 API 호출 실패:', error.response?.data || error.message);
       navigate('/');
     }
   };
 
-  return <div>카카오 로그인 중...</div>;
+  // 카카오 회원탈퇴 처리 함수
+  const handleKakaoWithdraw = async (code) => {
+    try {
+      // 탈퇴 API 요청
+      const response = await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials`,
+        {
+          params: { code },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log('[회원탈퇴 성공]');
+        localStorage.clear(); // 모든 저장 데이터 삭제
+        sessionStorage.removeItem('withdraw_flow'); // 탈퇴 플로우 상태 제거
+        alert('회원탈퇴가 완료되었습니다.');
+        navigate('/'); // 메인 페이지로 이동
+      }
+    } catch (error) {
+      console.error('회원탈퇴 API 호출 실패:', error.response?.data || error.message);
+      alert('회원탈퇴 중 오류가 발생했습니다.');
+      navigate('/');
+    }
+  };
+
+  return <div>카카오 처리 중...</div>;
 };
 
 export default KakaoCallback;
