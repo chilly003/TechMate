@@ -73,7 +73,7 @@ const Header = () => {
         }/auth/google&response_type=code&scope=openid%20profile%20email`;
       }
 
-
+      console.log(authUrl)
       // 리다이렉트 실행
       window.location.href = authUrl;
     } catch (error) {
@@ -87,6 +87,7 @@ const Header = () => {
     try {
       const response = await api.get("/users/nickname");
       if (response.status === 200 && response.data.success) {
+        console.log(response.data.data.oauthProvider)
         return response.data.data.oauthProvider.toLowerCase(); // "KAKAO" → "kakao", "GOOGLE" → "google"
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
