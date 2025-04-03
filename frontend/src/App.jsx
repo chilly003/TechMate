@@ -9,6 +9,7 @@ import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
 import OpenPage from './pages/OpenPage';
 import KakaoCallback from './pages/KakaoCallback';
+import GoogleCallback from './pages/GoogleCallback';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/open" element={<OpenPage />} />
             <Route path="/auth" element={<KakaoCallback />} />
+            <Route path="/auth/google" element={<GoogleCallback />} />
           </Routes>
         </div>
       </div>
