@@ -36,7 +36,7 @@ const KakaoCallback = () => {
                 } catch (withdrawError) {
                     console.error('회원 탈퇴 API 호출 실패:', withdrawError);
                     alert('회원 탈퇴 중 오류가 발생했습니다.');
-                    navigate('/');
+                    navigate('/home');
                 }
             } else {
                 // 1. 회원 여부 확인 요청
@@ -95,7 +95,7 @@ const KakaoCallback = () => {
         }
     };
 
-    return <div>카카오 로그인 중...</div>;
+    return <div></div>;
 };
 
 export default KakaoCallback;
