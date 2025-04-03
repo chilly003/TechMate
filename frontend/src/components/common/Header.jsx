@@ -53,20 +53,21 @@ const Header = () => {
     try {
       // OAuth Provider 확인
       const provider = await getOAuthProvider();
+      console.log("Provider:", provider); // Provider 값 확인
 
       // 탈퇴 플로우 설정
       sessionStorage.setItem("withdraw_flow", "true");
 
       // 카카오 인증 URL 생성
       let authUrl;
-      if (provider === "kakao") {
+      if (provider === "KAKAO") {
         const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
 
         authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
         console.log("카카오 인증 URL:", authUrl);
-      } else if (provider === "google") {
+      } else if (provider === "GOOGLE") {
         const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
 
@@ -76,23 +77,23 @@ const Header = () => {
       // 리다이렉트 실행
       window.location.href = authUrl;
     } catch (error) {
-      console.error("회원탈퇴 요청 실패:", error);
+      console.error("회원탈퇴 요청 실패:", error); // 에러 객체 전체 출력
       alert("회원탈퇴 요청 중 오류가 발생했습니다.");
     }
   };
 
-  // OAuth Provider 확인 함수
   const getOAuthProvider = async () => {
     try {
       const response = await api.get("/users/nickname");
+      console.log("API 응답:", response); // API 응답 확인
       if (response.status === 200 && response.data.success) {
-        console.log(response.data.data.oauthProvider);
-        return response.data.data.oauthProvider.toLowerCase(); // "KAKAO" → "kakao", "GOOGLE" → "google"
+        console.log("OAuth Provider:", response.data.data.oauthProvider);
+        return response.data.data.oauthProvider;
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
       }
     } catch (error) {
-      console.error("OAuth Provider 확인 실패:", error);
+      console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
       throw new Error("OAuth Provider 확인 중 오류가 발생했습니다.");
     }
   };
