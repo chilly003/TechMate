@@ -17,7 +17,7 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                    backgroundImage: `url(${imageUrl || MainArticleImage})`
+                    backgroundImage: `url(${imageUrl})`
                 }}
             />
 
