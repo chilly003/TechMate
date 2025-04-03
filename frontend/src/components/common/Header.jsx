@@ -60,21 +60,19 @@ const Header = () => {
       // 카카오 인증 URL 생성
       let authUrl;
       if (provider === "kakao") {
-        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${
-          import.meta.env.VITE_KAKAO_REST_API_KEY
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth&response_type=code`;
+        const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
+        const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
+
+        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
         console.log("카카오 인증 URL:", authUrl);
       } else if (provider === "google") {
-        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
-          import.meta.env.VITE_GOOGLE_CLIENT_ID
-        }&redirect_uri=${
-          import.meta.env.VITE_API_BASE_URL
-        }/auth/google&response_type=code&scope=openid%20profile%20email`;
+        const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+
+        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
       }
-      
+
       // 리다이렉트 실행
       window.location.href = authUrl;
     } catch (error) {
@@ -88,7 +86,7 @@ const Header = () => {
     try {
       const response = await api.get("/users/nickname");
       if (response.status === 200 && response.data.success) {
-        console.log(response.data.data.oauthProvider)
+        console.log(response.data.data.oauthProvider);
         return response.data.data.oauthProvider.toLowerCase(); // "KAKAO" → "kakao", "GOOGLE" → "google"
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
