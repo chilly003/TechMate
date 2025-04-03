@@ -59,23 +59,23 @@ const Header = () => {
       sessionStorage.setItem("withdraw_flow", "true");
 
       // 카카오 인증 URL 생성
-      let authUrl;
       if (provider === "KAKAO") {
         const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
 
-        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+        const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
+        window.location.href = kakaoURL;
         console.log("카카오 인증 URL:", authUrl);
       } else if (provider === "GOOGLE") {
         const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
 
-        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
+        const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
+        window.location.href = googleAuthUrl;
       }
 
       // 리다이렉트 실행
-      window.location.href = authUrl;
     } catch (error) {
       console.error("회원탈퇴 요청 실패:", error); // 에러 객체 전체 출력
       alert("회원탈퇴 요청 중 오류가 발생했습니다.");
