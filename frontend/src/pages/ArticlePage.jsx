@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { FiEdit } from "react-icons/fi";
-import ListImage from "../assets/images/ArticleCardImage.jpg";
 import ArticleCard from "../components/article/ArticleCard";
 import Memo from "../components/article/Memo";
 import Quiz from "../components/article/Quiz";

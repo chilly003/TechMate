@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainArticleImage from '../../assets/images/MainArticleImage.jpg';
 
 const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
     const navigate = useNavigate();

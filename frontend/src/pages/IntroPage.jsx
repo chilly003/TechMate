@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import IntroImage from "../assets/images/introImage.jpg";
+import cityImage from "../assets/images/cityImage.jpg";
 import SocialLoginButton from "../components/ui/SocialLoginButton";
 import { useGoogleLogin } from "@react-oauth/google";
 
@@ -10,10 +11,10 @@ const Intro = () => {
   const handleSocialLogin = (provider) => {
     if (provider === 'kakao') {
       const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; // VITE_ 접두사 사용
-      const REDIRECT_URI =  `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
-      
+      const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth`; // KakaoCallback 컴포넌트의 경로
+
       const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-      
+
       window.location.href = kakaoURL;
     } else if (provider === "google") {
       const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -21,17 +22,17 @@ const Intro = () => {
 
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
 
-      window.location.href = googleAuthUrl; 
-    } 
+      window.location.href = googleAuthUrl;
+    }
   };
-  
+
 
   return (
     <div className="flex flex-row min-h-screen h-screen w-full">
       {/* Left section - hidden on mobile */}
       <div className="hidden md:block md:w-1/2 relative">
         <img
-          src={IntroImage}
+          src={cityImage}
           alt="Tech city skyline"
           className="w-full h-full object-cover"
           style={{ filter: "brightness(0.8) saturate(1.2)" }}
@@ -44,7 +45,7 @@ const Intro = () => {
         <div className="w-[60%] md:w-[50%] flex flex-col items-center justify-center">
           <div className="w-full text-center space-y-6">
             <div className="space-y-2 flex flex-col items-center">
-              <h1 className="text-h1 md:text-4xl font-bold flex justify-center">
+              <h1 className="text-5xl md:text-4xl font-bold flex justify-center">
                 <span className="text-primary-500">Tech</span>
                 <span className="text-black">Mate</span>
               </h1>
@@ -63,12 +64,12 @@ const Intro = () => {
           </div>
 
           <div className="w-full space-y-4 mt-12">
-  
-              <SocialLoginButton
-                provider="kakao"
-                onClick={() => handleSocialLogin("kakao")}
-              />
-        
+
+            <SocialLoginButton
+              provider="kakao"
+              onClick={() => handleSocialLogin("kakao")}
+            />
+
             <SocialLoginButton
               provider="google"
               onClick={() => handleSocialLogin("google")}
