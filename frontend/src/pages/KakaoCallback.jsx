@@ -49,7 +49,7 @@ const KakaoCallback = () => {
           }
         );
   
-        localStorage.setItem('accessToken', authResponse.data.accessToken);
+        localStorage.setItem('accessToken', authResponse?.data.accessToken);
         navigate('/home');
       }
     } catch (error) {
