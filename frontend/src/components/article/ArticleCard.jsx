@@ -22,7 +22,7 @@ const ArticleCard = ({ id, title, journal, summary, category, imageUrl, datetime
             {/* Article Image */}
             <div className="w-1/3 sm:w-full aspect-[3/4] sm:mb-3 overflow-hidden relative flex-shrink-0">
                 <img
-                    src={imageUrl || ArticleCardImage}
+                    src={imageUrl}
                     alt="Article thumbnail"
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110 hover:rotate-3"
                 />
