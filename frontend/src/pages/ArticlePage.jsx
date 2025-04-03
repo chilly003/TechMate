@@ -16,6 +16,7 @@ import {
 } from "../store/slices/articleSilce";
 import { addScrap, removeScrap } from "../store/slices/scrapSlice";
 import FloatingButton from "../components/ui/FloatingButton";
+// import 여기서 끝끝
 
 const ArticlePage = () => {
   const navigate = useNavigate();
