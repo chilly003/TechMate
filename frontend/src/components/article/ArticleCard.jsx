@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import ArticleCardImage from '../../assets/images/ArticleCardImage.jpg';
 
 const ArticleCard = ({ id, title, journal, summary, category, imageUrl, datetime }) => {
     const navigate = useNavigate();
