@@ -21,7 +21,7 @@ const Intro = () => {
 
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`;
 
-      window.location.href = googleAuthUrl; // Google OAuth 로그인 페이지로 이동
+      window.location.href = googleAuthUrl; 
     } 
   };
   
