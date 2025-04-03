@@ -65,6 +65,8 @@ const Header = () => {
         }&redirect_uri=${
           import.meta.env.VITE_API_BASE_URL
         }/auth&response_type=code`;
+
+        console.log("카카오 인증 URL:", authUrl);
       } else if (provider === "google") {
         authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
           import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -72,8 +74,7 @@ const Header = () => {
           import.meta.env.VITE_API_BASE_URL
         }/auth/google&response_type=code&scope=openid%20profile%20email`;
       }
-
-      console.log(authUrl)
+      
       // 리다이렉트 실행
       window.location.href = authUrl;
     } catch (error) {
