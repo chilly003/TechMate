@@ -28,7 +28,8 @@ const KakaoCallback = () => {
       const { 
         isRegistered, 
         idToken 
-      } = validationResponse.data.data;
+      } = validationResponse?.data.data;
+      console.log(isRegistered, idToken)
 
       if (!isRegistered) {
         console.log('[회원가입 필요] idToken:', idToken); // 디버깅용 로그
