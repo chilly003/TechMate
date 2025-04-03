@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import IntroImage from "../assets/images/introImage.jpg";
-import cityImage from "../assets/images/cityImage.jpg";
+import cityImage from "../assets/images/cityimage.jpg";
 import SocialLoginButton from "../components/ui/SocialLoginButton";
 import { useGoogleLogin } from "@react-oauth/google";
 
