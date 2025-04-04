@@ -21,15 +21,15 @@ const UserProfilePage = () => {
     // location에서 provider도 함께 받아오도록 수정
     const { idToken, provider } = location.state || {}; // provider 추가
 
-    useEffect(() => {
-        if (!idToken || !provider) {
-            console.error('idToken 또는 provider가 없습니다.');
-            navigate('/');
-        } else {
-            console.log('받은 idToken:', idToken); // 디버깅용 로그
-            // 필요 시 API 호출이나 상태 업데이트 수행 가능
-        }
-    }, [idToken, navigate]);
+    // useEffect(() => {
+    //     if (!idToken || !provider) {
+    //         console.error('idToken 또는 provider가 없습니다.');
+    //         navigate('/');
+    //     } else {
+    //         console.log('받은 idToken:', idToken); // 디버깅용 로그
+    //         // 필요 시 API 호출이나 상태 업데이트 수행 가능
+    //     }
+    // }, [idToken, navigate]);
 
     // 프로그레스 바 단계 정보 추가
     const steps = [
