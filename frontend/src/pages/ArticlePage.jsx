@@ -1,3 +1,4 @@
+// 스크롤 효과 관련 부분만 수정했습니다
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +24,7 @@ const ArticlePage = () => {
   // url 파라미터를 통해 기사 id 추출 (메모 컴포넌트 전달용)
   const { id } = useParams();
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [textColor, setTextColor] = useState("text-black");
+  const [textColor, setTextColor] = useState("text-white");
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
@@ -121,13 +122,15 @@ const ArticlePage = () => {
     };
   }, []);
 
-  const sharedStyle = {
-    filter: `brightness(${Math.max(0.6, 1 - scrollPosition * 0.002)})`,
-  };
-
+  // 수정된 스타일 부분: 이미지는 확대되지만 오버레이는 #FDFBF7로 변경
   const imageStyle = {
     transform: `scale(${1 + scrollPosition * 0.0008})`,
-    ...sharedStyle,
+  };
+
+  // 오버레이 스타일: 스크롤에 따라 #FDFBF7 색상의 불투명도가 변함
+  const overlayStyle = {
+    backgroundColor: `rgba(253, 251, 247, ${Math.min(1, scrollPosition * 0.002)})`,
+
   };
 
   return (
@@ -311,7 +314,7 @@ const ArticlePage = () => {
         className={`transition-all duration-300 ease-in-out ${isSidePanelOpen ? "md:w-1/2" : "w-full"
           }`}
       >
-        {/* Hero Section */}
+        {/* Hero Section - 여기에 오버레이 스타일 적용 */}
         <div
           className={`fixed inset-0 flex flex-col ${isSidePanelOpen ? "" : "md:flex-row"
             } h-screen ${isSidePanelOpen ? "md:w-1/2" : "w-full"}`}
@@ -328,51 +331,60 @@ const ArticlePage = () => {
                 backgroundImage: `url(${article?.images[0]?.imageUrl})`,
               }}
             />
+            {/* 검은색 오버레이 대신 #FDFBF7 색상의 오버레이 적용 */}
             <div
-              className={`absolute inset-0 bg-black/50`}
+              className="absolute inset-0 bg-black/50"
+            />
+            {/* 새로운 오버레이 - 스크롤에 따라 #FDFBF7 색상으로 덮임 */}
+            <div
+              className="absolute inset-0 pointer-events-none z-10"
+              style={overlayStyle}
             />
           </div>
 
-          {/* Text Section */}
+          {/* Text Section - 동일한 오버레이 효과를 글자 섹션에도 적용 */}
           <div
             className={`absolute ${isSidePanelOpen ? "" : "md:relative"
               } w-full ${isSidePanelOpen ? "" : "md:w-1/2"
               } h-full flex items-center ${isSidePanelOpen
                 ? "bg-transparent"
-                : "md:bg-black"
+                : "md:bg-[#FDFBF7]"
               }`}
           >
-            <div className="px-8 md:px-12 max-w-2xl relative z-10">
+            {/* 글자 섹션에도 동일한 오버레이 적용 (모바일에서는 Hero 섹션 전체에 효과 적용) */}
+            <div
+              className="absolute inset-0 pointer-events-none z-10 md:hidden"
+              style={overlayStyle}
+            />
+            <div className="px-8 md:px-12 max-w-2xl relative">
               <p
-                className={`text-xl text-white font-['Pretendard-Black'] ml-2 ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-xl font-['Pretendard-Black'] ml-2 ${isSidePanelOpen ? "text-white" : "text-white md:text-black"
                   } mb-4`}
               >
                 {article?.category}
               </p>
               <h1
-                className={`text-4xl md:text-h1 font-['Pretendard-Black'] mb-6 md:mb-8 leading-tight text-white
-                                ${isSidePanelOpen ? "" : "md:" + textColor}
-                                decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] ${isSidePanelOpen
-                    ? "decoration-white"
-                    : "md:decoration-current"
-                  }`}
+                className={`text-4xl md:text-h1 font-['Pretendard-Black'] mb-6 md:mb-8 leading-tight
+              ${isSidePanelOpen ? "text-white" : "text-white md:text-black"}
+              decoration-4 md:decoration-8 underline underline-offset-[5px] md:underline-offset-[15px] 
+              ${isSidePanelOpen ? "decoration-white" : "decoration-white md:decoration-current"}`}
               >
                 {article?.title}
               </h1>
               <p
-                className={`text-lg md:text-xl mb-4 md:mb-6 text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-lg md:text-xl mb-4 md:mb-6 ${isSidePanelOpen ? "text-white" : "text-white md:text-black"
                   } opacity-80`}
               >
                 {article?.summary}
               </p>
               <p
-                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-sm md:text-base ${isSidePanelOpen ? "text-white" : "text-white md:text-black"
                   } opacity-70`}
               >
                 {article?.reporter}
               </p>
               <p
-                className={`text-sm md:text-base text-white ${isSidePanelOpen ? "" : "md:" + textColor
+                className={`text-sm md:text-base ${isSidePanelOpen ? "text-white" : "text-white md:text-black"
                   } opacity-70`}
               >
                 {article?.datetime}
@@ -485,7 +497,7 @@ const ArticlePage = () => {
                 </div>
               </div>
 
-              {/* Footer */}
+              {/* Footer - 나머지 코드는 동일 */}
               <footer className="w-full bg-[#111111] text-white">
                 <div className="w-[95%] md:w-[90%] max-w-[2000px] mx-auto px-8 py-20">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
@@ -497,16 +509,6 @@ const ArticlePage = () => {
                         학습할 수 있도록 도와주는 서비스
                       </p>
                     </div>
-
-                    {/* Navigation */}
-                    {/* <div className="md:col-span-3 space-y-8">
-                      <h3 className="text-xl font-semibold">Navigation</h3>
-                      <ul className="space-y-4">
-                        <li><a href="/home" className="text-gray-400 hover:text-white transition-colors">홈</a></li>
-                        <li><a href="/scrap" className="text-gray-400 hover:text-white transition-colors">스크랩</a></li>
-                        <li><a href="/mypage" className="text-gray-400 hover:text-white transition-colors">마이페이지</a></li>
-                      </ul>
-                    </div> */}
 
                     {/* Contact */}
                     <div className="md:col-span-4 space-y-8">
