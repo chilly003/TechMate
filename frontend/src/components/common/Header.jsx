@@ -77,23 +77,23 @@ const Header = () => {
 
       // 리다이렉트 실행
     } catch (error) {
-      console.error("회원탈퇴 요청 실패:", error); // 에러 객체 전체 출력
-      alert("회원탈퇴 요청 중 오류가 발생했습니다.");
+      // console.error("회원탈퇴 요청 실패:", error); // 에러 객체 전체 출력
+      // alert("회원탈퇴 요청 중 오류가 발생했습니다.");
     }
   };
 
   const getOAuthProvider = async () => {
     try {
       const response = await api.get("/users/nickname");
-      console.log("API 응답:", response); // API 응답 확인
+      // console.log("API 응답:", response); // API 응답 확인
       if (response.status === 200 && response.data.success) {
-        console.log("OAuth Provider:", response.data.data.oauthProvider);
+        // console.log("OAuth Provider:", response.data.data.oauthProvider);
         return response.data.data.oauthProvider;
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
       }
     } catch (error) {
-      console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
+      // console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
       throw new Error("OAuth Provider 확인 중 오류가 발생했습니다.");
     }
   };
