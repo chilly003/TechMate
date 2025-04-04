@@ -8,6 +8,7 @@ const KakaoCallback = () => {
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get('code');
         if (code) handleKakaoLogin(code);
+        navigate('/home');
     }, []);
 
     const handleKakaoLogin = async (code) => {
@@ -16,9 +17,6 @@ const KakaoCallback = () => {
             const isWithdrawFlow = sessionStorage.getItem("withdraw_flow") === "true";
 
             if (isWithdrawFlow) {
-                // 탈퇴 API 호출
-                console.log('회원탈퇴 인가 코드:',code);
-                console.log('accessToken:',localStorage.getItem('accessToken'))
                 try {
                     await axios.delete(
                         `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials`,
@@ -39,7 +37,6 @@ const KakaoCallback = () => {
                     navigate('/open'); // 또는 다른 페이지로 리다이렉트
                 } catch (withdrawError) {
                     console.error('회원 탈퇴 API 호출 실패:', withdrawError);
-                    alert('회원 탈퇴 중 오류가 발생했습니다.');
                     navigate('/home');
                 }
             } else {

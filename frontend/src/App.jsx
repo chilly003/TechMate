@@ -21,15 +21,31 @@ function App() {
     return children;
   };
 
+  // Redirect to home if already logged in
+  const PublicRoute = ({ children }) => {
+    if (token) {
+      return <Navigate to="/home" />;
+    }
+    return children;
+  };
+
   return (
     <Router>
       <div>
         {token && <Header />}
         <div>
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<OpenPage />} />
-            <Route path="/open" element={<Intro />} />
+            {/* Public routes with redirect if logged in */}
+            <Route path="/" element={
+              <PublicRoute>
+                <OpenPage />
+              </PublicRoute>
+            } />
+            <Route path="/open" element={
+              <PublicRoute>
+                <Intro />
+              </PublicRoute>
+            } />
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
 
