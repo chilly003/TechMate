@@ -23,16 +23,16 @@ const UserProfilePage = () => {
     console.log(idToken, provider)
 
 
-    // useEffect(() => {
-    //     if (!idToken || !provider) {
-    //         console.error('idToken 또는 provider가 없습니다.');
-    //         navigate('/');
-    //     } else {
-    //         console.log('받은 idToken:', idToken); // 디버깅용 로그
-    //         // 필요 시 API 호출이나 상태 업데이트 수행 가능
-    //     }
-    // }
-    // , [idToken, navigate]);
+    useEffect(() => {
+        if (!idToken || !provider) {
+            console.error('idToken 또는 provider가 없습니다.');
+            navigate('/');
+        } else {
+            console.log('받은 idToken:', idToken); // 디버깅용 로그
+            // 필요 시 API 호출이나 상태 업데이트 수행 가능
+        }
+    }
+    , [idToken, navigate]);
 
     // 프로그레스 바 단계 정보 추가
     const steps = [
