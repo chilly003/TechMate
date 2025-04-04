@@ -32,6 +32,7 @@ const ArticlePage = () => {
   const [newFolderName, setNewFolderName] = useState("");
   const [showUnscrapModal, setShowUnscrapModal] = useState(false);
   const [scrapToRemove, setScrapToRemove] = useState(null);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
   const { article, status, liked, scraped, scrapId } = useSelector(
     (state) => state.article
   );
@@ -181,6 +182,7 @@ const ArticlePage = () => {
               setShowFolderNameModal(true);
               return;
             }
+            setSelectedFolderId(option.value);
             dispatch(addScrap({ articleId: id, folderId: option.value }))
               .unwrap()
               .then(() => {
@@ -208,6 +210,7 @@ const ArticlePage = () => {
             dispatch(removeScrap(scrapToRemove))
               .unwrap()
               .then(() => {
+                setSelectedFolderId(null); 
                 setShowUnscrapModal(false);
                 setIsSidePanelOpen(false);
                 dispatch(fetchArticleDetail(id)); // 스크랩 취소 후 기사 정보 새로고침
@@ -303,7 +306,7 @@ const ArticlePage = () => {
                 )}
               </div>
             ) : (
-              <Memo articleId={id} />
+              <Memo articleId={id} initialFolderId={selectedFolderId}/>
             )}
           </div>
         </div>
