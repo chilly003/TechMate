@@ -158,7 +158,7 @@ const HomePage = () => {
                             </div>
                             <div className={`
                                 w-full md:w-1/2 min-h-screen p-4
-                                ${sectionIndex % 2 === 1 ? 'order-1 bg-[#FBFCF6]' : 'order-2 bg-[#C4FF30]'}
+                                ${sectionIndex % 2 === 1 ? 'order-1 bg-[#FBFCF6]' : 'order-2 bg-[#FBFCF6]'}
                             `}>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
                                     {regularArticles.map((article, idx) => (
