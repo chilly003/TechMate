@@ -6,15 +6,13 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
     (config) => {
-        // const token = localStorage.getItem('accessToken');
-        // if (token) {
-        //     config.headers.Authorization = `Bearer ${token}`;
-        // }
-        // else {
-        //     config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MzcyNTc0Niwic3ViIjoiMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiVVNFUiIsImV4cCI6MTc0MzkwNTc0Nn0.sYeOXKxDa6J7xRT_rNEQgfED9rT4lcUhrAbOF_CfwVI';
-        // }
-
-        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MzcyNTc0Niwic3ViIjoiMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiVVNFUiIsImV4cCI6MTc0MzkwNTc0Nn0.sYeOXKxDa6J7xRT_rNEQgfED9rT4lcUhrAbOF_CfwVI';
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        else {
+            config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0MzcyNTc0Niwic3ViIjoiMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiVVNFUiIsImV4cCI6MTc0MzkwNTc0Nn0.sYeOXKxDa6J7xRT_rNEQgfED9rT4lcUhrAbOF_CfwVI';
+        }
 
         return config;
 
