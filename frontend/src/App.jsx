@@ -1,8 +1,9 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';
+// import ArticlePage from './pages/articlepage';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
@@ -10,66 +11,24 @@ import OpenPage from './pages/OpenPage';
 import KakaoCallback from './pages/KakaoCallback';
 import GoogleCallback from './pages/GoogleCallback';
 
+
 function App() {
-  const token = localStorage.getItem('accessToken');
-
-  // Protected Route component
-  const ProtectedRoute = ({ children }) => {
-    if (!token) {
-      return <Navigate to="/open" />;
-    }
-    return children;
-  };
-
-  // Redirect to home if already logged in
-  const PublicRoute = ({ children }) => {
-    if (token) {
-      return <Navigate to="/home" />;
-    }
-    return children;
-  };
-
   return (
+    // access 토큰 있을 때만 헤더 보여주기
+    // access 토큰 없다면 open, / 화면만 볼 수 있음.
     <Router>
       <div>
-        {token && <Header />}
-        <div>
+        <Header />
+        <div> {/* Removed pt-16 padding */}
           <Routes>
-            {/* Public routes with redirect if logged in */}
-            <Route path="/" element={
-              <PublicRoute>
-                <OpenPage />
-              </PublicRoute>
-            } />
-            <Route path="/open" element={
-              <PublicRoute>
-                <Intro />
-              </PublicRoute>
-            } />
+            <Route path="/" element={<OpenPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/userprofile" element={<UserProfilePage />} />
+            <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/open" element={<Intro />} />
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
-
-            {/* Protected routes */}
-            <Route path="/home" element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/userprofile" element={
-              <ProtectedRoute>
-                <UserProfilePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/article/:id" element={
-              <ProtectedRoute>
-                <ArticlePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/mypage" element={
-              <ProtectedRoute>
-                <Mypage />
-              </ProtectedRoute>
-            } />
           </Routes>
         </div>
       </div>
