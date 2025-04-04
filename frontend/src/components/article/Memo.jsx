@@ -88,35 +88,30 @@ const Memo = ({ articleId, initialFolderId }) => {
 
 
   useEffect(() => {
-    console.log("📝 메모 컴포넌트가 마운트되었습니다");
-    console.log("현재 기사 ID:", articleId);
+    console.log("📝 메모 컴포넌트가 마운트되었습니다. 기사 ID: ", articleId);
 
     if (articleId) {
-      // 폴더 목록과 메모 정보를 동시에 가져오기
-      Promise.all([
-        dispatch(fetchFolders()),
-        dispatch(fetchMemo(articleId))
-      ]).then(([foldersResponse, memoResponse]) => {
-        console.log('폴더 목록:', foldersResponse);
-        console.log('메모 응답:', memoResponse.payload);
-        setCategory(String(memoResponse.payload.folderId));
-        if (memoResponse.payload?.content) {
-          setMarkdown(memoResponse.payload.content);
-          // 스크랩된 폴더 ID가 있으면 해당 ID로 설정
-          if (memoResponse.payload.folderId) {
-            console.log('메모의 폴더 ID:', memoResponse.payload.folderId);
-            console.log('메모의 폴더 이름:', String(memoResponse.payload.folderId));
-            setCategory(String(memoResponse.payload.folderId));
-          }
-        } else {
-          setMarkdown("# 마크다운을 입력하세요");
-          // 초기 폴더 ID가 있으면 해당 ID로 설정
+      // 먼저 폴더 목록을 가져온 후에 메모 정보를 가져오기
+      dispatch(fetchFolders())
+        .then(() => dispatch(fetchMemo(articleId)))
+        .then((memoResponse) => {
+          // 스크랩 모달에서 선택한 폴더 ID가 있으면 우선 적용
+          console.log(initialFolderId)
           if (initialFolderId) {
-            console.log('초기 폴더 ID:', initialFolderId);
+            console.log("스크랩 모달에서 선택한 폴더 ID:", initialFolderId);
             setCategory(String(initialFolderId));
           }
-        }
-      });
+          // 기존 메모의 폴더 ID가 있으면 적용
+          else if (memoResponse.payload?.folderId) {
+            setCategory(String(memoResponse.payload.folderId));
+          }
+
+          if (memoResponse.payload?.content) {
+            setMarkdown(memoResponse.payload.content);
+          } else {
+            setMarkdown("# 마크다운을 입력하세요");
+          }
+        });
     }
   }, [dispatch, articleId, initialFolderId]);
 
