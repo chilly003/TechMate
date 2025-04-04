@@ -170,7 +170,7 @@ const OpenPage = () => {
                 <div className="relative h-screen flex flex-col items-center justify-center z-10 space-y-8">
                     <h2 className="text-4xl font-bold text-center text-white title-animation">새로운 IT 뉴스 경험</h2>
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/open')}
                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors duration-300 font-semibold"
                     >
                         시작하기

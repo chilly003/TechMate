@@ -1,9 +1,8 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';
-// import ArticlePage from './pages/articlepage';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
@@ -11,22 +10,50 @@ import OpenPage from './pages/OpenPage';
 import KakaoCallback from './pages/KakaoCallback';
 import GoogleCallback from './pages/GoogleCallback';
 
-
 function App() {
+  const token = localStorage.getItem('accessToken');
+
+  // Protected Route component
+  const ProtectedRoute = ({ children }) => {
+    if (!token) {
+      return <Navigate to="/open" />;
+    }
+    return children;
+  };
+
   return (
     <Router>
       <div>
-        <Header />
-        <div> {/* Removed pt-16 padding */}
+        {token && <Header />}
+        <div>
           <Routes>
-            <Route path="/" element={<Intro />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/userprofile" element={<UserProfilePage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
-            <Route path="/mypage" element={<Mypage />} />
-            <Route path="/open" element={<OpenPage />} />
+            {/* Public routes */}
+            <Route path="/" element={<OpenPage />} />
+            <Route path="/open" element={<Intro />} />
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
+
+            {/* Protected routes */}
+            <Route path="/home" element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/userprofile" element={
+              <ProtectedRoute>
+                <UserProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/article/:id" element={
+              <ProtectedRoute>
+                <ArticlePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/mypage" element={
+              <ProtectedRoute>
+                <Mypage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </div>
