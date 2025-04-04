@@ -18,6 +18,7 @@ const KakaoCallback = () => {
             if (isWithdrawFlow) {
                 // 탈퇴 API 호출
                 console.log('회원탈퇴 인가 코드:',code);
+                console.log('accessToken:',localStorage.getItem('accessToken'))
                 try {
                     await axios.delete(
                         `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials`,
