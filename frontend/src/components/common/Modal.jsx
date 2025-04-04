@@ -67,7 +67,7 @@ const Modal = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-2xl p-6 w-[90%] md:w-[30%] shadow-lg">
+            <div className="bg-white rounded-2xl p-6 w-[90%] md:w-[50%] shadow-lg">
                 <div className="flex justify-between items-center mb-5">
                     <h2 className="text-lg font-bold">{title}</h2>
                     <button 
@@ -84,7 +84,7 @@ const Modal = ({
                     <div className="flex justify-end mt-5">
                         <button
                             onClick={onConfirm}
-                            className="bg-[#1a237e] hover:bg-[#0e1642] text-white font-bold py-2 px-6 rounded-lg"
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-6 rounded-lg"
                         >
                             확인
                         </button>
