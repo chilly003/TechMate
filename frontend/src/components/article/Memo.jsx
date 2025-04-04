@@ -67,28 +67,6 @@ const Memo = ({ articleId, initialFolderId }) => {
   const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
 
 
-  // const handleFolderChange = async (e) => {
-  //   const newFolderId = e.target.value;
-
-  //   if (memo?.scrapId && articleId) {
-  //     try {
-  //       await dispatch(removeScrap(memo.scrapId));
-
-  //       await dispatch(addScrap({
-  //         articleId: articleId,
-  //         folderId: newFolderId
-  //       }));
-
-  //       await dispatch(fetchMemo(articleId));
-
-  //       setCategory(newFolderId);
-  //     } catch (error) {
-  //       console.error("Error changing folder:", error);
-  //     }
-  //   }
-  // };
-
-
   // handleFolderChange도 수정
   const handleFolderChange = async (e) => {
     const newFolderId = String(e.target.value);  // 문자열로 변환
@@ -258,15 +236,15 @@ const Memo = ({ articleId, initialFolderId }) => {
       </div>
 
       {/* 마크다운 에디터 및 미리보기 */}
-      <div className="flex-grow overflow-hidden my-4">
+      <div className="flex-grow overflow-hidden my-2 h-[calc(90vh-250px)]">
         {!isPreview ? (
           <textarea
-            className="markdown-editor w-full h-full min-h-[300px] border border-gray-300 rounded "
+            className="markdown-editor w-full h-full border border-gray-300 rounded"
             value={markdown}
             onChange={handleInputChange}
           />
         ) : (
-          <div className="markdown-preview w-full h-full min-h-[300px] border border-gray-300 rounded overflow-auto">
+          <div className="markdown-preview w-full h-full border border-gray-300 rounded overflow-auto">
             <ReactMarkdown
               components={CustomComponents}
               remarkPlugins={[remarkGfm]}
@@ -278,10 +256,10 @@ const Memo = ({ articleId, initialFolderId }) => {
       </div>
 
       {/* 저장 버튼 */}
-      <div className="mt-4 text-center flex-shrink-0">
+      <div className="text-center flex-shrink-0 mt-4">
         <button
           onClick={handleSave}
-          className="preview-button bg-[#1E4C9A] text-white px-4 py-2 rounded"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-2 rounded shadow-md transition duration-200 ease-in-out w-32"
         >
           저장하기
         </button>
@@ -290,7 +268,7 @@ const Memo = ({ articleId, initialFolderId }) => {
       {/* 플로팅 버튼 */}
       <FloatingButton
         text={isPreview ? "메모" : "미리보기"}
-        color="from-[#1B2C7A] to-[#72B7CA] fixed bottom-8 right-8"
+        color="fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg"
         onClick={togglePreview}
       />
 
