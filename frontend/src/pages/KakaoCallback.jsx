@@ -8,7 +8,6 @@ const KakaoCallback = () => {
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get('code');
         if (code) handleKakaoLogin(code);
-        console.log(code);
     }, []);
 
     const handleKakaoLogin = async (code) => {
@@ -18,6 +17,7 @@ const KakaoCallback = () => {
 
             if (isWithdrawFlow) {
                 // 탈퇴 API 호출
+                console.log('회원탈퇴 인가 코드:',code);
                 try {
                     await axios.delete(
                         `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials`,
