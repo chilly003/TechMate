@@ -210,7 +210,7 @@ const ArticlePage = () => {
             dispatch(removeScrap(scrapToRemove))
               .unwrap()
               .then(() => {
-                setSelectedFolderId(null); 
+                setSelectedFolderId(null);
                 setShowUnscrapModal(false);
                 setIsSidePanelOpen(false);
                 dispatch(fetchArticleDetail(id)); // 스크랩 취소 후 기사 정보 새로고침
@@ -306,7 +306,7 @@ const ArticlePage = () => {
                 )}
               </div>
             ) : (
-              <Memo articleId={id} initialFolderId={selectedFolderId}/>
+              <Memo articleId={id} initialFolderId={selectedFolderId} />
             )}
           </div>
         </div>
@@ -490,7 +490,7 @@ const ArticlePage = () => {
                             category={relatedArticle.category}
                             summary={relatedArticle.summary || ""}
                             imageUrl={
-                              relatedArticle.thumbnailImageUrl || ListImage
+                              relatedArticle.thumbnailImageUrl
                             }
                             datetime={relatedArticle.datetime}
                           />
