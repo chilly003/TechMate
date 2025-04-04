@@ -18,19 +18,19 @@ const UserProfilePage = () => {
 
     const location = useLocation(); // 전달된 state를 가져오기 위한 훅
 
-    // 전달된 idToken 확인
-    const idToken = location.state?.idToken; // 전달된 state에서 idToken 추출
+    // location에서 provider도 함께 받아오도록 수정
+    const { idToken, provider } = location.state || {}; // provider 추가
 
     useEffect(() => {
-        if (!idToken) {
-            console.error('idToken이 없습니다.');
-            navigate('/'); // idToken이 없으면 홈으로 리다이렉트
+        if (!idToken || !provider) {
+            console.error('idToken 또는 provider가 없습니다.');
+            navigate('/');
         } else {
             console.log('받은 idToken:', idToken); // 디버깅용 로그
             // 필요 시 API 호출이나 상태 업데이트 수행 가능
         }
     }, [idToken, navigate]);
-    
+
     // 프로그레스 바 단계 정보 추가
     const steps = [
         { number: 1, text: '닉네임 입력' },
@@ -76,7 +76,8 @@ const UserProfilePage = () => {
                     const response = await dispatch(registerPreferredArticles({
                         nickname,
                         selectedArticles: newSelectedArticles,
-                        idToken
+                        idToken,
+                        provider // provider 추가
                     })).unwrap();
 
                     // 토큰 저장
@@ -220,7 +221,7 @@ const UserProfilePage = () => {
 
                         <div className="max-w-6xl mx-auto px-4 relative">
                             <div
-                                className={`grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-8 transition-all duration-300
+                                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 md:gap-8 transition-all duration-300
                                     ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
                             >
                                 {randomArticles
@@ -244,8 +245,7 @@ const UserProfilePage = () => {
                                                 }`}
                                         >
                                             <div className="w-full mx-auto pointer-events-none">
-                                                {/* articlecard에서 헤드라인, 날짜, 언론사 임의로 제거 */}
-                                                <div className="[&>div>div>div:first-child]:text-sm md:text-sm [&>div>div>div:first-child]:line-clamp-3 [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
+                                                <div className="[&>div>div>div>div:nth-child(1)]:!text-base [&>div>div>div>div:nth-child(1)]:!sm:text-base [&>div>div>div:not(:first-child)]:hidden [&>div>div>h3]:hidden">
                                                     <ArticleCard
                                                         id={article.id}
                                                         title={article.title}

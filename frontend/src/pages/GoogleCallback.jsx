@@ -58,10 +58,13 @@ const GoogleCallback = () => {
                 console.log(isRegistered, idToken)
 
                 if (!isRegistered) {
-                    console.log('[회원가입 필요] idToken:', idToken); // 디버깅용 로그
-                    // 회원가입 페이지로 이동하며 idToken 전달
-                    navigate('/userprofile', { state: { idToken } });
-
+                    console.log('[회원가입 필요] idToken:', idToken);
+                    navigate('/userprofile', { 
+                        state: { 
+                            idToken,
+                            provider: 'GOOGLE'
+                        }
+                    });
                 } else {
                     console.log('[로그인 성공]'); // 디버깅용 로그
                     // 로그인 API 요청
