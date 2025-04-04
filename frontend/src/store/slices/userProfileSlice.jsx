@@ -48,7 +48,7 @@ export const fetchRandomArticles = createAsyncThunk(
 // 선호 기사 등록 및 회원가입 액션
 export const registerPreferredArticles = createAsyncThunk(
     'userProfile/registerPreferred',
-    async ({ nickname, selectedArticles, idToken }, { rejectWithValue }) => {
+    async ({ nickname, selectedArticles, idToken, provider }, { rejectWithValue }) => {
         try {
             console.log('📝 회원가입 요청 데이터:', {
                 nickname,
@@ -57,7 +57,7 @@ export const registerPreferredArticles = createAsyncThunk(
             });
 
             const response = await api.post(
-                `/credentials?idToken=${idToken}&provider=KAKAO`,
+                `/credentials?idToken=${idToken}&provider=${provider}`,
                 {
                     nickname: nickname,
                     articleInitRequest: {
