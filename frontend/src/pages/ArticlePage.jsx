@@ -17,6 +17,7 @@ import {
 } from "../store/slices/articleSilce";
 import { addScrap, removeScrap } from "../store/slices/scrapSlice";
 import FloatingButton from "../components/ui/FloatingButton";
+import quiz from "../assets/images/quiz.png";
 // import 여기서 끝끝
 
 const ArticlePage = () => {
@@ -456,17 +457,37 @@ const ArticlePage = () => {
                     return elements;
                   })}
                 </div>
+
+
+                {/* 퀴즈 풀기 버튼 */}
+                <div className="w-full rounded-xl mb-12 pt-14">
+                  <div className="w-full rounded-2xl px-6 md:px-12 py-6 md:py-5 flex flex-col md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+                    {/* 텍스트와 버튼 영역 */}
+                    <div className="relative z-10 flex flex-col gap-4 w-full md:max-w-[60%] text-center md:text-left">
+                      <div>
+                        <p className="text-gray-600 text-sm md:text-base mb-1">쉽고 재밌는 IT 뉴스 플랫폼 TechMate와 함께 하는</p>
+                        <p className="text-2xl md:text-3xl pt-1 font-bold">IT 퀴즈</p>
+                      </div>
+                      <button
+                        onClick={handleQuizClick}
+                        className="bg-white text-sm font-semibold px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
+                      >
+                        퀴즈 풀러 가기
+                      </button>
+                    </div>
+                    {/* 우측 이미지 - 모바일에서는 숨김 */}
+                    <div className="hidden md:block h-40 w-40">
+                      <img
+                        src={quiz}
+                        alt="Quiz"
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* 퀴즈 풀기 버튼 */}
-              <div className="mt-8 text-center flex-shrink-0 mb-12">
-                <button
-                  onClick={handleQuizClick}
-                  className="preview-button bg-gradient-to-r from-[#1B2C7A] to-[#72B7CA] text-white px-6 py-2 rounded"
-                >
-                  퀴즈 풀기
-                </button>
-              </div>
+
 
               {/* Related Articles Section - Full width */}
               <div className="w-full bg-[#FDFBF7] py-16">
