@@ -8,7 +8,6 @@ const KakaoCallback = () => {
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get('code');
         if (code) handleKakaoLogin(code);
-        navigate('/home');
     }, []);
 
     const handleKakaoLogin = async (code) => {
@@ -34,7 +33,7 @@ const KakaoCallback = () => {
                     console.log('회원 탈퇴 성공');
                     sessionStorage.removeItem("withdraw_flow"); // 세션 스토리지에서 플래그 제거
                     alert('회원 탈퇴가 완료되었습니다.');
-                    navigate('/open'); // 또는 다른 페이지로 리다이렉트
+                    navigate('/'); // 또는 다른 페이지로 리다이렉트
                 } catch (withdrawError) {
                     console.error('회원 탈퇴 API 호출 실패:', withdrawError);
                     navigate('/home');

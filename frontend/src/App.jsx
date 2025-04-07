@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+=======
+import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+>>>>>>> frontend
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';

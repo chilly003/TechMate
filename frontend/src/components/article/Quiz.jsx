@@ -60,6 +60,15 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     }
   }, [quizAttemptStatus, selectedOptions, quizData.quizzes]);
 
+  // 3번째 문제의 정답 선택 후 다음 버튼 클릭 추적
+  // useEffect(() => {
+  //   // 3번째 문제(인덱스 2)에서 결과 화면으로 전환된 경우
+  //   if (currentQuestion === 2 && showResult && selectedAnswers[2] !== null) {
+  //     console.log("안녕");
+  //     // 제출 로직은 handleContinue에서 처리하도록 변경
+  //   }
+  // }, [currentQuestion, showResult, selectedAnswers]);
+
   // 진행 상태 계산
   const progress = ((currentQuestion + 1) / quizData.quizzes.length) * 100;
 
@@ -90,12 +99,37 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     }
   };
 
+  // 계속 진행 핸들러
+  const handleContinue = () => {
+    // 3번째 문제(인덱스 2)에서 다음 버튼 클릭 시 제출 처리
+    if (currentQuestion === 2 && !quizAttemptStatus) {
+      submitQuizResults();
+      onClose();
+    }
+
+    setShowResult(false);
+    if (currentQuestion < quizData.quizzes.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setShowFinalResults(true);
+    }
+  };
+
   // 답변 선택 핸들러
   const handleAnswerSelect = (optionId) => {
     const newAnswers = [...selectedAnswers];
     newAnswers[currentQuestion] = optionId;
     setSelectedAnswers(newAnswers);
     setShowWarning(false);
+
+    // 3번째 문제(인덱스 2)에서 답변 선택 시 제출 처리
+    if (currentQuestion === 2 && !quizAttemptStatus) {
+      // 상태 업데이트 후 제출하기 위해 setTimeout 사용
+      setTimeout(() => {
+        submitQuizResults();
+        onClose();
+      }, 10000);
+    }
   };
 
   // 다음 단계로 진행 핸들러
@@ -112,16 +146,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   const handlePrevResult = () => {
     setShowResult(true);
     setCurrentQuestion(currentQuestion - 1);
-  };
-
-  // 계속 진행 핸들러
-  const handleContinue = () => {
-    setShowResult(false);
-    if (currentQuestion < quizData.quizzes.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setShowFinalResults(true);
-    }
   };
 
   // 현재 퀴즈 가져오기
@@ -258,7 +282,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           {getCurrentQuiz().question}
         </h2>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mb-8">
           {getCurrentQuiz().options.map((option) => (
             <div
               key={option.option_id}
@@ -276,6 +300,14 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           ))}
         </div>
 
+        {/* 정답 설명 추가 */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-8">
+          <h3 className="font-semibold text-gray-700 mb-2">정답 설명</h3>
+          <p className="text-gray-600">
+            {quiz.reason}
+          </p>
+        </div>
+
         <div className="flex justify-end gap-4 mt-10">
           {currentQuestion > 0 && (
             <button
@@ -289,7 +321,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
             onClick={handleContinue}
             className="px-10 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors"
           >
-            {currentQuestion === quizData.quizzes.length - 1 ? '결과 보기' : '다음'}
+            {currentQuestion === quizData.quizzes.length - 1 ? '제출 하기' : '다음'}
           </button>
         </div>
       </div>

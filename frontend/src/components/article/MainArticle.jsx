@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import replaceImage from '../../assets/images/replaceImage.png';
 
 const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                    backgroundImage: `url(${imageUrl})`
+                    backgroundImage: `url(${imageUrl || replaceImage})`
                 }}
             />
 
