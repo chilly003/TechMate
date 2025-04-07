@@ -142,9 +142,9 @@ const OpenPage = () => {
                             ref={contentRef1}
                             className="opacity-0 transform translate-y-10 transition-all duration-1000 max-w-md"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">맞춤형 학습 경험</h2>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">IT 뉴스를 읽고</p>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">퀴즈로 복습하세요</p>
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">나만의 뉴스를 한눈에,</h2>
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600">뉴스를 스크랩하고</p>
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600">한눈에 모아보세요.</p>
                         </div>
 
                         <div className="hidden md:flex max-w-md">
@@ -170,9 +170,9 @@ const OpenPage = () => {
                             ref={contentRef2}
                             className="opacity-0 transform translate-y-10 transition-all duration-1000 max-w-md"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">맞춤형 학습 경험</h2>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">IT 뉴스를 읽고</p>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">퀴즈로 복습하세요</p>
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">메모까지 간편히,</h2>
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600">기사를 읽으며</p>
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600">나의 생각을 정리하세요</p>
                         </div>
 
                         <div className="hidden md:flex max-w-md">
