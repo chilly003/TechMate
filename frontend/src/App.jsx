@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';
@@ -11,12 +12,27 @@ import KakaoCallback from './pages/KakaoCallback';
 import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
-  const accessToken = localStorage.getItem('accessToken');
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+
+  useEffect(() => {
+    // localStorage 변경 감지 및 상태 업데이트
+    const handleStorageChange = () => {
+      setAccessToken(localStorage.getItem('accessToken'));
+    };
+
+    // storage 이벤트 리스너 등록
+    window.addEventListener('storage', handleStorageChange);
+
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <Router>
       <div>
-        {accessToken && <Header/>}
+        {accessToken && <Header />} 
         <div>
           <Routes>
             <Route path="/" element={<OpenPage />} />
