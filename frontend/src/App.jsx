@@ -1,5 +1,5 @@
-import './App.css'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';
@@ -11,22 +11,27 @@ import KakaoCallback from './pages/KakaoCallback';
 import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
+  const accessToken = localStorage.getItem('accessToken');
+
   return (
     <Router>
       <div>
-        <Header />
+        {accessToken && <Header/>}
         <div>
           <Routes>
             <Route path="/" element={<OpenPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/userprofile" element={<UserProfilePage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
-            <Route path="/mypage" element={<Mypage />} />
             <Route path="/open" element={<Intro />} />
-            <Route path="/auth" element={<KakaoCallback />} />
-            <Route path="/auth/google" element={<GoogleCallback />} />
-            {/* 없는 경로는 /로 리다이렉트 */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+
+            {accessToken && (
+              <>
+                <Route path="/home" element={<HomePage />} />
+                <Route path="/userprofile" element={<UserProfilePage />} />
+                <Route path="/article/:id" element={<ArticlePage />} />
+                <Route path="/mypage" element={<Mypage />} />
+                <Route path="/auth" element={<KakaoCallback />} />
+                <Route path="/auth/google" element={<GoogleCallback />} />
+              </>
+            )}
           </Routes>
         </div>
       </div>

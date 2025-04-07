@@ -66,7 +66,7 @@ const Header = () => {
         const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
         window.location.href = kakaoURL;
-        console.log("카카오 인증 URL:", authUrl);
+        // console.log("카카오 인증 URL:", authUrl);
       } else if (provider === "GOOGLE") {
         const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
@@ -77,8 +77,10 @@ const Header = () => {
 
       // 리다이렉트 실행
     } catch (error) {
-      console.error("회원탈퇴 요청 실패:", error); // 에러 객체 전체 출력
-      alert("회원탈퇴 요청 중 오류가 발생했습니다.");
+      if (error.response) {
+        console.error("상태 코드:", error.response.status);
+        console.error("응답 데이터:", error.response.data);
+      }
     }
   };
 
@@ -132,14 +134,16 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300  ${visible ? "translate-y-0" : "-translate-y-full"
-          } ${window.scrollY > 10 ? "bg-[#FDFBF7]/80 backdrop-blur-[2px]" : ""}`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300  ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        } ${window.scrollY > 10 ? "bg-[#FDFBF7]/80 backdrop-blur-[2px]" : ""}`}
       >
         <div className="max-w-[2000px] mx-auto px-8 md:px-12 h-16 flex items-center justify-between">
           <Link to="/Home" className="inline-flex items-center">
             <h1
-              className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight ${window.scrollY > 10 ? "text-primary-500" : "text-white"
-                }`}
+              className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight ${
+                window.scrollY > 10 ? "text-primary-500" : "text-white"
+              }`}
             >
               TechMate
             </h1>
@@ -147,15 +151,17 @@ const Header = () => {
 
           <button
             onClick={() => setIsMenuOpen(true)}
-            className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${isMenuOpen ? "opacity-0" : "opacity-100"
-              } `}
+            className={`p-1 hover:bg-gray-100/10 rounded-full transition-colors ${
+              isMenuOpen ? "opacity-0" : "opacity-100"
+            } `}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="36"
               height="36"
               viewBox="0 0 36 36"
-              className={window.scrollY > 10 ? "text-primary-500" : "text-white"
+              className={
+                window.scrollY > 10 ? "text-primary-500" : "text-white"
               }
             >
               <rect x="4" y="8" width="28" height="4" fill="currentColor" />
@@ -168,8 +174,9 @@ const Header = () => {
 
       {/* 사이드 패널 */}
       <div
-        className={`fixed top-0 right-0 h-screen bg-[#FDFBF7] shadow-lg transform transition-transform duration-300 ease-in-out z-[100] w-full md:w-1/2 ${isMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 h-screen bg-[#FDFBF7] shadow-lg transform transition-transform duration-300 ease-in-out z-[100] w-full md:w-1/2 ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="h-full flex flex-col justify-between">
           <div className="px-4 md:px-10 py-3">
