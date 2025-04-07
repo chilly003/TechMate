@@ -106,6 +106,8 @@ const quizSlice = createSlice({
             })
             .addCase(submitQuizAnswers.fulfilled, (state, action) => {
                 state.loading = false;
+                state.quizAttemptStatus = true;  // 퀴즈 제출 완료 상태로 변경
+                state.selectOptions = action.payload.data?.selectOptions || state.selectOptions;  // 서버에서 응답한 선택 정보 업데이트
             })
             .addCase(submitQuizAnswers.rejected, (state, action) => {
                 state.loading = false;
