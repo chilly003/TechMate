@@ -123,13 +123,13 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     setShowWarning(false);
 
     // 3번째 문제(인덱스 2)에서 답변 선택 시 제출 처리
-    if (currentQuestion === 2 && !quizAttemptStatus) {
-      // 상태 업데이트 후 제출하기 위해 setTimeout 사용
-      setTimeout(() => {
-        submitQuizResults();
-        onClose();
-      }, 10000);
-    }
+    // if (currentQuestion === 2 && !quizAttemptStatus) {
+    //   // 상태 업데이트 후 제출하기 위해 setTimeout 사용
+    //   setTimeout(() => {
+    //     submitQuizResults();
+    //     onClose();
+    //   }, 10000);
+    // }
   };
 
   // 다음 단계로 진행 핸들러
