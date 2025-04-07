@@ -25,12 +25,12 @@ function App() {
             {accessToken && (
               <>
                 <Route path="/home" element={<HomePage />} />
-                <Route path="/userprofile" element={<UserProfilePage />} />
                 <Route path="/article/:id" element={<ArticlePage />} />
                 <Route path="/mypage" element={<Mypage />} />
               </>
             )}
-            
+
+            <Route path="/userprofile" element={<UserProfilePage />} />
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
           </Routes>
