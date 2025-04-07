@@ -53,7 +53,7 @@ const Header = () => {
     try {
       // OAuth Provider 확인
       const provider = await getOAuthProvider();
-      console.log("Provider:", provider); // Provider 값 확인
+      // console.log("Provider:", provider); // Provider 값 확인
 
       // 탈퇴 플로우 설정
       sessionStorage.setItem("withdraw_flow", "true");
@@ -87,15 +87,15 @@ const Header = () => {
   const getOAuthProvider = async () => {
     try {
       const response = await api.get("/users/nickname");
-      console.log("API 응답:", response); // API 응답 확인
+      // console.log("API 응답:", response); // API 응답 확인
       if (response.status === 200 && response.data.success) {
-        console.log("OAuth Provider:", response.data.data.oauthProvider);
+        // console.log("OAuth Provider:", response.data.data.oauthProvider);
         return response.data.data.oauthProvider;
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
       }
     } catch (error) {
-      console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
+      // console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
       throw new Error("OAuth Provider 확인 중 오류가 발생했습니다.");
     }
   };

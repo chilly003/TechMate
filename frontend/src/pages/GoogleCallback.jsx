@@ -58,10 +58,10 @@ const GoogleCallback = () => {
 
         // 2. 응답 구조 분해 할당
         const { isRegistered, idToken } = validationResponse?.data.data;
-        console.log(isRegistered, idToken);
+        // console.log(isRegistered, idToken);
 
         if (!isRegistered) {
-          console.log("[회원가입 필요] idToken:", idToken);
+        //   console.log("[회원가입 필요] idToken:", idToken);
           navigate("/userprofile", {
             state: {
               idToken,
