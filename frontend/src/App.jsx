@@ -1,9 +1,8 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/common/Header';
 import Intro from './pages/IntroPage';
 import ArticlePage from './pages/ArticlePage';
-// import ArticlePage from './pages/articlepage';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/MyPage';
 import UserProfilePage from './pages/UserProfilePage';
@@ -11,15 +10,12 @@ import OpenPage from './pages/OpenPage';
 import KakaoCallback from './pages/KakaoCallback';
 import GoogleCallback from './pages/GoogleCallback';
 
-
 function App() {
   return (
-    // access 토큰 있을 때만 헤더 보여주기
-    // access 토큰 없다면 open, / 화면만 볼 수 있음.
     <Router>
       <div>
         <Header />
-        <div> {/* Removed pt-16 padding */}
+        <div>
           <Routes>
             <Route path="/" element={<OpenPage />} />
             <Route path="/home" element={<HomePage />} />
@@ -29,6 +25,8 @@ function App() {
             <Route path="/open" element={<Intro />} />
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
+            {/* 없는 경로는 /로 리다이렉트 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </div>
