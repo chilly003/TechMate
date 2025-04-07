@@ -18,6 +18,7 @@ import {
 import { addScrap, removeScrap } from "../store/slices/scrapSlice";
 import FloatingButton from "../components/ui/FloatingButton";
 import quiz from "../assets/images/quiz.png";
+import replaceImage from "../../src/assets/images/replaceImage.png";
 // import 여기서 끝끝
 
 const ArticlePage = () => {
@@ -332,7 +333,7 @@ const ArticlePage = () => {
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 ...imageStyle,
-                backgroundImage: `url(${article?.images[0]?.imageUrl})`,
+                backgroundImage: `url(${(article?.images && article.images[0]?.imageUrl) || replaceImage})`,
               }}
             />
             {/* 검은색 오버레이 대신 #FDFBF7 색상의 오버레이 적용 */}
