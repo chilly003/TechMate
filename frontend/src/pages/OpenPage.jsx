@@ -6,6 +6,9 @@ import deskImage from '../assets/images/deskImage.jpg';
 import webImage from '../assets/images/webImage1.png';
 import webImage2 from '../assets/images/webImage2.png';
 import webImage3 from '../assets/images/webImage3.png';
+import mobileImage from '../assets/images/mobileImage1.png';
+import mobileImage2 from '../assets/images/mobileImage2.png';
+import mobileImage3 from '../assets/images/mobileImage3.png';
 import '../styles/OpenPage.css';
 
 const ScrollArrow = () => (
@@ -28,7 +31,7 @@ const ScrollArrow = () => (
     </div>
 );
 
-const OpenPage = () => {
+const Openpage = () => {
     const navigate = useNavigate();
 
     // Add new ref for the fourth section
@@ -137,51 +140,72 @@ const OpenPage = () => {
             {/* Second section */}
             <FullpageScroll.Section className="bg-[#FFF8E7] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
-                    <div className="w-full flex flex-row items-center justify-center gap-12">
+                    <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
                             ref={contentRef1}
-                            className="opacity-0 transform translate-y-10 transition-all duration-1000 max-w-md"
+                            className="opacity-0 transform translate-y-10 transition-all ease-out duration-1000 max-w-[150px] md:max-w-[280px]"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">나만의 뉴스를 한눈에,</h2>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">뉴스를 스크랩하고</p>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">한눈에 모아보세요.</p>
+                            <div className="rounded-3xl overflow-hidden"> {/* Added fixed width */}
+                                <img
+                                    src={mobileImage3}
+                                    alt="App preview 2"
+                                    className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                />
+                            </div>
                         </div>
 
-                        <div className="hidden md:flex max-w-md">
+                        <div className=""> {/* Added flex and flex-col */}
                             <div
                                 ref={phoneRef1}
-                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out"
+                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out max-w-[200px] md:max-w-[600px]"
                             >
-                                <div className="rounded-3xl overflow-hidden">
-                                    <img src={webImage} alt="App preview 2" className="w-full h-full object-cover" />
+                                <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-4">나만의 뉴스를 한눈에,</h2>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600">뉴스를 스크랩하고</p>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-4">한눈에 모아보세요.</p>
+                                <div className="hidden md:block rounded-3xl overflow-hidden"> {/* Changed flex to block */}
+                                    <img
+                                        src={webImage}
+                                        alt="App preview 2"
+                                        className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </FullpageScroll.Section>
 
             {/* Third section */}
-            <FullpageScroll.Section className="bg-[#FFF8E7]">
+            <FullpageScroll.Section className="bg-[#FFF8E7] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
-                    <div className="w-full flex flex-row items-center justify-center gap-12">
+                    <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
                             ref={contentRef2}
-                            className="opacity-0 transform translate-y-10 transition-all duration-1000 max-w-md"
+                            className="opacity-0 transform translate-y-10 transition-all ease-out duration-1000 max-w-[150px] md:max-w-[280px]"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">메모까지 간편히,</h2>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">기사를 읽으며</p>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">나의 생각을 정리하세요</p>
+                            <div className="rounded-3xl overflow-hidden"> {/* Added fixed width */}
+                                <img
+                                    src={mobileImage2}
+                                    alt="App preview 2"
+                                    className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                />
+                            </div>
                         </div>
 
-                        <div className="hidden md:flex max-w-md">
+                        <div className=""> {/* Added flex and flex-col */}
                             <div
                                 ref={phoneRef2}
-                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out"
+                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out max-w-[200px] md:max-w-[600px]"
                             >
-                                <div className="rounded-3xl overflow-hidden">
-                                    <img src={webImage2} alt="App preview 2" className="w-full h-full object-cover" />
+                                <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-4">메모까지 간편히,</h2>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600">기사를 읽으며</p>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-4">나의 생각을 기록하세요.</p>
+                                <div className="hidden md:block rounded-3xl overflow-hidden"> {/* Changed flex to block */}
+                                    <img
+                                        src={webImage2}
+                                        alt="App preview 2"
+                                        className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -190,25 +214,36 @@ const OpenPage = () => {
             </FullpageScroll.Section>
 
             {/* Add fourth section */}
-            <FullpageScroll.Section className="bg-[#FFF8E7]">
+            <FullpageScroll.Section className="bg-[#FFF8E7] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
-                    <div className="w-full flex flex-row items-center justify-center gap-12">
+                    <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
                             ref={contentRef3}
-                            className="opacity-0 transform translate-y-10 transition-all duration-1000 max-w-md"
+                            className="opacity-0 transform translate-y-10 transition-all ease-out duration-1000 max-w-[150px] md:max-w-[280px]"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">맞춤형 학습 경험</h2>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">IT 뉴스를 읽고</p>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-600">퀴즈로 복습하세요</p>
+                            <div className="rounded-3xl overflow-hidden"> {/* Added fixed width */}
+                                <img
+                                    src={mobileImage}
+                                    alt="App preview 2"
+                                    className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                />
+                            </div>
                         </div>
 
-                        <div className="hidden md:flex max-w-md">
+                        <div className=""> {/* Added flex and flex-col */}
                             <div
                                 ref={phoneRef3}
-                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out"
+                                className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out max-w-[200px] md:max-w-[600px]"
                             >
-                                <div className="rounded-3xl overflow-hidden">
-                                    <img src={webImage3} alt="App preview 2" className="w-full h-full object-cover" />
+                                <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-4">맞춤형 학습경험</h2>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600">IT뉴스를 읽고</p>
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-4">퀴즈로 복습하세요</p>
+                                <div className="hidden md:block rounded-3xl overflow-hidden"> {/* Changed flex to block */}
+                                    <img
+                                        src={webImage3}
+                                        alt="App preview 2"
+                                        className="w-full h-full object-cover scale-100" /* Added scale for slightly larger image */
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -241,4 +276,4 @@ const OpenPage = () => {
     );
 };
 
-export default OpenPage;
+export default Openpage;
