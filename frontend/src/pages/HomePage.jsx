@@ -77,6 +77,9 @@ const HomePage = () => {
                 page: 0,
                 size: 20
             }));
+        } else if (!keyword) {
+            alert("검색 결과가 존재하지 않습니다.");
+            navigate("/home")
         } else if (category === 'hot') {
             dispatch(fetchHotArticles({ page: 0, size: 5 }));
         } else if (category === 'recent') {
