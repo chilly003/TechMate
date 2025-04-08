@@ -49,7 +49,6 @@ const ArticlePage = () => {
     // Remove the unnecessary scraped state check since we're using Redux store
   }, [dispatch, id]);
 
-
   // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
     if (!isSidePanelOpen) {
@@ -130,6 +129,7 @@ const ArticlePage = () => {
   // 오버레이 스타일: 스크롤에 따라 #FDFBF7 색상의 불투명도가 변함
   const overlayStyle = {
     backgroundColor: `rgba(253, 251, 247, ${Math.min(1, scrollPosition * 0.002)})`,
+
   };
 
   return (
