@@ -463,8 +463,8 @@ const ArticlePage = () => {
 
 
                 {/* 퀴즈 풀기 버튼 */}
-                <div className="w-full rounded-xl mb-12 pt-14">
-                  <div className="w-full rounded-xl px-6 md:px-12 py-6 md:py-5 px-12 py-6 flex md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+                <div className="w-full rounded-2xl mb-12 pt-14">
+                  <div className="w-full rounded-2xl px-6 md:px-12 py-6 md:py-5 px-12 py-6 flex md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
                     {/* 텍스트와 버튼 영역 */}
                     <div className="relative z-10 flex flex-col gap-4 w-full md:max-w-[60%] text-center md:text-left">
                       <div>

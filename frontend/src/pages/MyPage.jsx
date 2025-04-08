@@ -246,7 +246,7 @@ const Mypage = () => {
       {/* Main Content Container */}
       <div className="flex flex-col gap-8 h-full mt-14 pb-6">
         {/* Activity and Quiz History Container */}
-        <div className="flex flex-col md:flex-row gap-20">
+        <div className="flex flex-col md:flex-row gap-10">
           {/* Activity Statistics */}
           <div className="w-full md:w-1/2">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">활동 내역</h2>
@@ -273,7 +273,7 @@ const Mypage = () => {
           {/* Quiz History */}
           <div className="w-full md:w-1/2">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">퀴즈 풀이 현황</h2>
-            <div className="bg-gray-50 rounded-xl ps-12 pe-0 py-4">
+            <div className="bg-gray-50 rounded-xl px-5 py-4">
               <div className="overflow-x-auto">
                 <table className="w-full" style={{ borderSpacing: '2px' }}>
                   <thead>
