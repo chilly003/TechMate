@@ -92,7 +92,7 @@ const ArticlePage = () => {
   // 사이드 패널 닫을 때 퀴즈 상태도 초기화
   const handleCloseSidePanel = () => {
     setIsSidePanelOpen(false);
-    setShowQuiz(false);
+    // setShowQuiz(false);
   };
 
   // Modify scrap button click handler
@@ -250,7 +250,7 @@ const ArticlePage = () => {
         className={`fixed top-0 right-0 h-full w-full md:w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-[100] ${isSidePanelOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
-        <div className="h-full  overflow-hidden">
+        <div className="h-full overflow-hidden">
           <button
             onClick={() => setIsSidePanelOpen(false)}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -278,35 +278,37 @@ const ArticlePage = () => {
             style={{ overscrollBehavior: "contain" }}
           >
             {showQuiz ? (
-              <div className="flex-1 overflow-y-auto p-8">
-                {quizLoading || !quizzes?.length ? (
-                  <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
-                    <div className="flex flex-col items-center justify-center text-center space-y-6">
-                      <div className="relative">
-                        <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
-                        <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
-                      </div>
-                      <div>
-                        <p className="text-3xl font-bold text-gray-800 mb-4">
-                          퀴즈 생성 중
-                        </p>
-                        <p className="text-xl text-gray-600">
-                          잠시만 기다려주세요
-                        </p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          AI가 기사를 분석하여 퀴즈를 만들고 있습니다
-                        </p>
-                      </div>
+              quizLoading || !quizzes?.length ? (
+                <div className="flex items-center justify-center h-full min-h-[calc(100vh-16rem)] w-full">
+                  <div className="flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-24 w-24 border-[6px] border-gray-200"></div>
+                      <div className="absolute top-0 animate-spin rounded-full h-24 w-24 border-[6px] border-blue-500 border-t-transparent"></div>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">
+                        퀴즈 생성 중
+                      </p>
+                      <p className="text-xl text-gray-600">
+                        잠시만 기다려주세요
+                      </p>
+                      <p className="text-sm text-gray-500 mt-2">
+                        AI가 기사를 분석하여 퀴즈를 만들고 있습니다
+                      </p>
                     </div>
                   </div>
-                ) : (
-                  <Quiz
-                    articleId={id}
-                    quizzes={quizzes}
-                    onClose={handleCloseSidePanel}
-                  />
-                )}
-              </div>
+                </div>
+              ) : (
+                <Quiz
+                  key={`quiz-${id}`}
+                  articleId={id}
+                  quizzes={quizzes}
+                  onClose={() => {
+                    handleCloseSidePanel();
+                    setTimeout(() => setShowQuiz(false), 300);
+                  }}
+                />
+              )
             ) : (
               <Memo articleId={id} initialFolderId={selectedFolderId} />
             )}
@@ -462,7 +464,7 @@ const ArticlePage = () => {
 
                 {/* 퀴즈 풀기 버튼 */}
                 <div className="w-full rounded-xl mb-12 pt-14">
-                  <div className="w-full rounded-2xl px-6 md:px-12 py-6 md:py-5 flex flex-col md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+                  <div className="w-full rounded-xl px-6 md:px-12 py-6 md:py-5 px-12 py-6 flex md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
                     {/* 텍스트와 버튼 영역 */}
                     <div className="relative z-10 flex flex-col gap-4 w-full md:max-w-[60%] text-center md:text-left">
                       <div>
@@ -477,7 +479,7 @@ const ArticlePage = () => {
                       </button>
                     </div>
                     {/* 우측 이미지 - 모바일에서는 숨김 */}
-                    <div className="hidden md:block h-40 w-40">
+                    <div className="hidden sm:block h-40 w-40">
                       <img
                         src={quiz}
                         alt="Quiz"

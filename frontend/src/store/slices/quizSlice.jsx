@@ -24,10 +24,13 @@ export const fetchQuizzes = createAsyncThunk(
         } catch (error) {
             // API 에러 응답이 있는 경우
             if (error.response) {
+                if (error.response.data.reason === "solar api 서비스의 문제가 발생했습니다") {
+                    alert("퀴즈 생성 오류. 다시 시도해주세요.");
+                }
                 return rejectWithValue({
                     status: error.response.status,
-                    reason: error.response.data.reason,
-                    path: error.response.data.path,
+                    reason: error.rense.data.reason,
+                    path: error.response.data.spopath,
                     success: error.response.data.success,
                     timeStamp: error.response.data.timeStamp
                 });
@@ -106,6 +109,8 @@ const quizSlice = createSlice({
             })
             .addCase(submitQuizAnswers.fulfilled, (state, action) => {
                 state.loading = false;
+                state.quizAttemptStatus = true;  // 퀴즈 제출 완료 상태로 변경
+                state.selectOptions = action.payload.data?.selectOptions || state.selectOptions;  // 서버에서 응답한 선택 정보 업데이트
             })
             .addCase(submitQuizAnswers.rejected, (state, action) => {
                 state.loading = false;

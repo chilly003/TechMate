@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitQuizAnswers } from '../../store/slices/quizSlice';
+import quizGrass from "../../assets/images/quiz_grass.png";
 
 const Quiz = ({ articleId, quizzes, onClose }) => {
   // 퀴즈가 없을 경우 처리
@@ -30,6 +31,8 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   };
 
   // 상태 관리 훅들
+  const dispatch = useDispatch();
+  const currentQuestionRef = useRef(0);  // useRef 추가
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState(new Array(quizzes?.length || 0).fill(null));
   const [showWarning, setShowWarning] = useState(false);
@@ -69,51 +72,87 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   //   }
   // }, [currentQuestion, showResult, selectedAnswers]);
 
+  // 현재 퀴즈 가져오기
+  const getCurrentQuiz = () => quizData.quizzes[currentQuestion];
+
   // 진행 상태 계산
   const progress = ((currentQuestion + 1) / quizData.quizzes.length) * 100;
 
-  const dispatch = useDispatch();
-
-  // 최종 결과 제출 함수 (API 호출)
+  // 최종 결과 제출 함수 수정
   const submitQuizResults = async () => {
     try {
+      console.log('제출 시작 - 현재 상태:', {
+        currentQuestion,
+        showResult,
+        showFinalResults,
+        isSubmitting
+      });
+
+      setIsSubmitting(true);
       const finalDetailedAnswers = quizData.quizzes.map((quiz, index) => ({
         quizId: quiz.quiz_id,
         selectedOptionId: selectedAnswers[index]
       }));
 
-      console.log(finalDetailedAnswers);
-
-      // API 호출 (주석 해제 필요)
-      const response = await dispatch(submitQuizAnswers({
+      await dispatch(submitQuizAnswers({
         articleId: articleId,
         answers: finalDetailedAnswers
       })).unwrap();
 
-      console.log('퀴즈 답변 제출 성공', response);
+      // 상태 업데이트를 동기적으로 처리
+      setShowResult(false);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      setIsSubmitting(false);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      setShowFinalResults(true);
+
     } catch (error) {
-      console.error('퀴즈 답변 제출 실패', error);
+      console.error('퀴즈 답변 제출 실패:', error);
       setSubmitError('퀴즈 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 계속 진행 핸들러
-  const handleContinue = () => {
-    // 3번째 문제(인덱스 2)에서 다음 버튼 클릭 시 제출 처리
-    if (currentQuestion === 2 && !quizAttemptStatus) {
-      submitQuizResults();
-      onClose();
+  // 개별 상태 변화 추적을 위한 useEffect
+  useEffect(() => {
+    if (showFinalResults) {
+      console.log('showFinalResults가 true로 변경됨');
+    }
+  }, [showFinalResults]);
+
+
+  const handleContinue = async () => {
+    if (currentQuestion === quizData.quizzes.length - 1) {
+      console.log('마지막 문제 제출 시도:', {
+        currentQuestion,
+        quizAttemptStatus,
+        showResult,
+        showFinalResults
+      });
+      if (!quizAttemptStatus) {
+        currentQuestionRef.current = currentQuestion;  // ref 값 유지
+        await submitQuizResults();
+      } else {
+        setShowResult(false);
+        setShowFinalResults(true);
+      }
+      return;
     }
 
+    // 마지막 문제가 아닌 경우
+    const nextQuestion = currentQuestion + 1;
+    currentQuestionRef.current = nextQuestion;  // ref 값 업데이트
+    setCurrentQuestion(nextQuestion);
     setShowResult(false);
-    if (currentQuestion < quizData.quizzes.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setShowFinalResults(true);
-    }
   };
+
+  // useEffect로 ref 값 동기화
+  useEffect(() => {
+    if (currentQuestionRef.current !== currentQuestion) {
+      setCurrentQuestion(currentQuestionRef.current);
+    }
+  }, [showFinalResults]);
+
 
   // 답변 선택 핸들러
   const handleAnswerSelect = (optionId) => {
@@ -121,16 +160,8 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     newAnswers[currentQuestion] = optionId;
     setSelectedAnswers(newAnswers);
     setShowWarning(false);
-
-    // 3번째 문제(인덱스 2)에서 답변 선택 시 제출 처리
-    // if (currentQuestion === 2 && !quizAttemptStatus) {
-    //   // 상태 업데이트 후 제출하기 위해 setTimeout 사용
-    //   setTimeout(() => {
-    //     submitQuizResults();
-    //     onClose();
-    //   }, 10000);
-    // }
   };
+
 
   // 다음 단계로 진행 핸들러
   const handleNext = () => {
@@ -144,17 +175,51 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
   // 이전 결과 보기 핸들러
   const handlePrevResult = () => {
-    setShowResult(true);
-    setCurrentQuestion(currentQuestion - 1);
+    const prevQuestion = currentQuestion - 1;
+    if (prevQuestion >= 0) {
+      currentQuestionRef.current = prevQuestion;
+      setCurrentQuestion(prevQuestion);
+      setShowResult(true);
+    }
   };
 
-  // 현재 퀴즈 가져오기
-  const getCurrentQuiz = () => quizData.quizzes[currentQuestion];
+  // 기본 퀴즈 화면의 이전 버튼 onClick 핸들러를 수정합니다:
+  const handlePrev = () => {
+    const prevQuestion = currentQuestion - 1;
+    if (prevQuestion >= 0) {
+      if (selectedAnswers[prevQuestion] !== null) {
+        // 이전 문제에 답변이 있으면 결과 화면 표시
+        currentQuestionRef.current = prevQuestion;
+        setCurrentQuestion(prevQuestion);
+        setShowResult(true);
+      } else {
+        // 이전 문제에 답변이 없으면 문제 화면으로
+        setCurrentQuestion(prevQuestion);
+        setShowResult(false);
+      }
+    }
+  };
+
+
+
+  // 최종 결과 화면의 버튼 핸들러 수정
+  const handleFinalButtons = (action) => {
+    if (action === 'article') {
+      onClose();
+    } else {
+      window.location.href = '/home';
+    }
+  };
 
   // 최종 결과 화면
   if (showFinalResults) {
     return (
-      <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+      <div className="max-w-3xl px-10 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+        {/* <div className="flex items-center">
+          <div className="bg-[#1a237e] text-white text-3xl md:text-3xl font-bold mb-10">
+            퀴즈 풀이 결과
+          </div>
+        </div> */}
         {quizData.quizzes.map((quiz, index) => (
           <div key={quiz.quiz_id} className="mb-12">
             <h3 className="text-xl font-semibold mb-6">
@@ -195,11 +260,15 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
               ))}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
+
+            {/* 정답 설명 추가 */}
+            <div className="bg-gray-50 p-4 rounded-lg mb-8">
+              <h3 className="font-semibold text-gray-700 mb-2">정답 설명</h3>
               <p className="text-gray-600">
                 {quiz.reason}
               </p>
             </div>
+
           </div>
         ))}
 
@@ -217,25 +286,42 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           </div>
         )}
 
+        {/* 퀴즈 풀이 현황 버튼 */}
+        {/* <div className="w-full rounded-xl mb-12 pt-14"> */}
+        <div className="w-full rounded-2xl px-6 md:px-8 py-7 flex justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+          {/* 텍스트와 버튼 영역 */}
+          <div className="relative z-10 flex flex-col gap-4 w-full px-5 md:text-left">
+            <div>
+              <p className="text-gray-600 text-sm md:text-base mb-1">퀴즈 풀고 잔디 심어요!</p>
+              <p className="text-xl md:text-xl pt-0.5 font-bold">당신의 퀴즈 풀이 현황은?</p>
+              <button
+                onClick={() => window.location.href = '/mypage'}
+                className="bg-white text-sm font-semibold mt-3 px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
+              >
+                퀴즈 풀이 현황 보러가기
+              </button>
+            </div>
+          </div>
+          {/* 우측 이미지 - 모바일에서는 숨김 */}
+          <div className="hidden sm:block h-[120px] w-[170px] ml-auto me-7">
+            <img
+              src={quizGrass}
+              alt="Quiz"
+              className="h-full w-full object-contain"
+            />
+          </div>
+        </div>
+        {/* </div> */}
+
         <div className="flex flex-col md:flex-row justify-between gap-4 mt-16 mb-8">
           <button
-            onClick={() => {
-              if (!quizAttemptStatus) {
-                submitQuizResults();
-              }
-              onClose();
-            }}
+            onClick={() => handleFinalButtons('article')}
             className="px-8 md:px-16 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors w-full md:w-auto"
           >
             기사 보기
           </button>
           <button
-            onClick={() => {
-              if (!quizAttemptStatus) {
-                submitQuizResults();
-              }
-              window.location.href = '/home';
-            }}
+            onClick={() => handleFinalButtons('home')}
             className="px-8 md:px-16 py-4 bg-[#1E4C9A] text-white rounded-lg hover:bg-[#183c7a] transition-colors w-full md:w-auto"
           >
             홈으로 가기
@@ -247,12 +333,13 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
   // 결과 화면
   if (showResult) {
-    const quiz = getCurrentQuiz();
-    const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestion]);
+    // const quiz = getCurrentQuiz();
+    const quiz = quizData.quizzes[currentQuestionRef.current];  // currentQuestion 대신 ref 사용
+    const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestionRef.current]);
     return (
-      <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+      <div className="max-w-3xl px-8 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
         <div className="text-right mb-4">
-          Question {currentQuestion + 1} / {quizData.quizzes.length}
+          Question {currentQuestionRef.current + 1} / {quizData.quizzes.length}
         </div>
 
         <div className="relative">
@@ -301,12 +388,12 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
         </div>
 
         {/* 정답 설명 추가 */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-8">
+        {/* <div className="bg-gray-50 p-4 rounded-lg mb-8">
           <h3 className="font-semibold text-gray-700 mb-2">정답 설명</h3>
           <p className="text-gray-600">
             {quiz.reason}
           </p>
-        </div>
+        </div> */}
 
         <div className="flex justify-end gap-4 mt-10">
           {currentQuestion > 0 && (
@@ -330,7 +417,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
   // 기본 퀴즈 화면
   return (
-    <div className="max-w-3xl mx-auto md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+    <div className="max-w-3xl px-8 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
       <div className="text-right mb-4">
         Question {currentQuestion + 1} / {quizData.quizzes.length}
       </div>
@@ -358,6 +445,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
         </div>
       </div>
 
+
       <h2 className="text-2xl font-semibold mb-10 mt-10">
         {getCurrentQuiz().question}
       </h2>
@@ -382,10 +470,11 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
         )}
       </div>
 
+
       <div className="flex justify-end gap-4 mt-10">
         {currentQuestion > 0 && (
           <button
-            onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
+            onClick={handlePrev}
             className="px-10 py-4 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
           >
             이전
@@ -397,8 +486,11 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           다음
         </button>
       </div>
+
+
+
+
     </div>
   );
 }
-
 export default Quiz;
