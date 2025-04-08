@@ -29,7 +29,7 @@ export const fetchQuizzes = createAsyncThunk(
                 }
                 return rejectWithValue({
                     status: error.response.status,
-                    reason: error.rense.data.reason,
+                    reason: error.rensponse.data.reason,
                     path: error.response.data.spopath,
                     success: error.response.data.success,
                     timeStamp: error.response.data.timeStamp

@@ -73,7 +73,7 @@ const ArticlePage = () => {
           // Quiz loaded successfully
         })
         .catch((error) => {
-          if (error.status === 404 && error.reason?.includes('퀴즈가 생성중')) {
+          if (error.reason) {
             setTimeout(() => {
               console.log('퀴즈 생성 중... 재시도합니다.');
               fetchQuizWithRetry();
