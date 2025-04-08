@@ -235,3 +235,19 @@
   -ms-flex: 1;
   flex: 1;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating-arrow {
+  animation: float 2s ease-in-out infinite;
+}
