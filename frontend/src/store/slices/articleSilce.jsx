@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, isRejectedWithValue } from '@reduxjs/toolkit';
 import api from "../../api/axios";
 
 const initialState = {
@@ -112,6 +112,11 @@ export const fetchSearchArticles = createAsyncThunk(
                 size,
             }
         });
+        
+        if (response.data.data.content.length === 0) {
+            throw new Error("검색 결과가 없습니다.")
+        }
+
         return response.data;
     }
 )

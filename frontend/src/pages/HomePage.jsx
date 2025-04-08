@@ -69,24 +69,38 @@ const HomePage = () => {
     }, [loading, hasMore, currentPage, category, keyword]); // Add keyword to dependency array
 
     // Update the initial data fetch
-    useEffect(() => {
-        dispatch(resetArticle()); // Reset state when search or category changes
-        if (keyword) {
-            dispatch(fetchSearchArticles({
-                keyword,
-                page: 0,
-                size: 20
-            }));
-        } else if (category === 'hot') {
-            dispatch(fetchHotArticles({ page: 0, size: 5 }));
-        } else if (category === 'recent') {
-            dispatch(fetchRecentArticles({ page: 0, size: 5 }));
-        } else if (category && category !== 'all') {
-            dispatch(fetchCategoryArticles({ category, page: 0, size: 5 }));
-        } else {
-            dispatch(fetchRecommendArticles(0));
+// HomePage.js
+useEffect(() => {
+    const fetchData = async () => {
+        dispatch(resetArticle());
+        try {
+            if (keyword) {
+                // 검색 요청 후 결과 확인
+                await dispatch(fetchSearchArticles({
+                    keyword,
+                    page: 0,
+                    size: 20
+                })).unwrap(); // ✨ unwrap()으로 에러 캐치
+            } else if (category === 'hot') {
+                dispatch(fetchHotArticles({ page: 0, size: 5 }));
+            } else if (category === 'recent') {
+                dispatch(fetchRecentArticles({ page: 0, size: 5 }));
+            } else if (category && category !== 'all') {
+                dispatch(fetchCategoryArticles({ category, page: 0, size: 5 }));
+            } else {
+                dispatch(fetchRecommendArticles(0));
+            }
+        } catch (error) {
+            // 검색 결과가 없는 경우
+            if (error.message === "검색 결과가 없습니다.") {
+                alert(error.message); // 경고창 표시
+                navigate('/home'); // /home으로 이동
+            }
         }
-    }, [dispatch, category, keyword]); // Add keyword to dependency array
+    };
+
+    fetchData();
+}, [dispatch, category, keyword, navigate]); // navigate 추가
 
     // Remove the duplicate useEffect for initial data fetch
     // Keep only the useLayoutEffect for scroll behavior
