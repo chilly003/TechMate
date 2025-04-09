@@ -83,6 +83,7 @@ const Mypage = () => {
   // Add quizHistory to the destructured state
   const { nickname, activity, quizHistory, loading, error } = useSelector((state) => state.myPage);
   const [newNickname, setNewNickname] = useState("");
+  const [nicknameError, setNicknameError] = useState(""); // Add state for nickname validation error
   const folderData = useSelector(
     (state) => state.folder?.folders || { content: [] }
   );
@@ -186,6 +187,7 @@ const Mypage = () => {
 
   const handleNicknameEdit = () => {
     setNewNickname(nickname || "");
+    setNicknameError(""); // Clear any previous errors
     setIsNicknameModalOpen(true);
   };
 
@@ -195,6 +197,9 @@ const Mypage = () => {
   const handleNicknameUpdate = async () => {
     try {
       if (newNickname.trim()) {
+        if (newNickname.length > 15) {
+          return;
+        }
         const result = await dispatch(updateNickname(newNickname)).unwrap();
         if (result) {
           await dispatch(fetchNickname());
@@ -227,7 +232,7 @@ const Mypage = () => {
   };
 
   return (
-    <div className="px-14 py-28 md:pt-36 py-32 max-w-7xl mx-auto ">
+    <div className="px-14 md:pt-36 py-32 max-w-7xl mx-auto ">
       <div className="flex items-center gap-2 mb-8">
         <div className="flex items-center">
           <div className="bg-[#1a237e] text-white text-3xl md:text-5xl font-bold">

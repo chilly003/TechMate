@@ -58,6 +58,10 @@ const Modal = ({
                             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                             autoFocus
                         />
+                        {/* Add validation error message when nickname exceeds 10 characters */}
+                        {value && value.length > 15 && (
+                            <div className="text-red-500 text-sm mt-2">15자 이하로 작성해 주세요.</div>
+                        )}
                     </div>
                 );
             default:
@@ -85,6 +89,7 @@ const Modal = ({
                         <button
                             onClick={onConfirm}
                             className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-6 rounded-lg"
+                            disabled={type === 'edit' && value && value.length > 15}
                         >
                             확인
                         </button>
