@@ -163,7 +163,11 @@ const Header = () => {
               height="36"
               viewBox="0 0 36 36"
               className={
-                window.scrollY > 10 ? "text-primary-500" : "text-gray-800"
+                window.scrollY > 10
+                  ? "text-primary-500"
+                  : window.innerWidth <= 768
+                    ? "text-white"
+                    : "text-gray-800"
               }
             >
               <rect x="4" y="8" width="28" height="4" fill="currentColor" />
