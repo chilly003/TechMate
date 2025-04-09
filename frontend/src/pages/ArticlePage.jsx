@@ -471,7 +471,7 @@ const ArticlePage = () => {
                         onClick={handleQuizClick}
                         className="bg-white text-sm font-semibold px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
                       >
-                        퀴즈 풀러 가기
+                       AI 퀴즈 풀기
                       </button>
                     </div>
                     {/* 우측 이미지 - 모바일에서는 숨김 */}
