@@ -142,7 +142,7 @@ const Header = () => {
           <Link to="/Home" className="inline-flex items-center">
             <h1
               className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight ${
-                window.scrollY > 10 ? "text-primary-500" : "text-white"
+                window.scrollY > 10 ? "text-primary-500" : " text-black"
               }`}
             >
               TechMate
@@ -161,7 +161,7 @@ const Header = () => {
               height="36"
               viewBox="0 0 36 36"
               className={
-                window.scrollY > 10 ? "text-primary-500" : "text-white"
+                window.scrollY > 10 ? "text-primary-500" : "text-black"
               }
             >
               <rect x="4" y="8" width="28" height="4" fill="currentColor" />
