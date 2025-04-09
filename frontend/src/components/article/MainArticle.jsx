@@ -14,7 +14,10 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
             className="relative w-full h-full group cursor-pointer"
             onClick={handleClick}
         >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70 z-10" />
+            {/* 기존 그라데이션을 더 진하게 수정 */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/80 z-10" />
+            {/* 추가적인 어두운 오버레이 */}
+            <div className="absolute inset-0 bg-black/30" />
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
