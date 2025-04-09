@@ -24,7 +24,7 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
 
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 text-white z-20">
                 <div className="space-y-4 w-[80%]">
-                    <h2 className="font-['Pretendard-Black'] text-xl md:text-2xl leading-tight tracking-tight">
+                    <h2 className="font-['Pretendard-Black'] text-2xl md:text-3xl leading-tight tracking-tight inline-block px-5 py-3 bg-black/40 rounded-lg backdrop-blur-sm">
                         {category}
                     </h2>
 
