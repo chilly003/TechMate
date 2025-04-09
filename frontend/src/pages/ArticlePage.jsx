@@ -537,7 +537,7 @@ const ArticlePage = () => {
                     <div className="md:col-span-4 space-y-8">
                       <h3 className="text-xl font-semibold">Contact</h3>
                       <ul className="space-y-4">
-                        <li className="text-gray-400">SSAFY 12기 공통 프로젝트</li>
+                        <li className="text-gray-400">SSAFY 12기 특화 프로젝트</li>
                         <li className="text-gray-400">B201팀</li>
                       </ul>
                     </div>
