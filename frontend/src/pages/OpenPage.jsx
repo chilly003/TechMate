@@ -138,7 +138,7 @@ const Openpage = () => {
             </FullpageScroll.Section>
 
             {/* Second section */}
-            <FullpageScroll.Section className="bg-[#FFF8E7] relative">
+            <FullpageScroll.Section className="bg-[#FFFFF] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
                     <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
@@ -176,7 +176,7 @@ const Openpage = () => {
             </FullpageScroll.Section>
 
             {/* Third section */}
-            <FullpageScroll.Section className="bg-[#FFF8E7] relative">
+            <FullpageScroll.Section className="bg-[#FFFFF] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
                     <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
@@ -214,7 +214,7 @@ const Openpage = () => {
             </FullpageScroll.Section>
 
             {/* Add fourth section */}
-            <FullpageScroll.Section className="bg-[#FFF8E7] relative">
+            <FullpageScroll.Section className="bg-[#FFFFF] relative">
                 <div className="mx-auto px-4 h-screen flex items-center">
                     <div className="w-full flex flex-row justify-center gap-12 items-center">
                         <div
