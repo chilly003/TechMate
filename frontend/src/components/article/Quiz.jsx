@@ -246,14 +246,14 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
                         ? 'bg-red-100'
                         : 'bg-gray-100'
                       }`}
-                    style={{ width: `${option.choice_rate * 100}%` }}
+                    style={{ width: `${option.choice_rate}%` }}
                   />
                   <div className="relative flex justify-between items-center z-10">
                     <div>
                       {String.fromCharCode(64 + option.option_id)}. {option.text}
                     </div>
                     <div className="text-gray-500 font-medium">
-                      {(option.choice_rate * 100).toFixed(0)}%
+                      {(option.choice_rate).toFixed(0)}%
                     </div>
                   </div>
                 </div>
