@@ -7,7 +7,6 @@ export const fetchNickname = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/users/nickname');
-
             return response.data.data;
         } catch (err) {
 
@@ -21,6 +20,7 @@ export const updateNickname = createAsyncThunk(
     'myPage/updateNickname',
     async (nickname, { rejectWithValue }) => {
         try {
+            const response = await api.patch('/users/nickname', { nickname });
             return response.data.data;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || '닉네임 수정에 실패했습니다.');
@@ -35,7 +35,6 @@ export const fetchActivity = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/users/activity');
-
             return response.data.data;
         } catch (err) {
 
