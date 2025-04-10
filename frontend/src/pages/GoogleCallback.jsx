@@ -34,7 +34,7 @@ const GoogleCallback = () => {
           sessionStorage.removeItem("withdraw_flow");
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
-          localStorage.removeItem("hasVisitedIntro");
+          // localStorage.removeItem("hasVisitedIntro");
           alert("회원 탈퇴가 완료되었습니다.");
           navigate("/"); // 또는 다른 페이지로 리다이렉트
         } catch (withdrawError) {

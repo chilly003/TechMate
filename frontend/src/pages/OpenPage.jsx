@@ -34,16 +34,16 @@ const ScrollArrow = () => (
 const Openpage = () => {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // Check if user has visited before
-        const hasVisited = localStorage.getItem('hasVisitedIntro');
-        if (hasVisited) {
-            navigate('/open');
-            return;
-        }
-        // Set visited flag
-        localStorage.setItem('hasVisitedIntro', 'true');
-    }, [navigate]);
+    // useEffect(() => {
+    //     // Check if user has visited before
+    //     const hasVisited = localStorage.getItem('hasVisitedIntro');
+    //     if (hasVisited) {
+    //         navigate('/open');
+    //         return;
+    //     }
+    //     // Set visited flag
+    //     localStorage.setItem('hasVisitedIntro', 'true');
+    // }, [navigate]);
 
     // Add new ref for the fourth section
     const contentRef1 = useRef(null);
