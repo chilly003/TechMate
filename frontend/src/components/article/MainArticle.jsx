@@ -35,7 +35,7 @@ const MainArticle = ({ id, imageUrl, category, title, journal, summary }) => {
                         {title}
                     </h2>
 
-                    <p className="text-base md:text-lg opacity-90 leading-relaxed max-w-3xl">
+                    <p className="text-base hidden md:block opacity-90 leading-relaxed max-w-3xl">
                         {summary}
                     </p>
 
