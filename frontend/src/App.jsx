@@ -9,18 +9,34 @@ import UserProfilePage from "./pages/UserProfilePage";
 import OpenPage from "./pages/OpenPage";
 import KakaoCallback from "./pages/KakaoCallback";
 import GoogleCallback from "./pages/GoogleCallback";
-import ProtectedRoute from "./pages/ProtectedRoute"; // Route Guard 컴포넌트
+import ProtectedRoute from "./pages/ProtectedRoute";
+import UnprotectedRoute from "./pages/UnprotectedRoute";
 
 function App() {
-
   return (
     <Router>
       <div>
           <Routes>
-            {/* 엑세스 토큰 여부와 상관없이 접근 가능한 경로 */}
+            {/* 엑세스 토큰이 없을 때만 접근 가능한 경로 */}
             <Route path="/" element={<OpenPage />} />
-            <Route path="/open" element={<Intro />} />
-            <Route path="/userprofile" element={<UserProfilePage />} />
+            <Route 
+              path="/open" 
+              element={
+                <UnprotectedRoute>
+                  <Intro />
+                </UnprotectedRoute>
+              } 
+            />
+            <Route 
+              path="/userprofile" 
+              element={
+                <UnprotectedRoute>
+                  <UserProfilePage />
+                </UnprotectedRoute>
+              } 
+            />
+
+            {/* 인증 콜백 라우트 */}
             <Route path="/auth" element={<KakaoCallback />} />
             <Route path="/auth/google" element={<GoogleCallback />} />
 
@@ -30,8 +46,8 @@ function App() {
               element={
                 <ProtectedRoute>
                   <>
-                  <Header />
-                  <HomePage />
+                    <Header />
+                    <HomePage />
                   </>
                 </ProtectedRoute>
               }

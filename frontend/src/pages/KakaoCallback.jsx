@@ -35,6 +35,7 @@ const KakaoCallback = () => {
           sessionStorage.removeItem("withdraw_flow"); // 세션 스토리지에서 플래그 제거\
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
+          localStorage.removeItem("hasVisitedIntro");
           alert("회원 탈퇴가 완료되었습니다.");
           navigate("/"); // 또는 다른 페이지로 리다이렉트
         } catch (withdrawError) {
