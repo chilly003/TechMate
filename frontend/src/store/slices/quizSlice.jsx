@@ -52,7 +52,7 @@ export const submitQuizAnswers = createAsyncThunk(
     async ({ articleId, answers }) => {
         // const response = await api.post(`/articles/${articleId}/quiz`, answers);
         const response = await api.post(`/articles/${articleId}/quiz`, answers);
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     }
 );

@@ -77,23 +77,23 @@ const scrapSlice = createSlice({
       
       // 추가 처리
       .addCase(addScrap.fulfilled, (state, action) => {
-        console.log('스크랩 추가 성공:', action.payload);
+        // console.log('스크랩 추가 성공:', action.payload);
         state.scraps.content.unshift(action.payload.data);
       })
       .addCase(addScrap.rejected, (state, action) => {
-        console.error('스크랩 추가 실패:', action.error);
+        // console.error('스크랩 추가 실패:', action.error);
         state.error = action.error;
       })
       
       // 삭제 처리
       .addCase(removeScrap.fulfilled, (state, action) => {
-        console.log('스크랩 삭제 성공:', action.payload);
+        // console.log('스크랩 삭제 성공:', action.payload);
         state.scraps.content = state.scraps.content.filter(
           scrap => scrap.scrapId !== action.payload
         );
       })
       .addCase(removeScrap.rejected, (state, action) => {
-        console.error('스크랩 삭제 실패:', action.error);
+        // console.error('스크랩 삭제 실패:', action.error);
         state.error = action.error;
       });
   }
