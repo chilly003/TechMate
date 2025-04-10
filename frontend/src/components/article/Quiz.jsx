@@ -81,12 +81,12 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   // 최종 결과 제출 함수 수정
   const submitQuizResults = async () => {
     try {
-      console.log('제출 시작 - 현재 상태:', {
-        currentQuestion,
-        showResult,
-        showFinalResults,
-        isSubmitting
-      });
+      // console.log('제출 시작 - 현재 상태:', {
+      //   currentQuestion,
+      //   showResult,
+      //   showFinalResults,
+      //   isSubmitting
+      // });
 
       setIsSubmitting(true);
       const finalDetailedAnswers = quizData.quizzes.map((quiz, index) => ({
@@ -107,7 +107,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
       setShowFinalResults(true);
 
     } catch (error) {
-      console.error('퀴즈 답변 제출 실패:', error);
+      // console.error('퀴즈 답변 제출 실패:', error);
       setSubmitError('퀴즈 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
       setIsSubmitting(false);
     }
@@ -116,19 +116,19 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   // 개별 상태 변화 추적을 위한 useEffect
   useEffect(() => {
     if (showFinalResults) {
-      console.log('showFinalResults가 true로 변경됨');
+      // console.log('showFinalResults가 true로 변경됨');
     }
   }, [showFinalResults]);
 
 
   const handleContinue = async () => {
     if (currentQuestion === quizData.quizzes.length - 1) {
-      console.log('마지막 문제 제출 시도:', {
-        currentQuestion,
-        quizAttemptStatus,
-        showResult,
-        showFinalResults
-      });
+      // console.log('마지막 문제 제출 시도:', {
+      //   currentQuestion,
+      //   quizAttemptStatus,
+      //   showResult,
+      //   showFinalResults
+      // });
       if (!quizAttemptStatus) {
         currentQuestionRef.current = currentQuestion;  // ref 값 유지
         await submitQuizResults();
@@ -214,7 +214,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   // 최종 결과 화면
   if (showFinalResults) {
     return (
-      <div className="max-w-3xl px-10 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+      <div className="max-w-3xl px-6 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
         {/* <div className="flex items-center">
           <div className="bg-[#1a237e] text-white text-3xl md:text-3xl font-bold mb-10">
             퀴즈 풀이 결과
@@ -286,24 +286,24 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
           </div>
         )}
 
-        {/* 퀴즈 풀이 현황 버튼 */}
+        {/* 퀴즈 풀이 현황 배너 */}
         {/* <div className="w-full rounded-xl mb-12 pt-14"> */}
-        <div className="w-full rounded-2xl px-6 md:px-8 py-7 flex justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+        <div className="w-full rounded-2xl px-3 md:px-8 py-7 flex justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
           {/* 텍스트와 버튼 영역 */}
           <div className="relative z-10 flex flex-col gap-4 w-full px-5 md:text-left">
             <div>
               <p className="text-gray-600 text-sm md:text-base mb-1">퀴즈 풀고 잔디 심어요!</p>
-              <p className="text-xl md:text-xl pt-0.5 font-bold">당신의 퀴즈 풀이 현황은?</p>
+              <p className="text-lg md:text-xl pt-0.5 font-bold">당신의 퀴즈 풀이 현황은?</p>
               <button
                 onClick={() => window.location.href = '/mypage'}
-                className="bg-white text-sm font-semibold mt-3 px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
+                className="bg-white text-sm font-semibold mt-3 px-4 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
               >
-                퀴즈 풀이 현황 보러가기
+                풀이 현황 보러가기
               </button>
             </div>
           </div>
-          {/* 우측 이미지 - 모바일에서는 숨김 */}
-          <div className="hidden sm:block h-[120px] w-[170px] ml-auto me-7">
+          {/* 우측 이미지 */}
+          <div className="h-[100px] w-[140px] md:h-[120px] md:w-[170px] ml-auto me-7">
             <img
               src={quizGrass}
               alt="Quiz"
@@ -337,7 +337,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     const quiz = quizData.quizzes[currentQuestionRef.current];  // currentQuestion 대신 ref 사용
     const selectedOption = quiz.options.find(opt => opt.option_id === selectedAnswers[currentQuestionRef.current]);
     return (
-      <div className="max-w-3xl px-8 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+      <div className="max-w-3xl px-6 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
         <div className="text-right mb-4">
           Question {currentQuestionRef.current + 1} / {quizData.quizzes.length}
         </div>
@@ -417,7 +417,7 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
 
   // 기본 퀴즈 화면
   return (
-    <div className="max-w-3xl px-8 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+    <div className="max-w-3xl px-6 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
       <div className="text-right mb-4">
         Question {currentQuestion + 1} / {quizData.quizzes.length}
       </div>

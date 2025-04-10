@@ -458,24 +458,27 @@ const ArticlePage = () => {
                 </div>
 
 
-                {/* 퀴즈 풀기 버튼 */}
+                {/* 퀴즈 풀기 배너 */}
                 <div className="w-full rounded-2xl mb-12 pt-14">
-                  <div className="w-full rounded-2xl px-6 md:px-12 py-6 md:py-5 px-12 py-6 flex md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
+                  <div className="w-full rounded-2xl px-6 py-3 md:px-12 flex md:flex-row justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
                     {/* 텍스트와 버튼 영역 */}
-                    <div className="relative z-10 flex flex-col gap-4 w-full md:max-w-[60%] text-center md:text-left">
+                    <div className="relative z-10 flex flex-col px-6 gap-4 w-full md:max-w-[60%] text-left">
                       <div>
-                        <p className="text-gray-600 text-sm md:text-base mb-1">쉽고 재밌는 IT 뉴스 플랫폼 TechMate와 함께 하는</p>
+                        <p className="text-gray-600 text-sm md:text-base mb-1">
+                          <span className="hidden md:inline">쉽고 재밌는 IT 뉴스 플랫폼 </span>
+                          TechMate와 함께 하는
+                        </p>
                         <p className="text-2xl md:text-3xl pt-1 font-bold">IT 퀴즈</p>
                       </div>
                       <button
                         onClick={handleQuizClick}
-                        className="bg-white text-sm font-semibold px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit mx-auto md:mx-0"
+                        className="bg-white text-sm font-semibold px-5 py-1.5 rounded-full text-gray-700 hover:bg-gray-50 transition-colors w-fit"
                       >
                         AI 퀴즈 풀기
                       </button>
                     </div>
-                    {/* 우측 이미지 - 모바일에서는 숨김 */}
-                    <div className="hidden sm:block h-40 w-40">
+                    {/* 우측 이미지 */}
+                    <div className="h-40 w-40">
                       <img
                         src={quiz}
                         alt="Quiz"

@@ -81,14 +81,14 @@ const Memo = ({ articleId, initialFolderId }) => {
         await dispatch(fetchMemo(articleId));
         setCategory(newFolderId);
       } catch (error) {
-        console.error("Error changing folder:", error);
+        // console.error("Error changing folder:", error);
       }
     }
   };
 
 
   useEffect(() => {
-    console.log("📝 메모 컴포넌트가 마운트되었습니다. 기사 ID: ", articleId);
+    // console.log("📝 메모 컴포넌트가 마운트되었습니다. 기사 ID: ", articleId);
 
     if (articleId) {
       // 먼저 폴더 목록을 가져온 후에 메모 정보를 가져오기
@@ -96,9 +96,9 @@ const Memo = ({ articleId, initialFolderId }) => {
         .then(() => dispatch(fetchMemo(articleId)))
         .then((memoResponse) => {
           // 스크랩 모달에서 선택한 폴더 ID가 있으면 우선 적용
-          console.log(initialFolderId)
+          // console.log(initialFolderId)
           if (initialFolderId) {
-            console.log("스크랩 모달에서 선택한 폴더 ID:", initialFolderId);
+            // console.log("스크랩 모달에서 선택한 폴더 ID:", initialFolderId);
             setCategory(String(initialFolderId));
           }
           // 기존 메모의 폴더 ID가 있으면 적용
@@ -155,7 +155,7 @@ const Memo = ({ articleId, initialFolderId }) => {
         content: markdown,
       })).unwrap();
 
-      console.log("수정된 메모 데이터:", updateResponse);
+      // console.log("수정된 메모 데이터:", updateResponse);
       setShowSaveConfirmModal(true);
     }
   };

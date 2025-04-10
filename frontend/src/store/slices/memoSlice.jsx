@@ -8,22 +8,22 @@ export const fetchMemo = createAsyncThunk(
         try {
             const response = await api.get(`/scraps/memos/${articleId}`);
             if (!response.data.data) {
-                console.log('📝 메모가 없습니다.');
+                // console.log('📝 메모가 없습니다.');
                 return null;
             }
-            console.log('✅ 메모 조회 응답:', {
-                메모ID: response.data.data.memoId,
-                메모내용: response.data.data.content,
-                폴더아이디: response.data.data.folderId,
-                스크랩아이디: response.data.data.scrapId,
-            });
+            // console.log('✅ 메모 조회 응답:', {
+            //     메모ID: response.data.data.memoId,
+            //     메모내용: response.data.data.content,
+            //     폴더아이디: response.data.data.folderId,
+            //     스크랩아이디: response.data.data.scrapId,
+            // });
             return response.data.data;
         } catch (err) {
-            console.error('❌ 메모 조회 실패:', {
-                에러_메시지: err.message,
-                상태_코드: err.response?.status,
-                응답_데이터: err.response?.data
-            });
+            // console.error('❌ 메모 조회 실패:', {
+            //     에러_메시지: err.message,
+            //     상태_코드: err.response?.status,
+            //     응답_데이터: err.response?.data
+            // });
             return rejectWithValue(err.response?.data || err.message);
         }
     }
@@ -38,14 +38,14 @@ export const updateMemo = createAsyncThunk(
                 content: content
             });
 
-            console.log('✅ 메모 수정 성공:', response.data);
+            // console.log('✅ 메모 수정 성공:', response.data);
             return response.data.data;
         } catch (err) {
-            console.error('❌ 메모 수정 실패:', {
-                에러_메시지: err.message,
-                상태_코드: err.response?.status,
-                응답_데이터: err.response?.data
-            });
+            // console.error('❌ 메모 수정 실패:', {
+            //     에러_메시지: err.message,
+            //     상태_코드: err.response?.status,
+            //     응답_데이터: err.response?.data
+            // });
             return rejectWithValue(err.response?.data || err.message);
         }
     }
