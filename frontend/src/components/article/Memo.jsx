@@ -69,7 +69,7 @@ const Memo = ({ articleId, initialFolderId }) => {
 
   // handleFolderChange도 수정
   const handleFolderChange = async (e) => {
-    const newFolderId = String(e.target.value);  // 문자열로 변환
+    const newFolderId = String(e.target.value); // 문자열로 변환
 
     if (memo?.scrapId && articleId) {
       try {
@@ -94,7 +94,6 @@ const Memo = ({ articleId, initialFolderId }) => {
         .then(() => dispatch(fetchMemo(articleId)))
         .then((memoResponse) => {
           // 스크랩 모달에서 선택한 폴더 ID가 있으면 우선 적용
-          // console.log(initialFolderId)
           if (initialFolderId) {
             setCategory(String(initialFolderId));
           }
@@ -152,7 +151,6 @@ const Memo = ({ articleId, initialFolderId }) => {
         content: markdown,
       })).unwrap();
 
-      // console.log("수정된 메모 데이터:", updateResponse);
       setShowSaveConfirmModal(true);
     }
   };
@@ -215,8 +213,8 @@ const Memo = ({ articleId, initialFolderId }) => {
                 [...folders.content]  // 배열을 복사한 후 정렬
                   .sort((a, b) => a.folderId - b.folderId)
                   .map((folder) => (
-                    <option 
-                      key={folder.folderId} 
+                    <option
+                      key={folder.folderId}
                       value={String(folder.folderId)}
                     >
                       {folder.folderName}
@@ -247,8 +245,8 @@ const Memo = ({ articleId, initialFolderId }) => {
         )}
       </div>
 
-     {/* 저장/수정 버튼 */}
-     <div className="text-center flex-shrink-0 mt-4">
+      {/* 저장/수정 버튼 */}
+      <div className="text-center flex-shrink-0 mt-4">
         <button
           onClick={() => {
             // isPreview가 false일 경우에만 handleSave 함수를 실행합니다.

@@ -41,11 +41,9 @@ const Header = () => {
         // 로그인 페이지로 리다이렉트
         window.location.href = "/open";
       } else {
-        console.error("로그아웃 실패:", response.statusText);
         alert("로그아웃에 실패했습니다.");
       }
     } catch (error) {
-      console.error("로그아웃 중 오류 발생:", error);
       alert("오류가 발생했습니다.");
     }
   };
@@ -54,7 +52,6 @@ const Header = () => {
     try {
       // OAuth Provider 확인
       const provider = await getOAuthProvider();
-      // console.log("Provider:", provider); // Provider 값 확인
 
       // 탈퇴 플로우 설정
       sessionStorage.setItem("withdraw_flow", "true");
@@ -67,7 +64,6 @@ const Header = () => {
         const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
         window.location.href = kakaoURL;
-        // console.log("카카오 인증 URL:", authUrl);
       } else if (provider === "GOOGLE") {
         const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
@@ -79,8 +75,7 @@ const Header = () => {
       // 리다이렉트 실행
     } catch (error) {
       if (error.response) {
-        console.error("상태 코드:", error.response.status);
-        console.error("응답 데이터:", error.response.data);
+
       }
     }
   };
@@ -88,40 +83,15 @@ const Header = () => {
   const getOAuthProvider = async () => {
     try {
       const response = await api.get("/users/nickname");
-      // console.log("API 응답:", response); // API 응답 확인
       if (response.status === 200 && response.data.success) {
-        // console.log("OAuth Provider:", response.data.data.oauthProvider);
         return response.data.data.oauthProvider;
       } else {
         throw new Error("OAuth Provider 정보를 가져올 수 없습니다.");
       }
     } catch (error) {
-      // console.error("OAuth Provider 확인 실패:", error); // 에러 객체 전체 출력
       throw new Error("OAuth Provider 확인 중 오류가 발생했습니다.");
     }
   };
-
-  // 메뉴 열림 상태에 따른 스크롤 제어
-  // const [scrollbarWidth, setScrollbarWidth] = useState(0);
-
-  // useEffect(() => {
-  //     if (isMenuOpen) {
-  //         const scrollWidth = window.innerWidth - document.documentElement.clientWidth;
-  //         setScrollbarWidth(scrollWidth);
-  //         document.body.style.paddingRight = `${scrollWidth}px`;
-  //         document.body.style.overflow = 'hidden';
-  //     } else {
-  //         setScrollbarWidth(0);
-  //         document.body.style.paddingRight = '0px';
-  //         document.body.style.overflow = 'unset';
-  //     }
-
-  //     return () => {
-  //         setScrollbarWidth(0);
-  //         document.body.style.paddingRight = '0px';
-  //         document.body.style.overflow = 'unset';
-  //     };
-  // }, [isMenuOpen]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -185,24 +155,6 @@ const Header = () => {
       >
         <div className="h-full flex flex-col justify-between">
           <div className="px-4 md:px-10 py-3">
-            {/* <div className="mt-8 flex gap-4">
-                            <Link
-                                to="/home?category=hot"
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <FiTrendingUp className="text-xl" />
-                                <span className="font-medium">인기 뉴스</span>
-                            </Link>
-                            <Link
-                                to="/home?category=recent"
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <FiClock className="text-xl" />
-                                <span className="font-medium">최신 뉴스</span>
-                            </Link>
-                        </div> */}
             {/* 닫기 버튼 */}
             <div className="flex justify-end mb-4 md:mb-6">
               <button

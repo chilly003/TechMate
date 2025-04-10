@@ -20,19 +20,16 @@ const UserProfilePage = () => {
 
     // location에서 provider도 함께 받아오도록 수정
     const { idToken, provider } = location.state || {}; // provider 추가
-    console.log(idToken, provider)
 
 
     useEffect(() => {
         if (!idToken || !provider) {
-            console.error('idToken 또는 provider가 없습니다.');
             navigate('/');
         } else {
-            console.log('받은 idToken:', idToken); // 디버깅용 로그
             // 필요 시 API 호출이나 상태 업데이트 수행 가능
         }
     }
-    , [idToken, navigate]);
+        , [idToken, navigate]);
 
     // 프로그레스 바 단계 정보 추가
     const steps = [
@@ -91,7 +88,6 @@ const UserProfilePage = () => {
                     setIsTransitioning(false);
                     setStep(prev => prev + 1);
                 } catch (error) {
-                    console.error('회원가입 실패:', error);
                     setIsTransitioning(false);
                 }
             } else {
@@ -112,26 +108,13 @@ const UserProfilePage = () => {
                 if (action.type.endsWith('/fulfilled')) {
                     setStep(prev => prev + 1);
                 } else {
-                    console.error('❌ 데이터 저장 실패:', action);
+
                 }
             })
             .catch((err) => {
-                console.error('❌ 랜덤 기사 조회 실패:', err);
+
             });
     };
-
-    // 선호 기사 등록
-    // Remove extra closing brace and semicolon
-    // const handlePreferredArticles = () => {
-    //     dispatch(registerPreferredArticles(selectedArticles))
-    //         .unwrap()
-    //         .then(() => {
-    //             setStep(prev => prev + 1);
-    //         })
-    //         .catch((err) => {
-    //             console.error('❌ 선호 기사 등록 실패:', err);
-    //         });
-    // };
 
     const handleNext = () => {
         if (step === 1) {

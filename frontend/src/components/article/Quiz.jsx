@@ -63,15 +63,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
     }
   }, [quizAttemptStatus, selectedOptions, quizData.quizzes]);
 
-  // 3번째 문제의 정답 선택 후 다음 버튼 클릭 추적
-  // useEffect(() => {
-  //   // 3번째 문제(인덱스 2)에서 결과 화면으로 전환된 경우
-  //   if (currentQuestion === 2 && showResult && selectedAnswers[2] !== null) {
-  //     console.log("안녕");
-  //     // 제출 로직은 handleContinue에서 처리하도록 변경
-  //   }
-  // }, [currentQuestion, showResult, selectedAnswers]);
-
   // 현재 퀴즈 가져오기
   const getCurrentQuiz = () => quizData.quizzes[currentQuestion];
 
@@ -81,13 +72,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   // 최종 결과 제출 함수 수정
   const submitQuizResults = async () => {
     try {
-      // console.log('제출 시작 - 현재 상태:', {
-      //   currentQuestion,
-      //   showResult,
-      //   showFinalResults,
-      //   isSubmitting
-      // });
-
       setIsSubmitting(true);
       const finalDetailedAnswers = quizData.quizzes.map((quiz, index) => ({
         quizId: quiz.quiz_id,
@@ -107,7 +91,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
       setShowFinalResults(true);
 
     } catch (error) {
-      // console.error('퀴즈 답변 제출 실패:', error);
       setSubmitError('퀴즈 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
       setIsSubmitting(false);
     }
@@ -116,19 +99,12 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   // 개별 상태 변화 추적을 위한 useEffect
   useEffect(() => {
     if (showFinalResults) {
-      // console.log('showFinalResults가 true로 변경됨');
     }
   }, [showFinalResults]);
 
 
   const handleContinue = async () => {
     if (currentQuestion === quizData.quizzes.length - 1) {
-      // console.log('마지막 문제 제출 시도:', {
-      //   currentQuestion,
-      //   quizAttemptStatus,
-      //   showResult,
-      //   showFinalResults
-      // });
       if (!quizAttemptStatus) {
         currentQuestionRef.current = currentQuestion;  // ref 값 유지
         await submitQuizResults();
@@ -215,11 +191,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
   if (showFinalResults) {
     return (
       <div className="max-w-3xl px-6 md:px-20 py-8 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain isolate [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
-        {/* <div className="flex items-center">
-          <div className="bg-[#1a237e] text-white text-3xl md:text-3xl font-bold mb-10">
-            퀴즈 풀이 결과
-          </div>
-        </div> */}
         {quizData.quizzes.map((quiz, index) => (
           <div key={quiz.quiz_id} className="mb-12">
             <h3 className="text-xl font-semibold mb-6">
@@ -287,7 +258,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
         )}
 
         {/* 퀴즈 풀이 현황 배너 */}
-        {/* <div className="w-full rounded-xl mb-12 pt-14"> */}
         <div className="w-full rounded-2xl px-3 md:px-8 py-7 flex justify-between items-center relative overflow-hidden bg-[#EEF3FF]">
           {/* 텍스트와 버튼 영역 */}
           <div className="relative z-10 flex flex-col gap-4 w-full px-5 md:text-left">
@@ -386,14 +356,6 @@ const Quiz = ({ articleId, quizzes, onClose }) => {
             </div>
           ))}
         </div>
-
-        {/* 정답 설명 추가 */}
-        {/* <div className="bg-gray-50 p-4 rounded-lg mb-8">
-          <h3 className="font-semibold text-gray-700 mb-2">정답 설명</h3>
-          <p className="text-gray-600">
-            {quiz.reason}
-          </p>
-        </div> */}
 
         <div className="flex justify-end gap-4 mt-10">
           {currentQuestion > 0 && (

@@ -7,10 +7,10 @@ export const fetchNickname = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/users/nickname');
-            console.log('✅ 닉네임 조회 성공:', response.data);
+
             return response.data.data;
         } catch (err) {
-            console.error('❌ 닉네임 조회 실패:', err);
+
             return rejectWithValue(err.response?.data || err.message);
         }
     }
@@ -21,11 +21,8 @@ export const updateNickname = createAsyncThunk(
     'myPage/updateNickname',
     async (nickname, { rejectWithValue }) => {
         try {
-            const response = await api.patch('/users/nickname', { nickname });
-            console.log('✅ 닉네임 수정 성공:', response.data);
             return response.data.data;
         } catch (err) {
-            console.error('❌ 닉네임 수정 실패:', err);
             return rejectWithValue(err.response?.data?.message || '닉네임 수정에 실패했습니다.');
         }
     }
@@ -38,10 +35,10 @@ export const fetchActivity = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/users/activity');
-            console.log('✅ 활동 내역 조회 성공:', response.data);
+
             return response.data.data;
         } catch (err) {
-            console.error('❌ 활동 내역 조회 실패:', err);
+
             return rejectWithValue(err.response?.data || err.message);
         }
     }
@@ -53,7 +50,7 @@ export const fetchQuizHistory = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/users/quiz');
-            console.log('✅ 퀴즈 풀이 현황 조회 성공:', response.data);
+
 
             // 퀴즈 풀이 횟수에 따른 레벨 계산
             const quizLevels = {};
@@ -66,7 +63,7 @@ export const fetchQuizHistory = createAsyncThunk(
 
             return quizLevels;
         } catch (err) {
-            console.error('❌ 퀴즈 풀이 현황 조회 실패:', err);
+
             return rejectWithValue(err.response?.data || err.message);
         }
     }

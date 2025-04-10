@@ -51,11 +51,6 @@ const ArticleCard = ({ id, title, journal, summary, category, imageUrl, datetime
                         {formatDate(datetime)}
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                        {/* <img
-                            src={CompanyImage}
-                            alt="author"
-                            className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover"
-                        /> */}
                         <span className="text-sm sm:text-sm">{journal}</span>
                     </div>
                 </div>

@@ -95,7 +95,6 @@ const Mypage = () => {
 
   // months 변수를 calendarData로 변경
   const calendarData = generateCalendarData();
-  // console.log('Calendar Data:', calendarData); // Add this line temporarily to verify the data
 
   // Fetch folders when component mounts
   useEffect(() => {
@@ -116,7 +115,6 @@ const Mypage = () => {
 
   useEffect(() => {
     if (activeFolderId) {
-      console.log('Dispatching fetchScraps for folder ID:', activeFolderId);
       dispatch(fetchScraps(activeFolderId));
     }
   }, [activeFolderId, dispatch]);
@@ -209,7 +207,6 @@ const Mypage = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to update nickname:', error);
     }
   };
 
@@ -329,10 +326,9 @@ const Mypage = () => {
                             );
 
                             const formattedDate = format(date, 'yyyy-MM-dd');
-                            // console.log(formattedDate)
                             // Convert string to number and ensure it's a valid number
                             const quizCount = parseInt(quizHistory?.[formattedDate]) || 0;
-                            // console.log(quizCount)
+
 
                             const getBackgroundColor = (count) => {
                               // Ensure count is treated as a number

@@ -30,8 +30,6 @@ const KakaoCallback = () => {
             }
           );
 
-          // 탈퇴 성공 후 처리
-          console.log("회원 탈퇴 성공");
           sessionStorage.removeItem("withdraw_flow"); // 세션 스토리지에서 플래그 제거\
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
@@ -39,14 +37,12 @@ const KakaoCallback = () => {
           alert("회원 탈퇴가 완료되었습니다.");
           navigate("/"); // 또는 다른 페이지로 리다이렉트
         } catch (withdrawError) {
-          console.error("회원 탈퇴 API 호출 실패:", withdrawError);
           navigate("/home");
         }
       } else {
         // 1. 회원 여부 확인 요청
         const validationResponse = await axios.get(
-          `${
-            import.meta.env.VITE_API_BASE_URL
+          `${import.meta.env.VITE_API_BASE_URL
           }/api/v1/credentials/oauth/valid/register`,
           {
             params: {
@@ -58,10 +54,8 @@ const KakaoCallback = () => {
 
         // 2. 응답 구조 분해 할당
         const { isRegistered, idToken } = validationResponse?.data.data;
-        // console.log(isRegistered, idToken);
 
         if (!isRegistered) {
-        //   console.log("[회원가입 필요] idToken:", idToken); // 디버깅용 로그
           // 회원가입 페이지로 이동하며 idToken 전달
           navigate("/userprofile", {
             state: {
@@ -70,7 +64,6 @@ const KakaoCallback = () => {
             },
           });
         } else {
-          console.log("[로그인 성공]"); // 디버깅용 로그
           // 로그인 API 요청
           const authResponse = await axios.post(
             `${import.meta.env.VITE_API_BASE_URL}/api/v1/credentials/login`,
@@ -88,16 +81,11 @@ const KakaoCallback = () => {
           if (accessToken) {
             localStorage.setItem("accessToken", accessToken);
           } else {
-            console.error("accessToken이 응답에 없습니다.");
           }
           navigate("/home");
         }
       }
     } catch (error) {
-      console.error("API 호출 실패:", {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
       navigate("/");
     }
   };

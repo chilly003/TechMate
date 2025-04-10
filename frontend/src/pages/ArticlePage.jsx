@@ -18,8 +18,6 @@ import {
 import { addScrap, removeScrap } from "../store/slices/scrapSlice";
 import FloatingButton from "../components/ui/FloatingButton";
 import quiz from "../assets/images/quiz.png";
-import replaceImage from "../../src/assets/images/replaceImage.png";
-// import 여기서 끝끝
 
 const ArticlePage = () => {
   const navigate = useNavigate();
@@ -46,10 +44,8 @@ const ArticlePage = () => {
   useEffect(() => {
     dispatch(fetchArticleDetail(id));
     dispatch(fetchFolders());
-    // Remove the unnecessary scraped state check since we're using Redux store
   }, [dispatch, id]);
 
-  // Move the function definition here, before it's used
   const handleSidePanelToggle = () => {
     if (!isSidePanelOpen) {
       setShowQuiz(false); // Reset quiz state when opening panel
@@ -71,11 +67,9 @@ const ArticlePage = () => {
         .catch((error) => {
           if (error.reason) {
             setTimeout(() => {
-              console.log('퀴즈 생성 중... 재시도합니다.');
               fetchQuizWithRetry();
             }, 2000);
           } else {
-            console.error('퀴즈 로딩 실패:', error);
             setShowQuiz(false);
             setIsSidePanelOpen(false);
           }
@@ -88,10 +82,8 @@ const ArticlePage = () => {
   // 사이드 패널 닫을 때 퀴즈 상태도 초기화
   const handleCloseSidePanel = () => {
     setIsSidePanelOpen(false);
-    // setShowQuiz(false);
   };
 
-  // Modify scrap button click handler
   const handleScrapButtonClick = () => {
     if (scraped) {
       setScrapToRemove(scrapId); // articleSlice의 scrapId 사용
@@ -101,11 +93,9 @@ const ArticlePage = () => {
     }
   };
 
-  // Add this useEffect for scroll reset
-  // Modify the scroll reset useEffect
   useEffect(() => {
     window.scrollTo(0, 0);
-    setIsSidePanelOpen(false); // Close side panel when article changes
+    setIsSidePanelOpen(false);
   }, [id]);
 
 
@@ -121,15 +111,12 @@ const ArticlePage = () => {
     };
   }, []);
 
-  // 수정된 스타일 부분: 이미지는 확대되지만 오버레이는 #FDFBF7로 변경
   const imageStyle = {
     transform: `scale(${1 + scrollPosition * 0.0008})`,
   };
 
-  // 오버레이 스타일: 스크롤에 따라 #FDFBF7 색상의 불투명도가 변함
   const overlayStyle = {
     backgroundColor: `rgba(253, 251, 247, ${Math.min(1, scrollPosition * 0.002)})`,
-
   };
 
   return (
@@ -407,16 +394,12 @@ const ArticlePage = () => {
               >
                 <div className="text-left space-y-8">
                   {article?.content?.split("\n").map((paragraph, index, paragraphs) => {
-                    // Skip empty paragraphs
                     if (!paragraph.trim()) return null;
 
                     const elements = [];
 
-                    // Check if we should insert an image before this paragraph
-                    // Skip first image as it's used in the hero section
                     if (article?.images && article.images.length > 1 && index > 0) {
-                      // Calculate which image to show (excluding the first image)
-                      const currentImageIndex = Math.floor(index / 3) + 1; // Every 3 paragraphs
+                      const currentImageIndex = Math.floor(index / 3) + 1;
                       if (currentImageIndex < article.images.length && index % 3 === 0) {
                         const image = article.images[currentImageIndex];
                         elements.push(
@@ -436,13 +419,11 @@ const ArticlePage = () => {
                       }
                     }
 
-                    // Check if paragraph is a photo description
                     const isPhotoDesc =
                       paragraph.includes("@") &&
                       (paragraph.includes("기자") ||
                         paragraph.includes("연합뉴스"));
 
-                    // Add the paragraph
                     elements.push(
                       <p
                         key={`paragraph-${index}`}

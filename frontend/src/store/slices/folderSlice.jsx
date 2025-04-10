@@ -23,7 +23,6 @@ export const fetchFolders = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/scraps/folders");
-      // console.log(res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -49,12 +48,12 @@ export const createFolder = createAsyncThunk(
   "folders/create",
   async (folderName, { rejectWithValue }) => {
     try {
-      // console.log("폴더 생성 요청 시작:", folderName);
+
       const res = await api.post("/scraps/folders", { folderName });
-      // console.log(res.data);
+
       return res.data;
     } catch (err) {
-      // console.error("폴더 생성 실패:", err);
+
       return rejectWithValue(err.response.data);
     }
   }
@@ -86,12 +85,12 @@ const folderSlice = createSlice({
         state.loading = true;
       })
       .addCase(createFolder.fulfilled, (state, action) => {
-        // console.log("Folder creation successful:", action.payload);
+
         state.folders.content.unshift(action.payload.data);
         state.loading = false;
       })
       .addCase(createFolder.rejected, (state, action) => {
-        // console.error("Folder creation failed:", action.payload);
+
         state.error = action.payload;
         state.loading = false;
       })

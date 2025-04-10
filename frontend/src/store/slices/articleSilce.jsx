@@ -112,7 +112,7 @@ export const fetchSearchArticles = createAsyncThunk(
                 size,
             }
         });
-        
+
         if (response.data.data.content.length === 0) {
             throw new Error("검색 결과가 없습니다.")
         }
@@ -132,7 +132,6 @@ export const fetchArticleDetail = createAsyncThunk(
     "article/fetchArticleDetail",
     async (articleId) => {
         const response = await api.get(`/articles/${articleId}`);
-        // console.log(response.data);
         return response.data.data;
     }
 )
@@ -146,7 +145,6 @@ export const toggleLikeArticle = createAsyncThunk(
     "article/toggleLikeArticle",
     async (articleId) => {
         const response = await api.post(`/article-like/${articleId}`);
-        console.log('좋아요 응답 데이터:', response.data);
         return response.data;
     }
 )
