@@ -15,49 +15,70 @@ const FullpageScroll = ({ children }) => {
     const containerRef = useRef(null);
     const isScrolling = useRef(false);
     const timeoutRef = useRef(null);
+    const touchStartY = useRef(0);
+    const touchEndY = useRef(0);
 
-    // 실제 자식 요소만 필터링 (유효한 React 요소인지 확인)
     const validChildren = React.Children.toArray(children).filter(
         child => React.isValidElement(child)
     );
 
-    // 섹션 수 계산
     const sectionCount = validChildren.length;
 
-    // 휠 이벤트 처리
-    const handleWheel = (e) => {
-        e.preventDefault();
-
+    const handleSectionChange = (direction) => {
         if (isScrolling.current) return;
-
         isScrolling.current = true;
 
-        // 휠 방향에 따라 섹션 변경
-        if (e.deltaY > 0) {
-            // 아래로 스크롤
+        if (direction === 'down') {
             setCurrentSection(prev => (prev < sectionCount - 1 ? prev + 1 : prev));
         } else {
-            // 위로 스크롤
             setCurrentSection(prev => (prev > 0 ? prev - 1 : prev));
         }
 
-        // 스크롤 애니메이션이 완료될 시간 후에 다시 스크롤 가능하도록 설정
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
             isScrolling.current = false;
         }, 800);
     };
 
-    // 이벤트 리스너 등록 및 제거
+    const handleWheel = (e) => {
+        e.preventDefault();
+        handleSectionChange(e.deltaY > 0 ? 'down' : 'up');
+    };
+
+    // Touch event handlers
+    const handleTouchStart = (e) => {
+        touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+        touchEndY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+        const difference = touchStartY.current - touchEndY.current;
+        const minSwipeDistance = 50; // Minimum distance for swipe
+
+        if (Math.abs(difference) > minSwipeDistance) {
+            handleSectionChange(difference > 0 ? 'down' : 'up');
+        }
+    };
+
     useEffect(() => {
         const container = containerRef.current;
         if (container) {
             container.addEventListener('wheel', handleWheel, { passive: false });
+            container.addEventListener('touchstart', handleTouchStart, { passive: true });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd, { passive: true });
         }
 
         return () => {
             if (container) {
                 container.removeEventListener('wheel', handleWheel);
+                container.removeEventListener('touchstart', handleTouchStart);
+                container.removeEventListener('touchmove', handleTouchMove);
+                container.removeEventListener('touchend', handleTouchEnd);
             }
             clearTimeout(timeoutRef.current);
         };
@@ -66,7 +87,7 @@ const FullpageScroll = ({ children }) => {
     return (
         <div
             ref={containerRef}
-            className="h-screen w-full overflow-hidden relative"
+            className="h-screen w-full overflow-hidden relative touch-none"
         >
             <div
                 className="transition-transform duration-700 ease-in-out h-full"
@@ -92,7 +113,6 @@ const FullpageScroll = ({ children }) => {
     );
 };
 
-// 외부에서 사용할 수 있도록 Section도 내보냄
 FullpageScroll.Section = Section;
 
 export default FullpageScroll;
