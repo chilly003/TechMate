@@ -61,8 +61,8 @@ const Memo = ({ articleId, initialFolderId }) => {
   const dispatch = useDispatch();
   const { memo, loading, error } = useSelector((state) => state.memo);
   const { folders = [] } = useSelector((state) => state.folder);
-  const [markdown, setMarkdown] = useState("# 마크다운을 입력하세요");
-  const [isPreview, setIsPreview] = useState(false);
+  const [markdown, setMarkdown] = useState("# 마크다운 형식의 메모를 제공합니다. 사용해보세요!😊");
+  const [isPreview, setIsPreview] = useState(true);
   const [category, setCategory] = useState(initialFolderId ? String(initialFolderId) : "");
   const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
 
@@ -81,14 +81,12 @@ const Memo = ({ articleId, initialFolderId }) => {
         await dispatch(fetchMemo(articleId));
         setCategory(newFolderId);
       } catch (error) {
-        // console.error("Error changing folder:", error);
       }
     }
   };
 
 
   useEffect(() => {
-    // console.log("📝 메모 컴포넌트가 마운트되었습니다. 기사 ID: ", articleId);
 
     if (articleId) {
       // 먼저 폴더 목록을 가져온 후에 메모 정보를 가져오기
@@ -98,7 +96,6 @@ const Memo = ({ articleId, initialFolderId }) => {
           // 스크랩 모달에서 선택한 폴더 ID가 있으면 우선 적용
           // console.log(initialFolderId)
           if (initialFolderId) {
-            // console.log("스크랩 모달에서 선택한 폴더 ID:", initialFolderId);
             setCategory(String(initialFolderId));
           }
           // 기존 메모의 폴더 ID가 있으면 적용
@@ -250,23 +247,24 @@ const Memo = ({ articleId, initialFolderId }) => {
         )}
       </div>
 
-      {/* 저장 버튼 */}
-      <div className="text-center flex-shrink-0 mt-4">
+     {/* 저장/수정 버튼 */}
+     <div className="text-center flex-shrink-0 mt-4">
         <button
-          onClick={handleSave}
+          onClick={() => {
+            // isPreview가 false일 경우에만 handleSave 함수를 실행합니다.
+            if (!isPreview) {
+              handleSave();
+              setIsPreview(true);
+            } else {
+              setIsPreview(false);
+            }
+          }}
           className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-2 rounded shadow-md transition duration-200 ease-in-out w-32"
         >
-          저장하기
+          {isPreview ? '수정하기' : '저장하기'}
         </button>
+
       </div>
-
-      {/* 플로팅 버튼 */}
-      <FloatingButton
-        text={isPreview ? "메모" : "미리보기"}
-        color="fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg"
-        onClick={togglePreview}
-      />
-
       {/* 메모 저장 확인 모달 */}
       {showSaveConfirmModal && (
         <Modal
