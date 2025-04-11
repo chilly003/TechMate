@@ -1,0 +1,114 @@
+{
+  "groups": [
+    {
+      "name": "auth.jwt",
+      "type": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "oauth",
+      "type": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties"
+    },
+    {
+      "name": "oauth.google",
+      "type": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties",
+      "sourceMethod": "getGoogle()"
+    },
+    {
+      "name": "oauth.kakao",
+      "type": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties",
+      "sourceMethod": "getKakao()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "auth.jwt.access-exp",
+      "type": "java.lang.Long",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "auth.jwt.header",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "auth.jwt.prefix",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "auth.jwt.refresh-exp",
+      "type": "java.lang.Long",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "auth.jwt.secret-key",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.JwtProperties"
+    },
+    {
+      "name": "oauth.google.admin-key",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.google.app-id",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.google.base-url",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.google.client-id",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.google.client-secret",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.google.redirect-url",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.admin-key",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.app-id",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.base-url",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.client-id",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.client-secret",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    },
+    {
+      "name": "oauth.kakao.redirect-url",
+      "type": "java.lang.String",
+      "sourceType": "io.ssafy.p.s12b201.techmate.global.property.OauthProperties$OAuthSecret"
+    }
+  ],
+  "hints": []
+}
