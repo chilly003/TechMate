@@ -11,7 +11,7 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
         else {
-            config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZWNobWF0ZSIsImlhdCI6MTc0NDA4NzM5MCwic3ViIjoiMTciLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicm9sZSI6IlVTRVIiLCJleHAiOjE3NDQyNjczOTB9.q7g0tyduwRJHd_80IshG_hADu9ZUwVrqguezYUQQhao';
+            config.headers.Authorization = '';
         }
 
         return config;
